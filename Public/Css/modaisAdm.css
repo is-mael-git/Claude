@@ -1,0 +1,592 @@
+.modalAdm {
+    width: min(1000px, 94vw) !important;
+    max-width: 1000px !important;
+    max-height: 94vh !important;
+    height: auto !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+}
+
+.modalAdm .validacaoConteudo {
+    width: 100%;
+    padding: 18px 20px 16px;
+    background: #e5efff;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.modalAdm .mentorValidacaoHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 14px;
+}
+
+.modalAdm .mentorValidacaoInfo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.modalAdm .mentorValidacaoAvatar {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #30476b;
+    border-radius: 50%;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.modalAdm .mentorValidacaoAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modalAdm .mentorValidacaoAvatar i {
+    font-size: 27px;
+    color: #30476b;
+}
+
+.modalAdm .mentorValidacaoInfo h2 {
+    margin: 0 0 5px;
+    color: #283e62;
+    font-size: 23px;
+    line-height: 1.1;
+    font-weight: 600;
+}
+
+.modalAdm .statusPendente {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 15px;
+    background: #cce7ff;
+    color: #27578d;
+    font-size: 11px;
+    line-height: 1;
+}
+
+.modalAdm .dataValidacao {
+    padding-left: 18px;
+    border-left: 1px solid #b9cce4;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modalAdm .dataValidacao span {
+    color: #536683;
+    font-size: 10px;
+}
+
+.modalAdm .dataValidacao strong {
+    color: #30486c;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.modalAdm .validacaoCard {
+    width: 100%;
+    margin-bottom: 11px;
+    background: #ffffff;
+    border: 1px solid #cfdeef;
+    border-radius: 9px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.modalAdm .validacaoCardTitle {
+    min-height: 38px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #edf5ff;
+    border-bottom: 1px solid #d7e4f2;
+    box-sizing: border-box;
+}
+
+.modalAdm .validacaoCardTitle i {
+    color: #315783;
+    font-size: 14px;
+}
+
+.modalAdm .validacaoCardTitle h3 {
+    margin: 0;
+    color: #31517b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.modalAdm .validacaoCardBody {
+    padding: 12px 14px;
+    box-sizing: border-box;
+}
+
+.modalAdm .dadosPessoaisGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 16px;
+}
+
+.modalAdm .campoValidacao {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modalAdm .campoValidacao label {
+    color: #354967;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.modalAdm .valorValidacao {
+    height: 34px;
+    min-height: 34px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    background: #f8fbff;
+    border: 1px solid #cedae8;
+    border-radius: 6px;
+    color: #465974;
+    font-size: 11px;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.modalAdm .imagensCadastro {
+    display: flex;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.modalAdm .imagemCadastro {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 82px;
+}
+
+.modalAdm .imagemCadastro span {
+    color: #354967;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.modalAdm .imagemPreview {
+    width: 82px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f8fc;
+    border: 1px solid #ccd9e8;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.modalAdm .imagemPreview i {
+    font-size: 17px;
+    color: #30476b;
+}
+
+.modalAdm .imagemPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modalAdm .disponibilidadeGrid {
+    display: grid;
+    grid-template-columns: 1.9fr 0.8fr 0.8fr;
+    gap: 22px;
+}
+
+.modalAdm .subtituloValidacao {
+    margin: 0 0 6px;
+    color: #354967;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.modalAdm .diasValidacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.modalAdm .diaValidacao {
+    padding: 6px 9px;
+    border-radius: 13px;
+    background: #e3f0ff;
+    border: 1px solid #cce0f6;
+    color: #315b8b;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.modalAdm .infoDisponibilidade {
+    color: #435875;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.modalAdm .biografiaValidacao {
+    margin: 7px 0 0;
+    color: #4a5d78;
+    font-size: 11px;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modalAdm .competenciasValidacao {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.modalAdm .competenciaGrupo {
+    min-width: 0;
+}
+
+.modalAdm .competenciaGrupo h4 {
+    margin: 0 0 6px;
+    color: #354967;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.modalAdm .competenciaTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.modalAdm .competenciaTag {
+    padding: 5px 8px;
+    border-radius: 11px;
+    background: #e5f1ff;
+    border: 1px solid #d0e3f8;
+    color: #315b8b;
+    font-size: 9px;
+    line-height: 1.2;
+}
+
+.modalAdm .observacaoValidacao {
+    margin-top: 10px;
+    padding: 8px 10px;
+    display: flex;
+    gap: 9px;
+    background: #edf6ff;
+    border: 1px solid #cfe4f8;
+    border-radius: 6px;
+}
+
+.modalAdm .observacaoValidacao i {
+    margin-top: 1px;
+    color: #315b8b;
+    font-size: 13px;
+}
+
+.modalAdm .observacaoValidacao strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #31527c;
+    font-size: 10px;
+}
+
+.modalAdm .observacaoValidacao p {
+    margin: 0;
+    color: #526883;
+    font-size: 9px;
+    line-height: 1.3;
+}
+
+.modalAdm .acoesValidacao {
+    width: 100%;
+    padding-top: 4px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modalAdm .acoesValidacao button {
+    height: 38px;
+    min-width: 125px;
+    padding: 0 17px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.modalAdm .btnRejeitar {
+    background: #ffffff;
+    color: #283d60;
+    border: 2px solid #283d60;
+}
+
+.modalAdm .btnRejeitar:hover {
+    background: #f0f5fb;
+}
+
+.modalAdm .btnValidar {
+    background: #34425f;
+    color: #ffffff;
+    border: 2px solid #34425f;
+}
+
+.modalAdm .btnValidar:hover {
+    background: #293650;
+}
+
+@media (max-width: 1100px) {
+
+    .modalAdm {
+        width: 94vw !important;
+        max-width: 1000px !important;
+    }
+
+    .modalAdm .validacaoConteudo {
+        padding: 15px;
+    }
+
+    .modalAdm .dadosPessoaisGrid {
+        gap: 8px 12px;
+    }
+
+    .modalAdm .competenciasValidacao {
+        gap: 12px;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .modalAdm {
+        width: 95vw !important;
+        max-height: 95vh !important;
+    }
+
+    .modalAdm .validacaoConteudo {
+        padding: 12px;
+    }
+
+    .modalAdm .mentorValidacaoHeader {
+        gap: 12px;
+    }
+
+    .modalAdm .mentorValidacaoAvatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .modalAdm .mentorValidacaoInfo h2 {
+        font-size: 20px;
+    }
+
+    .modalAdm .dadosPessoaisGrid {
+        gap: 7px 9px;
+    }
+
+    .modalAdm .valorValidacao {
+        font-size: 10px;
+    }
+
+    .modalAdm .competenciasValidacao {
+        gap: 8px;
+    }
+
+    .modalAdm .competenciaTag {
+        font-size: 8px;
+        padding: 4px 6px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .modalAdm {
+        width: 97vw !important;
+        max-height: 96vh !important;
+    }
+
+    .modalAdm .validacaoConteudo {
+        padding: 9px;
+    }
+
+    .modalAdm .mentorValidacaoHeader {
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .modalAdm .mentorValidacaoAvatar {
+        width: 43px;
+        height: 43px;
+    }
+
+    .modalAdm .mentorValidacaoAvatar i {
+        font-size: 21px;
+    }
+
+    .modalAdm .mentorValidacaoInfo {
+        gap: 9px;
+    }
+
+    .modalAdm .mentorValidacaoInfo h2 {
+        font-size: 17px;
+    }
+
+    .modalAdm .statusPendente {
+        font-size: 8px;
+        padding: 4px 7px;
+    }
+
+    .modalAdm .dataValidacao {
+        padding-left: 8px;
+    }
+
+    .modalAdm .dataValidacao span {
+        font-size: 7px;
+    }
+
+    .modalAdm .dataValidacao strong {
+        font-size: 8px;
+    }
+
+    .modalAdm .validacaoCard {
+        margin-bottom: 6px;
+    }
+
+    .modalAdm .validacaoCardTitle {
+        min-height: 30px;
+        padding: 0 9px;
+    }
+
+    .modalAdm .validacaoCardTitle i {
+        font-size: 11px;
+    }
+
+    .modalAdm .validacaoCardTitle h3 {
+        font-size: 10px;
+    }
+
+    .modalAdm .validacaoCardBody {
+        padding: 7px 9px;
+    }
+
+    .modalAdm .dadosPessoaisGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+    }
+
+    .modalAdm .campoValidacao {
+        gap: 3px;
+    }
+
+    .modalAdm .campoValidacao label {
+        font-size: 8px;
+    }
+
+    .modalAdm .valorValidacao {
+        height: 25px;
+        min-height: 25px;
+        padding: 3px 5px;
+        font-size: 8px;
+    }
+
+    .modalAdm .imagensCadastro {
+        gap: 9px;
+        margin-top: 6px;
+    }
+
+    .modalAdm .imagemCadastro {
+        width: 55px;
+    }
+
+    .modalAdm .imagemCadastro span {
+        font-size: 8px;
+    }
+
+    .modalAdm .imagemPreview {
+        width: 55px;
+        height: 30px;
+    }
+
+    .modalAdm .disponibilidadeGrid {
+        grid-template-columns: 1.6fr 0.7fr 0.7fr;
+        gap: 7px;
+    }
+
+    .modalAdm .subtituloValidacao {
+        font-size: 8px;
+        margin-bottom: 4px;
+    }
+
+    .modalAdm .diaValidacao {
+        padding: 3px 5px;
+        font-size: 7px;
+    }
+
+    .modalAdm .infoDisponibilidade {
+        font-size: 8px;
+    }
+
+    .modalAdm .biografiaValidacao {
+        font-size: 8px;
+    }
+
+    .modalAdm .competenciasValidacao {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 4px;
+    }
+
+    .modalAdm .competenciaGrupo h4 {
+        font-size: 8px;
+    }
+
+    .modalAdm .competenciaTag {
+        padding: 3px 4px;
+        font-size: 6px;
+    }
+
+    .modalAdm .observacaoValidacao {
+        padding: 5px 6px;
+        margin-top: 6px;
+    }
+
+    .modalAdm .observacaoValidacao strong {
+        font-size: 7px;
+    }
+
+    .modalAdm .observacaoValidacao p {
+        font-size: 6px;
+    }
+
+    .modalAdm .acoesValidacao {
+        gap: 5px;
+    }
+
+    .modalAdm .acoesValidacao button {
+        height: 30px;
+        min-width: 95px;
+        font-size: 9px;
+    }
+
+}

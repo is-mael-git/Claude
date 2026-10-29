@@ -1,0 +1,186 @@
+.areaCardsMatch{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+/* ======================================================================= Area Startup ======================================================================== */
+.cardStartup{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 15px;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    width: 23vw;
+}
+.iconStartup{
+    display: flex;  
+    align-items: center;
+    background-color: #E8F0FE;
+    color: #4466c4;
+    padding: 20px 12px;
+    font-size: 50px;
+    border-radius: 100%;
+}
+.informacoesStartup{
+    display: flex;
+    align-items: baseline;
+    flex-direction: column;
+    gap: 5px;
+}
+.classStartup{
+    font-size: 13.5px;
+    color: rgb(77, 77, 77);
+}
+.nomeStartup{
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--cor-fundo-escuro);
+}
+.perfilStartup{
+    border: none;
+    background-color: #E8F0FE;
+    color: #4466c4;
+    padding: 5px;
+    border-radius: 5px;
+}
+/* ======================================================================= Area Mentor ========================================================================= */
+
+.cardMentor{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 15px;
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    width: 23vw;
+}
+.iconMentor{
+    display: flex;  
+    align-items: center;
+    background-color: #E8F0FE;
+    color: #4466c4;
+    padding: 20px 12px;
+    font-size: 50px;
+    border-radius: 100%;
+}
+.informacoesMentor{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.classMentor{
+    font-size: 13.5px;
+    color: rgb(77, 77, 77);
+}
+.nomeMentor{
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--cor-fundo-escuro);
+}
+.perfilMentor{
+    border: none;
+    background-color: #E8F0FE;
+    color: #4466c4;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* =================================================================== Area Competências ======================================================================= */
+
+.areaCompetenciasFragilidades{
+    display: flex;
+    padding: 5px 0px;
+    width: 100%;
+    gap: 15px
+}
+.areaCardInformativoCompetencias{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px
+}
+.competenciasMentor{
+    width: 23vw;
+    height: 27vh;
+    padding: 15px;
+    display: flex;
+    background-color: #E6F4EF;
+    flex-direction: column;
+
+}
+
+.nomeCompetenciasMentor{
+    color: #002409;
+    font-size: 20px;
+    font-weight: 600;
+    height: 30px;
+    
+}
+
+.cardInformativoCompetencias{
+    background-color: #b9e9d8;
+    padding: 5px;
+    border-radius: 5px;
+    font-weight: 500;
+}
+/* =================================================================== Area Fragilidades ======================================================================= */
+.FragilidadesStartup{
+    width: 23vw;
+    padding: 18px;
+    background-color: #f4e6e6;
+    border-radius: 5px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    height: 27vh;
+}
+
+.nomeFragilidades{
+    color: #c23333;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.boxCardInformativoFragilidades{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cardInformativoFragilidades{
+    padding: 5px;
+    background-color: #f78484;
+    border-radius: 5px;
+    color: rgb(37, 0, 0);
+}
+
+/* =================================================================== Area Justificativa ====================================================================== */
+
+.areaEscritaJustificativa{
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    width: 47vw;
+}
+.nomeAreaJustificativa{
+    font-size: 20px;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+}
+#iconAreaJustificativa{
+    color: darkblue;
+}
+/* ============================================================== Area Botoes Aprovar e Negar ================================================================== */
+.areaBotoesAprovarNegar{
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    gap: 10px;
+    justify-content: end;
+}

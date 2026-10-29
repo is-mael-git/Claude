@@ -1,0 +1,119 @@
+.menuLateralModalTrocaPerfil {
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    background-color: var(--cor-fundo-escuro);
+    border: none;
+    border-radius: 0px 0px 8px 8px;
+    padding: 1rem;
+    width: 18.7rem;
+    height: fit-content;
+    margin: 0;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.menuLateralModalTrocaPerfil[open] {
+    display: flex;
+    animation: descerTrocaPerfil 0.25s ease forwards;
+}
+
+.menuLateralModalTrocaPerfil::backdrop {
+    background: transparent;
+}
+
+@keyframes descerTrocaPerfil {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menuLateralContainerPerfil {
+    width: 14rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--cor-fundo-claro);
+}
+
+.menuLateralPerfil {
+    width: 100%;
+    height: 100%;
+}
+
+.menuLateralPerfilFoto {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 100%;
+}
+
+.menuLateralTituloPerfil {
+    font-size: .9rem;
+    color: var(--cor-fundo-claro);
+}
+
+.menuLateralLinhaPerfil {
+    width: 100%;
+    border: solid 1px var(--cor-fundo-claro);
+    margin-top: -1rem;
+}
+
+.menuLateralConfiguracaoPerfil {
+    width: 100%;
+    gap: 0.5rem;
+    border: none;
+    font-size: 1rem;
+    background-color: transparent;
+    color: var(--cor-fundo-claro);
+    margin-top: -1rem;
+}
+
+#menuLateralImgConfig {
+    font-size: 18px;
+    color: var(--cor-fundo-claro);
+}
+
+.menuLateralBotaoConfigPerfil {
+    border: none;
+    font-size: 1rem;
+    background-color: transparent;
+    color: var(--cor-fundo-claro);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.menuLateralSair {
+    padding-left: 0.3rem;
+}
+
+.menuLateralCaixaPerfil {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.menuLateralEscolhaPerfil {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+
+.menuLateralBurger {
+    display: none;
+}

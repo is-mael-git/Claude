@@ -1,0 +1,660 @@
+/* ==========================================================================
+   ESTRUTURA GERAL & LAYOUT CENTRAL
+   ========================================================================== */
+.asteristico { color: var(--cor-vermelho); margin-left: 4px; }
+
+.msgErro {
+    display: none;
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cor-vermelho);
+}
+.msgErro.ativo { 
+    display: inline;
+}
+
+/* CASO PRECISE
+
+.campoInvalido {
+    border-color: var(--cor-vermelho) !important;
+    
+}*/
+
+.btnCadastroMentor {
+    height: 40px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    justify-content: space-around;
+}
+
+.botaoAddMentor{
+    align-self: end;
+}
+
+.areaModalCentral {
+    background-color: var(--cor-fundo-claro);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.areaCentralCadastro {
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex: 1;
+    scrollbar-width: none;
+    overflow-y: auto;
+    background-color: var(--cor-branco);
+    padding: 20px;
+}
+
+.subtituloSuperiorInfo {
+    width: 100%;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cor-placeholder);
+}
+
+.btnAreaMentor {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: auto;
+    align-items: center;
+}
+
+.btnCancelarMentor {
+    margin: 0;
+}
+
+
+
+
+/* ==========================================================================
+   STATUS / PASSO A PASSO (PROGRESS STEPPER)
+   ========================================================================== */
+
+.areaStatusCard {
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+    gap: 12px;
+}
+
+.statusCard1,
+.statusCard2,
+.statusCard3 {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cor-placeholder);
+    gap: 4px;
+    transition: color 0.3s ease;
+}
+
+.circuloStatus1,
+.circuloStatus2,
+.circuloStatus3 {
+    border-radius: 100%;
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.statusPronto {
+    display: flex;
+    border: none;
+    background-color: #ccc;
+    width: 1vw;
+    height: 2px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+
+
+
+/* ==========================================================================
+   CARDS DE ETAPAS
+   ========================================================================== */
+
+.cardDadosPessoais,
+.cardDisponibilidade,
+.cardCernes {
+    display: none;
+    color: var(--cor-fundo-escuro);
+    border-radius: 8px;
+    width: 60vh;
+    height: 60vh;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+
+/* mostra só o card do passo atual */
+.areaModalCentral[data-step="1"] .cardDadosPessoais { display: flex; }
+.areaModalCentral[data-step="2"] .cardDisponibilidade { display: flex; }
+.areaModalCentral[data-step="3"] .cardCernes { display: flex; }
+
+.tituloCardMentor {
+    font-size: 22px;
+    color: var(--cor-fundo-escuro);
+    display: flex;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   PROGRESSO — bolinhas, linhas e botões controlados pelo data-step
+   ========================================================================== */
+
+
+.btnSetas {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    gap: 8px;
+    margin-top: 8px;
+}
+.btnSetasMentor1{
+    justify-content: end;
+}
+
+
+.mentorWrapperButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+   
+.btnVoltarCard {
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    /* background-color: #ccc; */
+    color: var(--cor-fundo-escuro);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.areaModalCentral[data-step="1"] .statusCard1,
+.areaModalCentral[data-step="2"] .statusCard1,
+.areaModalCentral[data-step="2"] .statusCard2,
+.areaModalCentral[data-step="3"] .statusCard1,
+.areaModalCentral[data-step="3"] .statusCard2,
+.areaModalCentral[data-step="3"] .statusCard3 {
+    color: var(--cor-fundo-escuro);
+}
+
+.areaModalCentral[data-step="1"] .circuloStatus1,
+.areaModalCentral[data-step="2"] .circuloStatus1,
+.areaModalCentral[data-step="2"] .circuloStatus2,
+.areaModalCentral[data-step="3"] .circuloStatus1,
+.areaModalCentral[data-step="3"] .circuloStatus2,
+.areaModalCentral[data-step="3"] .circuloStatus3 {
+    background-color: var(--cor-fundo-escuro);
+}
+
+.areaModalCentral[data-step="2"] .statusPronto[data-linha="1"],
+.areaModalCentral[data-step="3"] .statusPronto[data-linha="1"],
+.areaModalCentral[data-step="3"] .statusPronto[data-linha="2"] {
+    background-color: var(--cor-fundo-escuro);
+}
+
+/* botões */
+.areaModalCentral[data-step="1"] .btnVoltarCard {
+    display: none;
+}
+
+
+.areaModalCentral[data-step="3"] .btnAvancarCard {
+    display: none;
+}
+
+.btnSalvarMentor {
+    display: none;
+}
+
+.areaModalCentral[data-step="3"] .btnSalvarMentor {
+    display: inline-block;
+}
+
+
+.voltarAvancarCard {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ==========================================================================
+   MÍDIAS (FOTO E BANNER)
+   ========================================================================== */
+.perfilContainer {
+    text-align: center;
+}
+.areaFotoBannerMentor {
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 8px;
+}
+
+.fotoContainer,
+.bannerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.areaFoto,
+.areaBanner {
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+}
+
+
+.fotoPerfil {
+    border: 2px solid var(--cor-fundo-escuro);
+    display: flex;
+    object-fit: scale-down;
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+
+}
+
+.fotoBanner {
+    border: 2px solid var(--cor-fundo-escuro);
+    display: flex;
+    object-fit: scale-down;
+    width: 160px;
+    height: 80px;
+    border-radius: 8px;
+}
+.novaFotoPerfil {
+    border: 2px solid var(--cor-fundo-escuro);
+    display: flex;
+    object-fit: cover;
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+
+}
+
+.novaFotoBanner {
+    border: 2px solid var(--cor-fundo-escuro);
+    display: flex;
+    object-fit: cover;
+    width: 160px;
+    height: 80px;
+    border-radius: 8px;
+}
+
+
+.btnAdicionarFoto,
+.btnAdicionarBanner {
+    position: absolute;
+    bottom: 0;
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-branco);
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    border: 2px solid var(--cor-branco);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btnAdicionarFoto {
+    right: 0;
+}
+
+.btnAdicionarBanner {
+    right: -5px;
+}
+
+.btnAdicionarFoto:hover,
+.btnAdicionarBanner:hover {
+    transform: scale(1.1);
+}
+
+.legendaMidia {
+    font-size: 12px;
+    text-align: center;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   FORMULÁRIOS, INPUTS E GRIDS
+   ========================================================================== */
+
+.inputMentorTituloParceiro {
+    margin-top: 8px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.inputMentorTitulo {
+    margin: 8px 0;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.dadoLinkedin .erroCampo,
+.dadoInstagramMentor .erroCampo {
+    display: inline;
+    margin-left: 8px;
+    color: var(--cor-vermelho);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.cadastroMentorDados {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.socialInputs,
+.inputsDropdown {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.dadoLinkedin,
+.dadoInstagramMentor,
+.dadoTelefoneMentor,
+.dadoCargo,
+.dropHorarios,
+.dropModalidade {
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.inputMentorCadastro,
+.inputMentorCadastroSocial {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px;
+    border: 1px solid rgb(170, 170, 170);
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+}
+
+.biografiaInput {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.caixaBiografia {
+    flex: 1;
+    height: 80px;
+    border: 1px solid rgb(170, 170, 170);
+    resize: none;
+    border-radius: 8px;
+    padding: 8px;
+    width: 100%;
+    font-size: 16px;
+}
+
+.qtdCaracter {
+    align-self: flex-start;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--cor-placeholder);
+}
+
+.qtdCaracter.limiteAtingido {
+    color: var(--cor-vermelho);
+    font-weight: bold;
+}
+
+/* Seleções e Checkboxes */
+.selecaoDisponibilidade {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.selecaoDia,
+.areaSelecaoTermo,
+.selecaoTermo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+/* Botões Selecionáveis (Tags / Cernes) */
+.tecnologiaCerne,
+.capitalCerne,
+.empreendedorCerne,
+.gestaoCerne,
+.mercadoCerne {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.btnSelecaoEixo input {
+    display: none;
+}
+
+.btnEstiloVisual {
+    display: inline-block;
+    padding: 12px;
+    background-color: #ffffff;
+    color: var(--cor-fundo-escuro);
+    border-radius: 8px;
+    border: 1px solid rgb(170, 170, 170);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+.btnSelecaoEixo input:checked + .btnEstiloVisual {
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-branco);
+}
+
+/* ==========================================================================
+   DROPDOWNS CUSTOMIZADOS
+   ========================================================================== */
+
+
+
+
+.areaDrop {
+    position: relative;
+    display: inline-block;
+}
+
+.dropNomeEmpresa,
+.dropDisponibilidade {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px;
+    border: 1px solid rgb(170, 170, 170);
+    color: var(--cor-fundo-escuro);
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+.dropNomeEmpresa {
+    text-align: center;
+    color: var(--cor-fundo-escuro);
+}
+
+
+
+.areaDrop:hover .dropNomeEmpresa,
+.areaDrop:hover .dropDisponibilidade {
+    background-color: #f1f1f1;
+}
+
+.dropConteudo {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid rgb(170, 170, 170);
+    min-width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+
+.itemDadoDrop {
+    color: var(--cor-fundo-escuro);
+    padding: 12px;
+    text-decoration: none;
+    display: flex;
+    gap: 8px;
+    text-align: left;
+    align-items: center;
+}
+
+.areaDrop:hover .dropConteudo {
+    display: block;
+}
+
+.dropHorarios .areaDrop,
+.dropModalidade .areaDrop {
+    display: block;
+    width: 100%;
+}
+
+.dropHorarios .dropDisponibilidade,
+.dropModalidade .dropDisponibilidade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px;
+    border-color: var(--cor-borda-inputs);
+    background-color: var(--cor-branco);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropHorarios .dropDisponibilidade:hover,
+.dropModalidade .dropDisponibilidade:hover {
+    background-color: var(--cor-branco);
+}
+
+.setaDropDisponibilidade {
+    flex-shrink: 0;
+    transform: rotate(-90deg);
+    transition: transform 300ms;
+}
+
+.dropHorarios .areaDrop.aberto .setaDropDisponibilidade,
+.dropModalidade .areaDrop.aberto .setaDropDisponibilidade {
+    transform: rotate(0deg);
+}
+
+.dropHorarios .dropConteudo,
+.dropModalidade .dropConteudo {
+    display: none;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    flex-direction: column;
+    padding: 5px;
+    border-color: var(--cor-borda-inputs);
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.dropHorarios .areaDrop.aberto .dropConteudo,
+.dropModalidade .areaDrop.aberto .dropConteudo {
+    display: flex;
+}
+
+.dropHorarios .areaDrop:not(.aberto):hover .dropConteudo,
+.dropModalidade .areaDrop:not(.aberto):hover .dropConteudo {
+    display: none;
+}
+
+.dropHorarios .itemDadoDrop,
+.dropModalidade .itemDadoDrop {
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dropHorarios .itemDadoDrop:hover,
+.dropModalidade .itemDadoDrop:hover {
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-branco);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MEDIA QUERIES)
+   ========================================================================== */
+@media (max-width: 1024) {
+.cardDadosPessoais,
+.cardDisponibilidade,
+.cardCernes {
+    width: 70vh;
+    height: 68vh;
+}
+    
+}
+
+@media (max-width: 768px) {
+    .nomeStatusCard {
+        display: none;
+    }
+    .statusPronto {
+        width: 10vh;
+    }
+    
+}
