@@ -1,0 +1,249 @@
+/* =========================================================
+   HEADER - DESKTOP
+========================================================= */
+
+/* Container principal do conteúdo */
+.menuLateralMainContainer {
+    width: 99%;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease-in-out;
+}
+
+/* Container quando menu fechado */
+.menuLateral.fechado~.menuLateralMainContainer,
+.menuLateralEstadoFechado .menuLateral~.menuLateralMainContainer {
+    width: calc(100% - 80px);
+}
+
+.menuLateralSuperiorMenu {
+    z-index: 4;
+    position: fixed;
+    left: 220px;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.875rem;
+    height: 90px;
+    justify-content: space-between;
+    background-color: var(--cor-fundo-escuro);
+    padding-right: 1.25rem;
+    transition: left 0.3s ease-in-out;
+}
+
+.menuLateral.fechado~.menuLateralMainContainer .menuLateralSuperiorMenu,
+.menuLateralEstadoFechado .menuLateral~.menuLateralMainContainer .menuLateralSuperiorMenu {
+    left: 100px;
+}
+
+.menuLateral.fechado~.menuLateralSuperiorMenu,
+.menuLateralEstadoFechado .menuLateral~.menuLateralSuperiorMenu {
+    left: 100px;
+}
+
+/* Ícone do título na topbar */
+.menuLateralIconeTopo svg {
+    font-size: .2rem;
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+/* Área do título */
+.menuLateralTitulo {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Nome da página */
+.menuLateralTituloPage {
+    color: #FFFFFF;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   TOPBAR — Pesquisa
+========================================================= */
+
+/* Container do campo de busca */
+.menuLateralContainerPesquisar {
+    position: relative;
+    display: flex;
+    height: 40px;
+    background-color: var(--cor-fundo-claro);
+    border-radius: 24px;
+    align-items: center;
+    padding-left: 10px;
+    gap: 5px;
+    flex: 1;
+}
+
+.menuLateralContainerPesquisarMobile {
+    display: none;
+    height: 40px;
+    background-color: aliceblue;
+    border-radius: 24px;
+    align-items: center;
+    padding-left: 10px;
+    gap: 5px;
+    flex: 1;
+   
+}
+
+/* Campo de texto da busca */
+.menuLateralInputPesquisar {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-family: 'Urbanist', poppins;
+}
+
+/* Ícone de pesquisa */
+.menuLateralIconePesquisa {
+    margin-top: 5px;
+}
+
+/* Placeholder da busca */
+.menuLateralInputPesquisar::placeholder {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--cor-botao);
+}
+
+/* =========================================================
+   TOPBAR — Perfil do usuário
+========================================================= */
+
+/* Container do perfil */
+.menuLateralPerfilMenu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: clamp(220px, 24vw, 300px);
+    max-width: 300px;
+    flex-shrink: 0;
+    height: 3rem;
+    gap: 1.5rem;
+    transition: width 0.3s ease-in-out, gap 0.3s ease-in-out;
+}
+
+/* Botões de ação (pesquisa, notificação, perfil, seta) */
+.menuLateralBotaoNotificacao {
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.menuLateralBotaoNotificacaoSeta {
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* Ícone de notificação */
+.menuLateralNotificacao {
+    font-size: 1.5rem;
+}
+
+/* Foto do perfil */
+.menuLateralContainerFoto {
+    color: var(--cor-fundo-claro);
+    font-size: 1.7rem;
+}
+
+/* Textos do perfil */
+.menuLateralTextoPerfil {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Nome do usuário */
+.menuLateralTexto {
+    color: var(--cor-fundo-claro);
+    font-size: .9rem;
+}
+
+/* Email do usuário */
+.menuLateralSubTextoPerfil {
+    color: var(--cor-fundo-claro);
+    font-size: .85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+/* Outros */
+.menuLateralCaixaPesquisar {
+    display: none;
+}
+
+/* =========================================================
+   HEADER - MOBILE
+========================================================= */
+
+
+
+
+
+
+.menuLateralPesquisaResultados {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 100%;
+    background-color: var(--cor-fundo-claro);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .2s ease;
+    z-index: 5;
+}
+
+.menuLateralPesquisaResultados.aberto {
+    max-height: 320px;
+    opacity: 1;
+    overflow-y: auto;
+    pointer-events: auto;
+}
+
+.menuLateralPesquisaResultados ul {
+    padding: 8px 0;
+}
+
+.menuLateralPesquisaResultados li {
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--cor-botao);
+    font-family: 'Urbanist', poppins;
+    font-size: 0.95rem;
+}
+
+.menuLateralPesquisaResultados li:hover {
+    background-color: aliceblue;
+}
+
+.menuLateralPesquisaSemResultado {
+    display: none;
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+    font-family: 'Urbanist', poppins;
+    margin: 0;
+}

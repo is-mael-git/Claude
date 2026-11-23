@@ -1,0 +1,31 @@
+
+#modalInativar,
+#modalAvisoQuestoesQuestionario{
+    width: 490px;
+    height: 350px;
+    /* background: #2F3C54; */
+    border-radius: 8px;
+    align-items: center;   
+}
+
+#modalInativar .areaModal,
+#modalAvisoQuestoesQuestionario .areaModal{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+#modalInativar p,
+#modalAvisoQuestoesQuestionario p{
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+#modalInativar > span{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}

@@ -1,0 +1,94 @@
+@import url(Componentes/adicionarParceiro.css);
+
+.crudParceiro {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.botaoAddParceiro {
+    font-size: 1rem;
+    font-weight: 600;
+    width: fit-content;
+    background-color: transparent;
+    padding: 14px;
+    border-radius: 10px;
+    align-self: end;
+    cursor: pointer;
+    border: 2px solid var(--cor-fundo-escuro);
+    transition: ease-in .15s;
+
+
+    &:hover {
+        background-color: var(--cor-fundo-escuro);
+        color: var(--cor-branco);
+    }
+
+}
+
+.botaoVerCardParceiro {
+    width: 260px;
+    height: 48px;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+    align-self: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: ease-out 0.15s;
+
+    &:hover {
+        background-color: transparent;
+        border: 2px solid var(--cor-fundo-escuro);
+        color: var(--cor-fundo-escuro);
+    }
+}
+
+/* Estilização da tabela */
+
+.itemTabelaParceiros1 {
+    width: 10%;
+}
+
+.itemTabelaParceiros2 {
+    width: 20%;
+}
+
+.itemTabelaParceiros3 {
+    width: 15%;
+}
+
+.itemTabelaParceiros4 {
+    width: 20%;
+}
+
+.itemTabelaParceiros5 {
+    width: 15%;
+}
+
+.botaoEditarParceiro,
+.botaoEditarMentor {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.caixaAreaAtuacaoParceiro {
+    background-color: turquoise;
+    width: fit-content;
+    padding: 6px;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+.wrapperTabelaParceiros7 {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}

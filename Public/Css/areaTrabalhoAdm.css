@@ -1,0 +1,607 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+.areaTrabalhoAdm {
+    display: flex;
+    flex-direction: column;
+}
+
+.espaço-menu-adm {
+    display: flex;
+    width: 100%;
+    height: 90%;
+    justify-content: space-between;
+    flex-direction: column;
+
+}
+
+.visualizacoesMiniDest {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    justify-content: space-between;
+
+}
+
+.cardIndicador {
+    display: flex;
+    width: 24%;
+    border: solid 1px;
+    border-radius: 10px;
+    gap: 10px;
+    padding: 15px;
+}
+
+.informacao-card strong {
+    color: #34415c;
+    font-size: 22px;
+    line-height: 22px;
+    font-weight: 700;
+}
+
+
+/* TÍTULO */
+
+.informacao-card span {
+    margin-top: 3px;
+    color: #34415c;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* CRESCIMENTO */
+
+.informacao-card small {
+    margin-top: 4px;
+    color: #6f7d95;
+    font-size: 11px;
+}
+
+.iconeCard {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 22px;
+}
+
+
+/* CORES DOS ÍCONES */
+
+.iconeCard.Startups {
+    background: #a7c9ff;
+    color: #2878e8;
+}
+
+.iconeCard.Mentores {
+    background: #e7f7ec;
+    color: #36a852;
+}
+
+.iconeCard.Reunioes {
+    background: #eee8ff;
+    color: #6838d8;
+}
+
+.iconeCard.Questionarios {
+    background: #fff5d9;
+    color: #c89500;
+}
+
+
+/* INFORMAÇÕES */
+
+.informacaoCardAdm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.caixaMaiorAdm {
+    display: flex;
+    width: 100%;
+    height: 85%;
+    gap: 10px;
+
+}
+
+.espacamento-maior {
+    padding: 5px;
+}
+
+.caixa-2 {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.caixa1-startups-ativas {
+    width: 100%;
+    flex: 2;
+}
+
+.titulo-ativas {
+    color: var(--cor-fundo-escuro);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.caixaStartupsAtivas {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    scrollbar-width: thin;
+}
+
+.tabelaListaStartupsAtivas {
+    width: 100%;
+    border-radius: 5px;
+    border-collapse: collapse;
+}
+
+
+.caixaStartupsAtivas th {
+    background: var(--cor-fundo-escuro);
+    color: #fff;
+    padding: 5px;
+    text-align: center;
+}
+
+.tabelaCorpoAdm {
+    width: 100%;
+    height: 63vh;
+    border: 1px solid var(--cor-fundo-escuro);
+    border-radius: 5px;
+}
+.admDecisoesTabela {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+
+/* CÉLULAS */
+
+.Adm4{
+    width: 30%;
+}
+
+/* TIPO */
+
+.admDecisaoTipo {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-weight: 500;
+}
+
+
+.admDecisaoTipo i {
+    font-size: 16px;
+}
+
+
+/* SITUAÇÃO */
+
+.admDecisaoSituacao {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 13px;
+
+    font-weight: 500;
+}
+
+
+.admDecisaoSituacao i {
+    font-size: 8px;
+}
+
+
+/* STATUS */
+
+.admSituacaoPendente {
+    color: #b47a00;
+}
+
+
+.admSituacaoAtraso {
+    color: #c0392b;
+}
+
+
+.admSituacaoAtencao {
+    color: #b47a00;
+}
+
+
+.admSituacaoAndamento {
+    color: #2878c8;
+}
+
+
+/* AÇÃO */
+
+
+
+
+.admDecisaoBotao {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #34415a;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.admDecisaoBotao:hover {
+    background: #34415a;
+
+    color: #ffffff;
+
+    transform: scale(1.05);
+}
+
+.calendarioAdm {
+    width: 50%;
+    height: 94%;
+    background-color: var(--cor-fundo-claro);
+}
+
+.agenda {
+    height: 100%;
+}
+
+.calendario {
+    background: var(--cor-fundo-escuro);
+    width: 100%;
+    color: var(--cor-branco);
+    padding: 10px;
+    display: flex;
+    border-radius: 10px 10px 0px 0px;
+    gap: 30px;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.guia-text {
+    display: flex;
+    color: var(--cor-branco);
+    font-size: 18px;
+    margin-left: 20px;
+}
+
+.evento-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--cor-branco);
+    gap: 10px;
+}
+
+.evento-text i {
+    color:#6838d8;
+}
+
+.navegacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+#mesAno {
+    display: flex;
+    font-size: 18px;
+    color: var(--cor-branco);
+}
+
+#anterior {
+    cursor: pointer;
+}
+
+#proximo {
+    cursor: pointer;
+}
+
+
+#calendario {
+    display: flex;
+    border: 1.5px solid var(--cor-preto);
+    border-radius: 0px 0px 5px 5px;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 5px;
+    column-gap: .4%;
+    row-gap: 5px;
+    background: var(--cor-fundo-claro);
+}
+
+
+.dia {
+    background: var(--cor-branco);
+    width: 13.92%;
+    height: 18%;
+    justify-content: space-between;
+    border-radius: 5px;
+    display: flex;
+
+    padding: 5px;
+
+}
+
+.semana {
+    color: var(--cor-preto);
+}
+
+.numero {
+    font-weight: bold;
+}
+
+.hoje {
+    border: 2px solid var(--cor-fundo-escuro);
+}
+.dia.fora-mes {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.dia.com-reuniao {
+    position: relative;
+}
+
+.reuniao-marca {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #6838d8;
+    color: var(--cor-branco);
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#calendario.seis-semanas .dia {
+    height: 15%;
+}
+/* Responsividade notbook e tablet */
+
+
+@media screen and (max-width: 768px) {
+
+    .areaTrabalhoAdm {
+        width: 100%;
+        height: 100%;
+    }
+
+    .caixa-maior {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .caixa1-startups-ativas {
+        width: 100%;
+        height: 70px;
+    }
+
+    .caixa-2 {
+        width: 100%;
+    }
+
+    .questionario-btns {
+        flex-direction: column;
+    }
+
+    .btn-q {
+        width: 100%;
+    }
+
+    .linha-adm {
+        min-width: 700px;
+    }
+
+    .linha-separada {
+        overflow-x: auto;
+    }
+
+    .calendario-adm {
+        overflow-x: auto;
+    }
+
+    .dia {
+        overflow-x: auto;
+        flex-direction: column;
+    }
+
+    .semana {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width:1024px) {
+    .areaTrabalhoAdm {
+        Width: 100%;
+        /* height: 100%; */
+        overflow: scroll;
+    }
+
+    .menuLateralFundo {
+        width: 100%;
+        height: 100%;
+    }
+
+    .caixa-maior {
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .caixa1-startups-ativas {
+        width: 100%;
+        min-height: 40%;
+    }
+
+    .questionarios-adm {
+        width: 100%;
+        height: 100%;
+    }
+
+    .caixa-2 {
+        width: 100%;
+        height: 75%;
+        flex-direction: row;
+    }
+
+    .lista-pendencias-adm {
+        width: 100%;
+        height: 108%;
+    }
+
+    .calendario-adm {
+        height: 50%;
+        flex-wrap: wrap;
+
+    }
+
+    #calendario {
+        height: 82%;
+        flex-wrap: wrap;
+    }
+
+    .cabecalho-tabela-adm {
+        gap: 5%;
+    }
+
+    .agenda {
+        width: 100%;
+        height: 100%;
+    }
+
+    .calendario {
+        flex-wrap: wrap;
+    }
+
+}
+
+@media (max-width:480px) {
+    .areaTrabalhoAdm {
+        Width: 100%;
+        height: 100%;
+        overflow: scroll;
+    }
+
+    .menuLateralFundo {
+        width: 100%;
+        height: 100%;
+    }
+
+    .caixa-maior {
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .caixa1-startups-ativas {
+        width: 100%;
+        min-height: 40%;
+    }
+
+    .questionarios-adm {
+        width: 100%;
+        height: 100%;
+    }
+
+    .caixa-2 {
+        width: 100%;
+        height: 75%;
+        flex-direction: column;
+    }
+
+    .lista-pendencias-adm {
+        width: 100%;
+        height: 108%;
+    }
+
+    .linha-separada {
+        overflow-x: auto;
+
+    }
+
+    .calendario-adm {
+        height: 50%;
+        flex-wrap: wrap;
+
+    }
+
+    #calendario {
+        height: 82%;
+        flex-wrap: wrap;
+    }
+
+    .cabecalho-tabela-adm {
+        gap: 5%;
+    }
+
+    .agenda {
+        width: 100%;
+        height: 100%;
+    }
+
+    .calendario {
+        flex-wrap: wrap;
+    }
+
+}
+
+

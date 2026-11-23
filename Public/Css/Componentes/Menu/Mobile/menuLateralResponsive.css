@@ -1,0 +1,479 @@
+/* =========================================================
+   RESPONSIVO — Menu Lateral (max-width: 1023px)
+========================================================= */
+@media screen and (max-height: 600px){
+
+}
+
+@media screen and (max-width: 1024px) {
+    #openBtnMenuLateral {
+        display: none;
+    }
+
+    .menuLateralImageLogoMenu {
+        margin-top: 50%;
+    }
+
+    @media screen and (max-height: 667px) {
+        .menuLateralImageLogoMenu {
+            margin-top: 50%;
+            margin-bottom: -70px;
+        }
+    }
+
+    .menuLateralBtnFecharMenu {
+        display: none;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .menuLateral {
+        display: flex;
+        /* Fica sempre em flex para a transição funcionar */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        /* Define uma largura para sabermos o quanto esconder */
+        height: 100%;
+        z-index: 100;
+
+        /* ESCONDE O MENU: Joga ele totalmente para a esquerda fora do ecrã */
+        transform: translateX(-100%);
+
+        /* A TRANSIÇÃO: Anima o transform de forma suave */
+        transition: transform 0.3s ease-in-out;
+    }
+
+
+    /* Abre deslizando */
+    .menuLateral.mobileAberto {
+        transform: translateX(0) !important;
+        display: flex;
+        /* overflow: hidden; */
+    }
+
+    /* Overlay */
+    .menuLateralOverlayMenu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 199;
+    }
+
+    .menuLateralOverlayMenu.ativo {
+        display: block;
+    }
+
+
+
+    .menuLateralFundo {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transform: translateX(0);
+    }
+
+    /* Container quando menu fechado no mobile */
+    .menuLateral.fechado~.menuLateralMainContainer {
+        flex: 1;
+        width: 100%;
+    }
+
+    /* Overlay escuro atrás do menu */
+    #overlay_menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 150;
+    }
+
+    .menuLateralOverlayMenu.aberto {
+        display: block;
+    }
+
+    /* Logo reduzido */
+    .menuLateralLogoMenu {
+        width: 140px;
+    }
+
+    /* Opção ativa no mobile */
+    .menuLateralCaixaOpcaoMenu.active {
+        width: calc(100%);
+        margin-left: -20px;
+        padding-left: 20px;
+        border-radius: 40px 0 0 40px;
+        transform: none;
+    }
+
+    /* Sem curvas decorativas no mobile */
+    .menuLateralCaixaOpcaoMenu.active::before,
+    .menuLateralCaixaOpcaoMenu.active::after {
+        display: flex;
+        left: 95%;
+    }
+
+    /* Área do ícone */
+    .menuLateralAreaIconeMenu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+    }
+
+    /* Divisor */
+    .menuLateralBarrinhaMenu {
+        width: calc(100% - 20px);
+        margin-top: 20px;
+    }
+
+    /* Botão sair */
+    .menuLateralSairMenu {
+        font-size: 16px;
+        margin-right: 0;
+        margin-bottom: 30px;
+        gap: 8px;
+    }
+
+    /* Botão toggle oculto no mobile */
+    #menuLateralOpenBtnIcon {
+        display: none;
+    }
+
+    /* =====================================================
+       CONTEÚDO PRINCIPAL — Mobile
+    ===================================================== */
+
+    .menuLateralMainContainer {
+        width: 100% !important;
+        min-width: 0;
+        flex: 1;
+    }
+
+
+    /* =====================================================
+       TOPBAR — Mobile
+    ===================================================== */
+
+    .menuLateral.fechado {
+        display: none;
+    }
+
+    #menuLateralOpenBtnIcon {
+        display: none;
+    }
+
+    .menuLateralAreaTrabalho {
+        width: 100vw;
+        height: calc(100vh - 90px);
+        background-color: var(--cor-fundo-claro);
+        margin: 0px;
+        margin-top: 90px;
+        border-radius: 0px;
+        z-index: 2;
+    }
+
+    .menuLateralSuperiorMenu {
+        width: 100%;
+        left: 0;
+        padding: 1rem;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        height: 90px;
+        justify-content: space-between;
+        background-color: var(--cor-fundo-escuro);
+        transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+    }
+
+
+    .menuLateralTituloPage {
+        font-size: 80%;
+    }
+
+    .menuLateralPerfilMenu {
+        display: flex;
+        /* justify-content: space-between; */
+        align-items: center;
+        width: fit-content;
+        gap: 1rem;
+    }
+
+    .menuLateralTextoPerfil {
+        display: none;
+    }
+
+    .menuLateralIconeTopo {
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: none;
+    }
+
+    .menuLateralIconeTopo svg {
+        display: none;
+    }
+
+    .conteiner-pesquisar-menu {
+        position: relative;
+        display: flex;
+        width: 35px;
+        height: 35px;
+        background-color: aliceblue;
+        border-radius: 100%;
+        align-items: center;
+        padding-left: 10px;
+    }
+
+    .menuLateralIconePesquisa {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    .menuLateralSetaPerfil {
+        display: none;
+    }
+
+    .menuLateralCaixaPesquisar {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .menuLateralContainerPesquisar {
+        display: none;
+    }
+
+    .menuLateralContainerPesquisarMobile {
+        position: absolute;
+        /* left: 58%; */
+        width: 100%;
+        height: 32px;
+        border-radius: 50px;
+        padding-right: 0.2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        /* transition: all 0.5s ease-in-out; */
+        cursor: pointer;
+        min-width: 32px;
+    }
+
+    .menuLateralContainerPesquisarMobile.expandido {
+        left: 2%;
+        position: fixed;
+        width: 97%;
+        height: 4%;
+        border-radius: 24px;
+        cursor: default;
+        /* transition: all 0.5s ease-in-out; */
+    }
+
+    .menuLateralContainerPesquisarMobile.expandido .menuLateralInputPesquisar {
+        display: flex;
+    }
+
+
+    .menuLateralBurger {
+        position: relative;
+        width: 30px;
+        height: 27px;
+        background: transparent;
+        cursor: pointer;
+        display: block;
+
+    }
+
+    .menuLateralBotaoNotificacaoSeta {
+        display: none;
+    }
+
+    .menuLateralBurger input {
+        display: none;
+    }
+
+    .menuLateralBurger span {
+        display: block;
+        position: absolute;
+        height: 4px;
+        width: 100%;
+        background: var(--cor-fundo-claro);
+        border-radius: 9px;
+        opacity: 1;
+        left: 0;
+        transform: rotate(0deg);
+        transition: .25s ease-in-out;
+    }
+
+    .menuLateralBurger span:nth-of-type(1) {
+        top: 0px;
+        transform-origin: left center;
+    }
+
+    .menuLateralBurger span:nth-of-type(2) {
+        top: 50%;
+        transform: translateY(-50%);
+        transform-origin: left center;
+    }
+
+    .menuLateralBurger span:nth-of-type(3) {
+        top: 100%;
+        transform-origin: left center;
+        transform: translateY(-100%);
+    }
+
+    .menuLateralBurger input:checked~span:nth-of-type(1) {
+        transform: rotate(45deg);
+        top: 0px;
+        left: 5px;
+    }
+
+    .menuLateralBurger input:checked~span:nth-of-type(2) {
+        width: 0%;
+        opacity: 0;
+    }
+
+    .menuLateralBurger input:checked~span:nth-of-type(3) {
+        transform: rotate(-45deg);
+        top: 22px;
+        left: 5px;
+    }
+
+
+    .menuLateralModalNotificacao {
+        top: -20%;
+        left: 70%;
+    }
+
+    .menuLateralModalNotificacao.descer {
+        top: 38%;
+    }
+
+    .menuLateralModalTrocaPerfil {
+        position: fixed;
+        z-index: 100;
+        top: 83%;
+        left: 46%;
+        background-color: var(--cor-fundo-escuro);
+        border: none;
+        border-radius: 8px 8px 0px 0px;
+        padding: 2rem;
+        width: 25rem;
+        height: 18rem;
+        transform: translate(-50%, -50%);
+        margin: 1rem;
+        overflow: hidden;
+        display: none;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .menuLateralModalTrocaPerfil[open] {
+        display: flex;
+        animation: subir 0.25s ease forwards;
+    }
+
+    @keyframes subir {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -30%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+
+    .menuLateralContainerPerfil {
+        width: 14rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: var(--cor-fundo-claro);
+    }
+
+    .perfil {
+        width: 100%;
+        height: 100%;
+    }
+
+    .menuLateralPerfilFoto {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 100%;
+        /* border: 1px solid var(--cor-fundo-escuro); */
+    }
+
+    .menuLateralTituloPerfil {
+        font-size: .9rem
+    }
+
+    .menuLateralLinhaPerfil {
+        width: 100%;
+        border: solid 1px var(--cor-fundo-claro);
+        margin-top: -1rem;
+    }
+
+    .menuLateralConfiguracaoPerfil {
+        width: 100%;
+        gap: 0.5rem;
+        border: none;
+        font-size: 1rem;
+        background-color: transparent;
+        color: var(--cor-fundo-claro);
+        margin-top: -1rem;
+    }
+
+
+    #menuLateralImgConfig {
+        font-size: 18px;
+        color: var(--cor-fundo-claro);
+    }
+
+    .menuLateralBotaoConfigPerfil {
+        border: none;
+        font-size: 1rem;
+        background-color: transparent;
+        color: var(--cor-fundo-claro);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .menuLateralSair {
+        padding-left: 0.3rem;
+    }
+
+    .menuLateralCaixaPerfil {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+    }
+
+    .menuLateralEscolhaPerfil {
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+}

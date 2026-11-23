@@ -1,0 +1,153 @@
+@import url('./adicionarQuestionario.css');
+@import url('./atualizarQuestionario.css');
+@import url('./fazerQuestionario.css');
+@import url('../Questao/adicionarQuestao.css');
+
+#modalInativar.modalQuestaoComVinculos p {
+    font-size: 22px;
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+}
+
+body:has(.crudQuestionario) .modalSalvo {
+    display: none;
+}
+
+html.mostrarModalSalvo body:has(.crudQuestionario) .modalSalvo {
+    display: flex;
+}
+
+.itemTabelaQuestionario1 {
+    width: 30%;
+}
+
+.itemTabelaQuestionario2 {
+    width: 30%;
+    text-align: center;
+}
+
+.botaoEditarQuestionario,
+.botaoEditarQuestao,
+.botaoVisualizarQuestionario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.tabelaQuestionario {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+
+.tabelaQuestionario .linhaTabelaCorpo {
+    height: 64px;
+    border-bottom: 1px solid rgba(47, 60, 84, 0.08);
+}
+
+.tabelaQuestionario .itemTabelaCorpo {
+    padding: 0.7rem 1rem;
+    vertical-align: middle;
+}
+
+.tabelaQuestionario .itemTabelaCorpo p {
+    margin: 0;
+}
+
+.tabelaQuestionario .itemTabelaQuestionario1 p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+}
+
+.tabelaQuestoes .itemTabelaQuestionario1 {
+    width: 60%;
+    text-align: center;
+}
+
+.tabelaQuestoes .itemTabelaQuestionario2 {
+    width: 13.333%;
+}
+
+.tabelaQuestoes .itemTabelaQuestionario3 {
+    width: 13.333%;
+    text-align: center;
+}
+
+.tabelaQuestoes .itemTabelaQuestionario4 {
+    width: 13.333%;
+    text-align: center;
+}
+
+.tabelaQuestoes .itemTabelaQuestionario1 p {
+    text-align: justify;
+    text-align-last: left;
+}
+
+.tabelaQuestionario.tabelaQuestoes
+.itemTabelaCorpo.itemTabelaQuestionario1 p {
+    text-align: justify;
+    text-align-last: left;
+    text-justify: inter-word;
+    letter-spacing: normal;
+    word-spacing: normal;
+}
+
+.tabelaQuestoes .wrapperTabelaQuestionario {
+    gap: 20px;
+}
+
+.tabelaQuestionario .linhaTabelaCorpo:nth-child(even) {
+    background-color: rgba(47, 60, 84, 0.04);
+}
+
+.tabelaQuestionario .linhaTabelaCorpo:last-child {
+    border-bottom: none;
+}
+
+.wrapperTabelaQuestionario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.botaoEditarQuestionario i,
+.botaoEditarQuestao i,
+.botaoVisualizarQuestionario i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botaoEditarQuestionario svg,
+.botaoEditarQuestao svg,
+.botaoVisualizarQuestionario svg {
+    display: block;
+}
+
+.tabelaQuestionario .textoStatus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabelaQuestionario .btnSwitch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabelaQuestionario .switch {
+    margin: 0;
+}

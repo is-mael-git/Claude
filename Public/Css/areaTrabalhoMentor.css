@@ -1,0 +1,150 @@
+
+/* ====================================================================== DASHBOARD ============================================================================ */
+
+.dashboardHeaderATM{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+.cardDashboardATM1{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+            gap: 15px;
+                
+    background-color: white;
+    border-radius: 5px;
+    width: 12vw;
+    height: 12vh;
+    justify-content: center;
+}
+.iconDashboardATM1{
+    color: #4466c4;
+    background-color: #E8F0FE;
+    border-radius: 30px;
+    font-size: 25px;
+    padding: 10px;
+}
+
+.quantidadeDashboardATM1{
+    font-size: 25px;
+    font-weight: 600;
+    color: #4466c4;
+}
+.classeDashboardATM1{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cor-fundo-escuro);
+}
+.dataDashboardATM1{
+    font-size: 12px;
+    color: var(--cor-fundo-escuro);
+}
+
+.cardDashboardATM2{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    background-color: white;
+    border-radius: 5px;
+    width: 12vw;
+    height: 12vh;    
+    justify-content: center;
+}
+.iconDashboardATM2{
+    color: #128D79;
+    background-color: #E6F4EF;
+    border-radius: 30px;
+    font-size: 25px;
+    padding: 10px;
+}
+.quantidadeDashboardATM2{
+    font-size: 25px;
+    font-weight: 600;
+    color: #128D79;
+}
+.classeDashboardATM2{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cor-fundo-escuro);
+}
+.dataDashboardATM2{
+    font-size: 12px;
+    color: var(--cor-fundo-escuro);
+}
+
+.cardDashboardATM3{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    background-color: white;
+    border-radius: 5px;
+    width: 12vw;
+    height: 12vh;
+    justify-content: center;
+}
+.iconDashboardATM3{
+    color: #FDB722;
+    background-color: #FFF5E4;
+    border-radius: 30px;
+    font-size: 25px;
+    padding: 10px;
+}   
+.quantidadeDashboardATM3{
+    font-size: 25px;
+    font-weight: 600;
+    color: #FDB722;
+}
+.classeDashboardATM3{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cor-fundo-escuro);
+}
+.dataDashboardATM3{
+    font-size: 12px;
+    color: var(--cor-fundo-escuro);
+}
+
+.cardDashboardATM4{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    background-color: white;
+    border-radius: 5px;
+    width: 12vw;
+    height: 12vh;
+    justify-content: center;
+}
+.iconDashboardATM4{
+    color: #925FF2;
+    background-color: #F2EDFD;
+    border-radius: 30px;
+    font-size: 25px;
+    padding: 10px;
+}   
+.quantidadeDashboardATM4{
+    font-size: 25px;
+    font-weight: 600;
+    color: #925FF2;
+}
+.classeDashboardATM4{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cor-fundo-escuro);
+}
+.dataDashboardATM4{
+    font-size: 12px;
+    color: var(--cor-fundo-escuro);
+}
+
+.informacoesDashboardATM{
+    display: flex;
+    align-items: baseline;
+    flex-direction: column;
+}
+
+/* ============================================================== AREA DAS INFORMACOES ========================================================================= */
+

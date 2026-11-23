@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('Bibliotecas/coloris.css');
+@import url('Componentes/tabela.css');
+@import url('Componentes/padroesBotao.css');
+@import url('Componentes/btnColoris.css');
+@import url('crudParceiros.css');
+/* @import url('../COMPONENTES/Calendario/calendario.css'); */
+/* @import url('add-parceiros.css'); */
+@import url('login.css');
+@import url('Componentes/Menu/menuLateral.css');
+@import url('areaTrabalhoMentor.css');
+@import url('cardsParceiros.css');
+@import url('areaTrabalhoAdm.css');
+/* @import url('calendario-adm.css'); */
+@import url('equipe.css');
+@import url('novoPerfil.css');
+@import url('crudStartups.css');
+@import url('Componentes/modal.css');
+@import url('Componentes/modalInativar.css');
+@import url('Componentes/modalSalvo.css');
+@import url('Componentes/validarRelato.css');
+@import url('crudMentores.css');
+@import url('Componentes/Questionario/questionario.css');
+@import url('Componentes/modalMatch.css');
+
+
+:root {
+    --cor-amarelo: #FFE000;
+    --cor-rosa: #C62F7C;
+    --cor-verde: #86AC18;
+    --cor-fundo-claro: #E6EFFF;
+    --cor-fundo-escuro: #2F3C54;
+    --cor-preto: #282829;
+    --cor-branco: #FFFFFF;
+    --cor-vermelho: #DA0000;
+    --cor-placeholder: #B1B5BB;
+    --cor-borda-placeholder: #2B75BF;
+    --cor-link: #0B57D9;
+    --cor-borda-inputs: #aaaaaa80; 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Urbanist', poppins;
+    list-style: none;
+    text-decoration: none;
+}
+a{
+    color: black;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}

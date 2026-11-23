@@ -1,0 +1,88 @@
+.templateModal {
+    position: fixed;
+    background-color: var(--cor-fundo-escuro);
+    border: none;
+    border-radius: 15px;
+    width: fit-content;
+    height: fit-content;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+}
+
+
+.templateModal:open {
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    background-color: var(--cor-fundo-escuro);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+}
+
+
+.modalTitulo {
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.fecharModal {
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.areaModal {
+    background-color: var(--cor-fundo-claro);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    height: fit-content;
+    padding: 1rem;
+}
+
+#modalConfirmarFechamento {
+    width: min(490px, calc(100vw - 2rem));
+}
+
+#modalConfirmarFechamento .areaModal {
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+#modalConfirmarFechamento p {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.modalConfirmarAcoes {
+    display: flex;
+    gap: 1rem;
+}
+/* button.abrir-modal {
+    border: none;
+    border-radius: 50px;
+    display: flex;
+    padding: 0px;
+    color: var(--cor-fundo-claro);
+    background-color: var(--cor-fundo-escuro);
+} */

@@ -1,0 +1,415 @@
+.areaCadastroParceiro{
+    --tamanhos-parceiro:16px;
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+    gap: 1rem;
+}
+
+.etapasParceiro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 20px 0;
+}
+
+.etapaParceiro{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #98A2B3;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.numeroEtapaParceiro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #98A2B3;
+    color: var(--cor-branco);
+}
+
+.etapaAtivaParceiro{
+    color: var(--cor-fundo-escuro);
+}
+
+.etapaAtivaParceiro .numeroEtapaParceiro{
+    background-color: var(--cor-fundo-escuro);
+}
+
+.etapaConcluidaParceiro{
+    color: var(--cor-verde);
+}
+
+.etapaConcluidaParceiro .numeroEtapaParceiro{
+    background-color: var(--cor-verde);
+}
+
+.linhaEtapaParceiro{
+    width: 10%;
+    height: 1px;
+    margin: 0 2%;
+    background-color: #B8C0CC;
+}
+
+.scrollCadastroParceiro{
+    height: 600px;
+    overflow-y: auto;
+    border-radius: 16px;
+    background-color: var(--cor-branco);
+}
+
+.caixaPrincipalAdicionarParceiros{
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    height: 100%;
+}
+
+.caixaPrincipalAdicionarParceiros > *{
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.juncaoInputsParceiro{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.secaoCadastroParceiro{
+    flex-direction: column;
+    background-color: var(--cor-branco);
+    border-radius: 8px;
+    padding: 1.25rem;
+    gap: 1rem;
+    border: 1px solid var(--cor-borda-inputs);
+    flex: 1;
+}
+
+.secaoRepresentanteLegal,
+.secaoDadosEmpresa{
+    display: none;
+}
+
+.secaoRepresentanteLegal.active,
+.secaoDadosEmpresa.active
+ {
+    display: flex;
+}
+
+
+.areaInputsParceiros{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+.camposEmpresaParceiro{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.inputWrapperParceiros{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.labelAddParceiros{
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.campoObrigatorio::after{
+    content: " *";
+    color: var(--cor-vermelho);
+}
+
+.inputAddParceiros{
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+}
+
+.erroCampoParceiro{
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cor-vermelho);
+}
+
+.labelLogoEmpresaParceira{
+    text-align: center;
+}
+
+.labelLogoEmpresaParceira .erroCampoParceiro{
+    display: block;
+    margin-left: 0;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.erroTipoFotoParceiro{
+    display: block;
+    margin: 4px 0 0;
+    text-align: center;
+}
+
+.selectCustomizadoParceiros{
+    position: relative;
+    width: 100%;
+}
+
+.selecionadoSelectParceiros{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background-color: transparent;
+    color: var(--cor-fundo-escuro);
+    text-align: left;
+    cursor: pointer;
+}
+
+.setaSelectParceiros{
+    flex-shrink: 0;
+    fill: var(--cor-fundo-escuro);
+    transform: rotate(-90deg);
+    transition: 300ms;
+}
+
+.selectCustomizadoParceiros.aberto .setaSelectParceiros{
+    transform: rotate(0deg);
+}
+
+.opcoesSelectParceiros{
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    flex-direction: column;
+    padding: 5px;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+    background-color: var(--cor-branco);
+    max-height: 80px;
+    overflow-y: scroll;
+}
+
+.selectCustomizadoParceiros.aberto .opcoesSelectParceiros{
+    display: flex;
+}
+
+.opcaoSelectParceiros{
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cor-fundo-escuro);
+    cursor: pointer;
+    transition: 300ms;
+}
+
+.opcaoSelectParceiros:hover,
+.opcaoSelectParceiros.opcaoAtualParceiros{
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+
+.wrapperAreaAtuacao{
+    display: flex;
+    gap: 8px;
+}
+
+.campoNovaArea{
+    min-width: 0;
+}
+
+
+.botaoAreaAtuacao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--cor-borda-inputs);
+    width: 43px;
+    aspect-ratio: 1;
+    align-self: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.botaoAreaAtuacao > i{
+    transition: transform 300ms;
+}
+
+.botaoAreaAtuacao.girado > i{
+    transform: rotate(45deg);
+}
+
+.btnVoltarParceiro{
+    border-radius:999px;
+    background-color: transparent;
+    border: 3px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-escuro);
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s ease-in;
+    cursor: pointer;
+    padding: 8px;
+    aspect-ratio: 1;
+}
+
+.btnVoltarParceiro:hover{
+    background-color: var(--cor-fundo-escuro);
+    border: 3px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+
+.wrapperBtnSalvarParceiro{
+    display: flex;
+    gap: 8px;
+    width: 60%;
+    justify-content: flex-end;
+}
+
+.areaBotaoRepresentanteParceiro{
+    display: flex;
+    justify-content: space-between;
+}
+
+.areaBotaoEmpresaParceira{
+    display: flex;
+    justify-content: end;
+    gap: 8px;
+}
+
+.wrapperDescLogoParceiro{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+
+.wrapperFotoParceiro{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: fit-content;
+    gap: 1rem;
+    align-self: center;
+
+
+
+    & > img{
+        width: 4.5rem;
+        border: 2px solid var(--cor-fundo-escuro);
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    & > img.comFoto{
+        padding: 0;
+        aspect-ratio: 1;
+        object-fit: cover;
+    }
+
+    & > label{
+        position: absolute;
+        bottom: -20px;
+        right: -16px;
+        cursor: pointer;
+    }
+
+    & > #foto{
+        display: none;
+    }
+
+}
+
+
+
+
+
+@media (min-width: 900px) and (max-height: 800px){
+    .scrollCadastroParceiro{
+        max-height: min(76vh, calc(100vh - 8rem));
+    }
+
+    .labelLogoEmpresaParceira{
+        text-align: center;
+    }
+
+    .secaoCadastroParceiro{
+        padding: 1rem 1.25rem;
+        gap: 1rem;
+    }
+
+    .secaoDadosEmpresa .areaInputsParceiros{
+        flex-direction: row;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .secaoDadosEmpresa .wrapperDescLogoParceiro{
+        flex: 0 0 10rem;
+        gap: 1.25rem;
+    }
+
+    .wrapperFotoParceiro > img{
+        width: 6rem;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width : 1024px){
+    .areaCadastroParceiro{
+        width: 80vw;
+    }
+}
+
+@media (max-width: 768px){
+    .areaCadastroParceiro{
+        width: 70vw;
+    }
+
+    .caixaPrincipalAdicionarParceiros{
+        flex-direction: column;
+    }
+    .juncaoInputsParceiro{
+        flex-direction: column;
+    }
+
+    .scrollCadastroParceiro{
+        max-height: min(60vh, calc(100vh - 13rem));
+    }
+}
+
+@media (max-width: 600px){
+    .etapaParceiro p{
+        display: none;
+    }
+
+    .linhaEtapaParceiro{
+        width: 15%;
+    }
+}

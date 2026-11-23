@@ -1,0 +1,328 @@
+.areaBtnPadrao{
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.btnSalvar{
+    width: 127px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: var(--cor-fundo-escuro);
+    border: 0;
+    color: var(--cor-fundo-claro);
+    transition: 0.15s ease-in;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btnSalvar:hover{
+    background-color: var(--cor-verde);
+}
+.btnCancelar{
+    width: 127px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 3px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-escuro);
+    transition: 0.2s ease-in;
+    font-size: 16px;
+    box-shadow: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btnCancelar:hover{
+    background-color: var(--cor-vermelho);
+    border: var(--cor-vermelho);
+    color: var(--cor-fundo-claro);
+}
+.btnDefault{
+    border-radius: 10px;
+    background-color: transparent;
+    border: 3px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-escuro);
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s ease-in;
+    cursor: pointer;
+    height: 5vh;
+    width: fit-content;
+    padding: 8px;
+}
+.btnDefault i{
+    font-size: 17px;
+}
+.btnDefault:hover{
+    background-color: var(--cor-fundo-escuro);
+    border: 3px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+.adicionarTrl{
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #2F3C54;
+    cursor: pointer;
+
+}
+.select{
+    width: 150px;
+    cursor: pointer;
+    position: relative;
+    transition: 300ms;
+    color: var(--cor-fundo-escuro);
+    overflow: hidden;
+}
+
+.selected {
+    background-color: transparent;
+    padding: 5px;
+    margin-bottom: 3px;
+    border-radius: 5px;
+    border: var(--cor-fundo-escuro) 2px solid;
+    position: relative;
+    z-index: 100000;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;   
+}
+.arrow {
+    position: relative;
+    right: 0px;
+    height: 15px;
+    transform: rotate(-90deg);
+    width: 25px;
+    fill: #2F3C54;
+    z-index: 100000;
+    transition: 300ms;
+}
+
+.options {
+    display: none;
+    flex-direction: column;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: transparent;
+    position: relative;
+    top: -5px;
+    transition: 300ms;
+    border: var(--cor-fundo-escuro) 2px solid;
+}
+
+.select.active > .options {
+    display: block;
+    opacity: 1;
+    top: 0;
+
+}
+
+.select.active .arrow {
+    transform: rotate(0deg);
+}
+.option {
+    border-radius: 5px;
+    padding: 5px;
+    transition: 300ms;
+    background-color: transparent;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600; 
+}
+.option:hover {
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+
+.options input[type="radio"] {
+    display: none;
+}
+
+.options label {
+    display: inline-block;    
+}
+.options label::before {
+    content: attr(data-txt);      
+}   
+
+.options input[type="radio"]:checked + label {
+    display: none;
+}
+
+.options input[type="radio"]#all:checked + label {
+    display: none;
+}
+
+.select:has(.options input[type="radio"]#all:checked) .selected::before {
+    content: attr(data-default);
+}
+.select:has(.options input[type="radio"]#option-1:checked) .selected::before {
+    content: attr(data-one);
+}
+.select:has(.options input[type="radio"]#option-2:checked) .selected::before {
+    content: attr(data-two);
+}
+.select:has(.options input[type="radio"]#option-3:checked) .selected::before {
+    content: attr(data-three);
+}
+
+
+.switch {
+ font-size: 17px;
+ position: relative;
+ display: inline-block;
+ width: 46px;
+ height: 24px;
+}
+
+.switch input {
+ display: none;
+ opacity: 0;
+ width: 0;
+ height: 0;
+}
+
+.slider {
+ position: absolute;
+ cursor: pointer;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background-color: var(--cor-vermelho);
+ transition: .2s;
+ border-radius: 30px;
+}
+
+.slider:before {
+ position: absolute;
+ content: "";
+ height: 18px;
+ width: 18px;
+ border-radius: 20px;
+ left: 0.3em;
+ bottom: 0.2em;
+ background-color: var(--cor-branco);
+ transition: .4s;
+}
+
+input:checked + .slider::before {
+ background-color: var(--cor-branco);
+}
+
+input:checked + .slider {
+ background-color: var(--cor-verde);
+}
+
+input:focus + .slider {
+ box-shadow: 0 0 1px var(--secondary-container);
+}
+
+input:checked + .slider:before {
+ transform: translateX(1.1em);
+}
+.btnSwitch{
+    flex-direction: row;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+.textoStatus{
+    font-weight: 600;
+    color: var(--cor-vermelho);
+    gap: 120px;
+    
+}
+
+.textoStatus.statusAtivo {
+    color: var(--cor-verde);
+}
+
+/* From Uiverse.io by SelfMadeSystem */ 
+/* Hide the default checkbox */
+.container input {
+  display: none;
+}
+
+.container {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #2196F300;
+  border-radius: 0.20em;
+  transition: all 0.2s;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: var(--cor-fundo-escuro);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  /* transform: rotate(0deg); */
+  border: 0.1em solid;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 0.25em;
+  /* transition: all 0.25s, border-width 0.1s; */
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  left: 0.23em;
+  top: 0.05em;
+  width: 0.2em;
+  height: 0.4em;
+  border-color: #fff0 white white #fff0;
+  border-width: 0 0.15em 0.15em 0;
+  border-radius: 0em;
+  transform: rotate(45deg);
+}
+
+
+.btnXClaro{
+    border: none;
+    background-color: transparent;
+    color: var(--cor-fundo-claro);
+    font-weight: 600;
+    font-size: 20px;
+    cursor: pointer;
+}
+.btnXEscuro{
+    border: none;
+    background-color: transparent;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.btnEditar{
+    border: none;
+    background-color: transparent;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+    font-size: 25px;
+    cursor: pointer;
+}

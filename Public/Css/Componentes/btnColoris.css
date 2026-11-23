@@ -1,0 +1,72 @@
+/* Transforma o campo do Coloris ([data-coloris]) em um botão de cor: o texto do
+   input fica escondido e o swatch vira uma pílula preenchida com a cor
+   escolhida, com a escrita dentro (data-texto do input, ver btnColoris.js). */
+
+.selecionarCor{
+    display: inline-flex;
+    transition: 0.2s ease-in;
+    cursor: pointer;
+    align-self: center;
+    min-height: 32px;
+}
+
+/* O input continua clicável e focável, mas invisível: é ele que abre o picker.
+   Fora do fluxo, quem dá o tamanho do campo é o botão. */
+.selecionarCor input{
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background-color: transparent;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* A pilula inteira e preenchida com a cor escolhida (currentColor vem do
+   .selecionarCor, que o Coloris mantem igual ao valor do input) */
+.selecionarCor button{
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    transform: none;
+    padding: 0.4rem 1.1rem;
+    border: 0;
+    border-radius: 4rem;
+    background: currentColor;
+    font: inherit;
+    font-weight: 500;
+    text-indent: 0;
+    overflow: visible;
+}
+
+/* A escrita nao pode herdar a cor escolhida, senao some dentro da pilula */
+.selecionarCor .textoBtnColoris{
+    color: var(--cor-preto);
+    white-space: nowrap;
+}
+
+/* O swatch da lib preenchia o botao inteiro por cima do texto */
+.selecionarCor button::after{
+    display: none;
+}
+
+.selecionarCor:hover button,
+.selecionarCor:focus-within button{
+    box-shadow: 0 0 0 2px var(--cor-branco), 0 0 0 4px var(--cor-fundo-escuro);
+}
+
+/* Dentro de um modal o picker vira filho do <dialog> (ver btnColoris.js), entao
+   o overflow: hidden do template-modal cortaria o painel de cores. */
+.template-modal:has(> .clr-picker.clr-open){
+    overflow: visible;
+}
+
+/* Variante menor: colocar a classe no proprio input ([data-coloris]) */
+.selecionarCor:has(.btnColorisPequeno) button{
+    padding: 0.2rem 0.8rem;
+    font-size: 0.85em;
+}

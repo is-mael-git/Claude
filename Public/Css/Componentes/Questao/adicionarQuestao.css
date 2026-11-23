@@ -1,0 +1,371 @@
+/* CONTAINER */
+
+.crudQuestao {
+    width: 70vw;
+    max-width: 900px;
+    padding: 1rem;
+    overflow: visible;
+    border-radius: 16px;
+    background-color: var(--cor-branco);
+}
+
+.acoesFormQuestao button {
+    text-transform: uppercase;
+}
+
+
+/* BLOCO */
+
+.blocoQuestao {
+    position: relative;
+
+    display: flex;
+    min-height: 300px;
+
+    padding: 1.25rem;
+
+    background: var(--cor-branco);
+
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+}
+
+
+/* FORMULÁRIO */
+
+.formQuestao,
+.formAtualizarQuestao {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+
+    gap: 20px;
+}
+
+
+/* CAMPOS */
+
+.campoQuestao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    position: relative;
+}
+
+.campoQuestao label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.formQuestao .erroCampoQuestao {
+    margin-left: 8px;
+    font-size: 13px;
+    color: var(--cor-vermelho);
+}
+
+
+/* TEXTAREA */
+
+.campoQuestao textarea {
+    min-height: 100px;
+
+    padding: 12px 14px 28px;
+
+    background: #fff;
+
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+    resize: none;
+}
+
+.campoQuestao textarea:focus {
+    border-color: #31415f;
+}
+
+.campoEditavelQuestao {
+    position: relative;
+    width: 100%;
+}
+
+.campoEditavelQuestao textarea {
+    width: 100%;
+    padding-right: 46px;
+}
+
+.campoEditavelQuestao textarea[readonly],
+.selectCustomizadoAtualizarQuestao.bloqueadoQuestao .selecionadoSelectAtualizarQuestao {
+    background-color: #F8F9FB;
+    cursor: default;
+}
+
+.campoEditavelQuestao textarea[readonly]:focus {
+    border-color: #d3d3d3;
+}
+
+.campoEditavelQuestao .campoQuestaoEditando {
+    background-color: #FFFFFF;
+}
+
+.botaoEditarCampoQuestao {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+    padding: 0;
+
+    background: transparent;
+
+    border: none;
+
+    cursor: pointer;
+}
+
+.botaoEditarCampoQuestao svg {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* CONTADOR */
+
+.contadorQuestao,
+.contadorAtualizarQuestao {
+    position: absolute;
+
+    right: 12px;
+    bottom: 9px;
+
+    font-size: 11px;
+    color: #8a8a8a;
+}
+
+
+/* SELECT CUSTOMIZADO */
+
+.selectCustomizadoQuestao,
+.selectCustomizadoAtualizarQuestao {
+    position: relative;
+    width: 100%;
+}
+
+
+/* SELECT FECHADO */
+
+.selecionadoSelectQuestao,
+.selecionadoSelectAtualizarQuestao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    width: 100%;
+    padding: 12px 14px;
+
+    background: #fff;
+
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    color: var(--cor-fundo-escuro);
+
+    cursor: pointer;
+}
+
+
+/* SETA */
+
+.setaSelectQuestao {
+    flex-shrink: 0;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--cor-fundo-escuro);
+}
+
+
+/* LISTA DE OPÇÕES */
+
+.opcoesSelectQuestao,
+.opcoesSelectAtualizarQuestao {
+    display: none;
+
+    position: absolute;
+
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    z-index: 100;
+
+    max-height: min(160px, 30vh);
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    padding: 5px;
+
+    background: var(--cor-branco);
+
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+
+/* SELECT ABERTO */
+
+.selectCustomizadoQuestao.aberto .opcoesSelectQuestao,
+.selectCustomizadoAtualizarQuestao.aberto .opcoesSelectAtualizarQuestao {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* OPÇÕES */
+
+.opcaoSelectQuestao,
+.opcaoSelectAtualizarQuestao {
+    flex-shrink: 0;
+    padding: 8px;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--cor-fundo-escuro);
+
+    cursor: pointer;
+
+    transition: 300ms;
+}
+
+.competenciasDoEixoQuestao {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.opcaoSelectQuestao:hover,
+.opcaoSelectQuestao.opcaoAtualQuestao,
+.opcaoSelectAtualizarQuestao:hover,
+.opcaoSelectAtualizarQuestao.opcaoAtualQuestao {
+    background: var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+
+
+/* SCROLL */
+
+.opcoesSelectQuestao::-webkit-scrollbar,
+.opcoesSelectAtualizarQuestao::-webkit-scrollbar {
+    width: 6px;
+}
+
+.opcoesSelectQuestao::-webkit-scrollbar-thumb,
+.opcoesSelectAtualizarQuestao::-webkit-scrollbar-thumb {
+    background: var(--cor-borda-inputs);
+    border-radius: 10px;
+}
+
+
+/* AÇÕES */
+
+.acoesFormQuestao {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: auto;
+
+    padding-top: 5px;
+}
+
+.acoesFormQuestao button {
+    min-width: 110px;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* CANCELAR */
+
+.btnCancelarQuestao,
+.btnCancelarAtualizarQuestao {
+    background: transparent;
+
+    border: 3px solid var(--cor-fundo-escuro);
+
+    color: var(--cor-fundo-escuro);
+}
+
+.btnCancelarQuestao:hover,
+.btnCancelarAtualizarQuestao:hover {
+    background: #f5f6f8;
+}
+
+
+/* SALVAR */
+
+.btnSalvarQuestao,
+.btnSalvarAtualizarQuestao {
+    background: var(--cor-fundo-escuro);
+
+    border: 3px solid var(--cor-fundo-escuro);
+
+    color: #fff;
+}
+
+.btnSalvarQuestao:hover,
+.btnSalvarAtualizarQuestao:hover {
+    opacity: 0.85;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 600px) {
+
+    .crudQuestao {
+        width: 80vw;
+        padding: 10px;
+    }
+
+    .blocoQuestao {
+        min-height: 320px;
+
+        padding: 18px;
+    }
+
+    .acoesFormQuestao {
+        flex-direction: column-reverse;
+    }
+
+    .acoesFormQuestao button {
+        width: 100%;
+    }
+
+}

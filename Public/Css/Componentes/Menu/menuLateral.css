@@ -1,0 +1,49 @@
+/* ASIDEBAR — Menu lateral de navegação */
+@import "./Desktop/asideMenuLateral.css";
+@import "./Desktop/headerMenuLateral.css";
+@import "./Desktop/modalNotficacaoMenuLateral.css";
+@import "./Desktop/modalTrocaPerfilMenuLateral.css";
+
+/* @import "./Mobile/responsivoAsideMenuLateral.css";
+@import "./Mobile/responsivoHeaderMenuLateral.css";  */
+@import "./Mobile/menuLateralResponsive.css";
+
+
+/* BODY */
+.menuLateralFundo {
+    position: relative;
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--cor-fundo-escuro);
+}
+
+/* Área de trabalho */
+.menuLateralAreaTrabalho {
+    flex: 1;
+    min-width: 0;
+    height: calc(100vh - 103px);
+    margin: 0 13px 13px 0;
+    margin-top: 90px;
+    background-color: var(--cor-fundo-claro);
+    border-radius: 15px;
+    padding-top: 2px;
+    z-index: 2;
+    padding: 18px;
+    transition: width 0.3s ease-in-out, margin 0.3s ease-in-out;
+}
+
+/* Icone ParkTech */
+#iconeParktec{
+    width: 2px;
+    max-height: 2px;
+}
+
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+dialog::backdrop {
+    transition: background-color 0.2s ease;
+}

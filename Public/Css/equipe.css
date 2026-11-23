@@ -1,0 +1,1119 @@
+.equipeAreaTrabalhoCrud {
+    padding: 20px;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipeAcoesTabela {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.equipeTelefoneWhatsApp {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.equipeTelefoneWhatsApp .fa-whatsapp {
+    font-size: 20px;
+}
+
+.itemTabelaEquipeStatus .textoStatus {
+    color: var(--cor-vermelho);
+    font-weight: 700;
+}
+
+.itemTabelaEquipeStatus .textoStatus.statusAtivo {
+    color: var(--cor-verde);
+}
+
+/*  OVERLAY DO MODAL  */
+
+.equipeModalPrincipalStaff {
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: fixed;
+    inset: 0;
+    z-index: 101;
+    background: rgba(0, 0, 0, .65);
+}
+
+.equipeBtnCadastrarStaff {
+    background-color: var(--cor-fundo-claro);
+    color: var(--cor-fundo-escuro);
+    font-size: 20px;
+    align-self: end;
+    width: 12%;
+    min-width: 180px;
+    /* evita que o botão fique ilegível em telas estreitas */
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+.equipeBtnCadastrarStaff:hover {
+    cursor: pointer;
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+}
+
+.btnCadastrarEquipe{
+    display: flex;
+    justify-content: end;
+}
+
+.abrirModalEquipe{
+    padding: 0px 20px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.equipeCadastrarModal {
+    width: 90%;
+    max-width: 1200px;
+    height: auto;
+    max-height: 92vh;
+    margin: auto;
+    background-color: var(--cor-fundo-escuro);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* overflow: hidden; o scroll acontece dentro do .equipeFundoModal */
+}
+
+.equipeTitleModal {
+    color: var(--cor-fundo-claro);
+    font-size: 25px;
+}
+
+.equipeIconeTitleModal {
+    font-size: 20px;
+}
+
+.equipeIconeTrabalho {
+    color: var(--cor-fundo-claro);
+    font-size: 30px;
+}
+
+.equipeInformacaoModal {
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+    /* header nunca encolhe, mesmo se o modal ficar baixo */
+}
+
+.equipeIconeModal {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+}
+
+.fechar-modal {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--cor-fundo-claro);
+    font-size: 30px;
+}
+
+.equipeFundoModal {
+    background-color: var(--cor-fundo-claro);
+    border-radius: 0px 0px 10px 10px;
+    /* margin: 10px; */
+    flex: 1;
+    min-height: 0;
+    /* necessário para o overflow funcionar dentro de flex */
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    padding: 1rem;
+}
+
+
+.equipeGrupoHorariosModalidade {
+    display: flex;
+    border: 1px solid var(--cor-borda-inputs);
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.equipeGrupoDisponibilidadeHorarios {
+    width: 100%;
+}
+
+.equipeGrupoDisponibilidadeModalidade {
+    width: 100%;
+}
+
+.equipeSelecionarModalidade {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 8px;
+    outline: none;
+    color: var(--cor-fundo-escuro);
+    width: 100%;
+}
+
+.equipeFundoModal:has(.equipeDadosPessoaisCards:hover) .equipeTextoAtivo {
+    color: var(--cor-fundo-escuro);
+    transition: 0.2s;
+}
+
+
+
+.equipeStepModal {
+    display: flex;
+    align-items: center;
+    color: #666;
+}
+
+.equipeCirculo {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.equipeAtivo {
+    background-color: var(--cor-fundo-escuro);
+}
+
+.equipeInativo {
+    background-color: #999;
+}
+
+.equipeTexto,
+.equipeTextoModal {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.equipeLinhaContainer {
+    width: 100px;
+    height: 2px;
+    background-color: #ccc;
+}
+
+/* .equipeTextoInformacaoModal {
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+} */
+
+.equipeCadastrarStaff {
+    background-color: white;
+    display: flex;
+    align-items: flex-start;
+    border-radius: 10px;
+    gap: 16px;
+    height: auto;
+    padding: 1rem;
+    flex-wrap: wrap;
+    /* permite empilhar naturalmente em telas estreitas */
+}
+
+.equipeEspacamento1 {
+    background-color: var(--cor-branco);
+    border-radius: 10px;
+    padding: 10px;
+    height: auto;
+    border: 1px solid gray;
+    flex: 1 1 320px;
+    /* cresce/encolhe, mas nunca fica menor que 320px */
+}
+
+.equipeEspacamento2 {
+    background-color: var(--cor-branco);
+    border-radius: 10px;
+    max-width: none;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+.equipeEspacamento3 {
+    background-color: var(--cor-branco);
+    border-radius: 10px;
+    max-width: none;
+    padding: 5px;
+    width: 100%;
+    border: 1px solid gray;
+    height: auto;
+}
+
+.equipeAumentarPerfil {
+    font-size: 15px;
+}
+
+.equipeSelecionarHorarios {
+    display: flex;
+    justify-items: center;
+}
+
+.equipeDisponibilidadeSemana {
+    justify-content: space-between;
+    display: flex;
+}
+
+.equipeCardDisponibilidadePerfil {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1 1 320px;
+}
+
+.equipePerfilsCard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.equipeTituloCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 5px;
+}
+
+.equipeTituloCard h2 {
+    color: var(--cor-fundo-escuro);
+    display: flex;
+    justify-content: center;
+}
+
+.equipeLinhaCard {
+    height: 2px;
+    background-color: #ddd;
+    margin: 1rem;
+}
+
+.equipeFotoContainer {
+    position: relative;
+    display: block;
+    width: 120px;
+    height: 120px;
+    margin: 0;
+}
+
+.equipeFotoEdicao {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 10px auto 20px;
+}
+
+.equipeFotoEdicao[hidden] {
+    display: none;
+}
+
+.divEquipeFoto {
+    margin: 0 auto;
+}
+
+.equipeModalRecorte {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgb(0 0 0 / 65%);
+}
+
+.equipeModalRecorte[hidden] {
+    display: none;
+}
+
+.equipeEditorRecorte {
+    box-sizing: border-box;
+    width: min(100%, 420px);
+    margin: 0;
+    padding: 20px;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 12px 40px rgb(0 0 0 / 30%);
+}
+
+.equipeEditorRecorte h2 {
+    margin: 0 0 10px;
+    color: var(--cor-fundo-escuro);
+}
+
+.equipeFormulario .inputAddParceiros {
+    box-sizing: border-box;
+    min-height: 44px;
+    color: var(--cor-fundo-escuro);
+    background: #fff;
+}
+
+.equipeFormulario .inputAddParceiros:focus {
+    border-color: var(--cor-fundo-escuro);
+    box-shadow: 0 0 0 3px rgb(47 60 84 / 12%);
+}
+
+.equipeFotoCard {
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 2px solid #ebebeb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    color: #74788e;
+}
+
+.equipeFotoCard img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.equipeEditorRecorte {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #dedee5;
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+}
+
+.equipeEditorRecorte[hidden] {
+    display: none;
+}
+
+.equipeEditorRecorte p {
+    margin: 0 0 10px;
+    color: #4d4d59;
+    font-size: 14px;
+}
+
+.equipeAreaRecorte {
+    width: min(100%, 280px);
+    aspect-ratio: 1;
+    margin: auto;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #222;
+}
+
+.equipeCanvasRecorte {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+}
+
+.equipeCanvasRecorte:active {
+    cursor: grabbing;
+}
+
+.equipeZoomRecorte {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.equipeAcoesRecorte {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.equipeAcoesRecorte button {
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.equipeAplicarRecorte {
+    color: #fff;
+    background: var(--cor-fundo-escuro);
+}
+
+.equipeErroCampo {
+    margin-left: 6px;
+    color: var(--cor-vermelho);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.equipeFotoContainer .equipeErroCampo {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 16px);
+    z-index: 2;
+    width: max-content;
+    max-width: 220px;
+    margin: 0;
+    padding: 6px 10px;
+    transform: translateY(-50%);
+    border: 1px solid #ffd5d5;
+    border-radius: 6px;
+    background: #fff5f5;
+    text-align: left;
+}
+
+.equipeAddCard {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    box-sizing: border-box;
+    font-size: 20px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background-color: var(--cor-fundo-escuro);
+    color: white;
+    cursor: pointer;
+}
+
+.equipeAddCard .tooltipAnexarFoto {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    margin-top: 8px;
+    padding: 6px 10px;
+
+    background-color:var(--cor-fundo-escuro);
+    color: white;
+    border-radius: 5px;
+
+    font-size: 12px;
+    white-space: nowrap;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.2s ease;
+    z-index: 9999;
+
+    pointer-events: none;
+}
+
+.equipeAddCard:hover .tooltipAnexarFoto {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+
+/* Quando passar o mouse no botão */
+.equipeAddCard:hover .tooltipAnexarFoto {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Cadastro de equipe em etapas. */
+#cadastroEquipe .areaModal,
+.equipeFormulario {
+    width: 100%;
+}
+
+.equipeEtapas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 auto 14px;
+    color: #777;
+}
+
+.equipeEtapas hr {
+    width: clamp(24px, 8vw, 100px);
+    border: 0;
+    border-top: 2px solid #d7d7d7;
+    transition: border-color 0.25s ease;
+}
+
+.equipeEtapa {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.equipeEtapa span {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    background: #999;
+}
+
+.equipeEtapa.ativa span {
+    background: var(--cor-fundo-escuro);
+}
+
+.equipeEtapa.concluida {
+    color: var(--cor-verde);
+}
+
+.equipeEtapa.concluida span {
+    background: var(--cor-verde);
+}
+
+.equipeEtapas hr.concluida {
+    border-top-color: var(--cor-verde);
+}
+
+.equipeInstrucao {
+    margin: 1rem;
+    color: #555;
+    text-align: center;
+}
+
+.equipeErroEnvio {
+    width: min(100% - 20px, 760px);
+    margin: 0 auto 12px;
+    padding: 10px 14px;
+    border: 1px solid #f1b8b8;
+    border-radius: 8px;
+    color: #9f1d1d;
+    background: #fff2f2;
+    font-weight: 600;
+}
+
+.equipeErroEnvio[hidden] {
+    display: none;
+}
+
+.equipePasso[hidden] {
+    display: none;
+}
+
+.equipePainelCadastro {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.equipeCadastroCard {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.equipeCadastroCard h2 {
+    margin: 0;
+    color: var(--cor-fundo-escuro);
+    text-align: center;
+}
+
+.equipeCampoCard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 15px;
+    color: var(--cor-fundo-escuro);
+    font-weight: 600;
+}
+
+.equipeRotuloCampo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.equipeCampoCard .equipeMarcacaoObrigatoria,
+.equipeGrupoTitulo span {
+    margin-left: 4px;
+    color: #e53935;
+}
+
+.equipeCampoCard input,
+.equipeCampoCard select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.equipeCampoTelefoneCpf {
+    margin-top: 12px;
+}
+
+.equipeGrupoObrigatorio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 16px 0;
+    padding: 14px;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.equipeGrupoCampo {
+    min-width: 0;
+}
+
+.equipeDisponibilidadeLinha {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 16px;
+}
+
+.equipeDisponibilidadeLinha .equipeGrupoCampo {
+    min-width: 0;
+}
+
+.equipeDisponibilidadeLinha .equipeGrupoObrigatorio {
+    align-content: start;
+    min-width: 0;
+}
+
+.equipeGrupoTitulo {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--cor-fundo-escuro);
+    font-weight: 700;
+}
+
+.equipeGrupoObrigatorio label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.equipeCampoModalidade {
+    margin: 16px 0;
+}
+
+.equipePerfilCargoLinha {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.equipePerfilCargoLinha .equipeCampoCard {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.equipePerfilCargoLinha .equipeAdicionarPerfil {
+    display: grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    margin-bottom: 0;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.equipeBtnAcoesFormularios {
+    flex-direction: row;
+    align-items: center;
+}
+
+.equipeBtnAcoesFormularios [hidden] {
+    display: none;
+}
+
+.equipeAvancar {
+    padding: 11px 18px;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    background: var(--cor-fundo-escuro);
+    white-space: nowrap;
+}
+
+.equipeVoltar {
+    box-sizing: border-box;
+    display: grid;
+    flex: 0 0 40px;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+}
+
+.equipeVoltar,
+.equipeAdicionarPerfil {
+    position: relative;
+}
+
+.equipeGrupoObrigatorio .equipeCheckbox,
+.equipeGrupoObrigatorio .container,
+.equipePermissionBox .equipeCheckbox,
+.equipePermissionBox .container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.equipeGrupoObrigatorio .equipeCheckmark,
+.equipeGrupoObrigatorio .checkmark,
+.equipePermissionBox .equipeCheckmark,
+.equipePermissionBox .checkmark {
+    display: inline-block;
+    flex: 0 0 16px;
+    box-sizing: border-box;
+}
+
+.equipeVoltar[data-tooltip]:hover::after,
+.equipeAdicionarPerfil[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border-radius: 5px;
+    background: var(--cor-fundo-escuro);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.equipeAddCard {
+    position: absolute;
+}
+
+@media (max-width: 600px) {
+    .equipeFotoEdicao {
+        grid-template-columns: 1fr;
+    }
+
+    .equipeFotoContainer {
+        width: 88px;
+        height: 88px;
+    }
+
+    .equipeFotoContainer .equipeErroCampo {
+        left: calc(100% + 10px);
+        max-width: min(150px, calc(100vw - 150px));
+    }
+
+    .equipeFotoCard {
+        width: 88px;
+        height: 88px;
+    }
+
+    .equipeAreaRecorte {
+        width: 100%;
+    }
+
+    .equipeEtapas {
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .equipeEtapas hr {
+        width: 12px;
+    }
+
+    .equipeCadastroCard {
+        padding: 0;
+    }
+
+    .equipePainelCadastro {
+        padding: 14px;
+    }
+
+    .equipeDisponibilidadeLinha {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+}
+
+/*  CAMPOS DO FORMULÁRIO  */
+
+.equipeCampoCard {
+    margin-bottom: 15px;
+}
+
+.equipeCampoCard label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--cor-fundo-escuro);
+}
+
+.equipeCampoTelefoneCpf {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    width: 100%;
+    color: var(--cor-fundo-escuro);
+}
+
+.equipeCampoDadosTelefone,
+.equipeCampoDadosCpf {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    font-weight: bold;
+    gap: 10px;
+}
+
+.equipeInputIcon {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--cor-borda-inputs);
+    border-radius: 6px;
+    padding: 12px;
+    min-height: 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.equipeInputIcon i {
+    margin-right: 10px;
+    color: var(--cor-fundo-escuro);
+}
+
+.equipeInputIcon input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+}
+
+.equipeMarcacaoObrigatoria {
+    color: #e53935;
+    /* vermelho para chamar atenção */
+    margin-left: 3px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.equipeTituloSegundoCard {
+    font-size: 20px;
+    color: var(--cor-fundo-escuro);
+    margin-bottom: 5px;
+}
+
+.equipeGrupoDisponibilidadeSemana1,
+.equipeGrupoDisponibilidadeSemana2 {
+    display: flex;
+    /* flex-direction: row; */
+    gap: 15px;
+    justify-content: space-between;
+    /* flex-wrap: wrap; */
+    /* margin-top: 10px; */
+}
+
+.equipeGrupoDisponibilidadeHorarios2 {
+    margin-bottom: 10px;
+    color: var(--cor-fundo-escuro);
+    /* display: flex; */
+    /* justify-content: space-between; */
+}
+
+.equipeGrupoDisponibilidadeIdade2 {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.equipeGrupoDisponibilidade label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.equipePerfilItens {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.equipeCor {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+}
+
+.equipeAdicionarPerfil {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+    border-radius: 50%;
+    border: 3px solid var(--cor-fundo-escuro);
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.equipeAdicionarPerfil:hover {
+    background-color: var(--cor-fundo-escuro);
+    color: white;
+}
+
+.equipeBtnAcoesFormularios {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    /* padding: 10px 0; */
+}
+
+.equipeAcoesEtapa {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    min-width: 0;
+    gap: 16px;
+}
+
+.equipeSalvarBtn {
+    justify-content: center;
+}
+
+
+
+@media (max-width: 1024px) {
+
+    .equipeCadastrarStaff {
+        flex-direction: column;
+        align-items: stretch;
+        /* garante que os filhos estiquem na largura */
+    }
+
+    .equipeEspacamento1,
+    .equipeEspacamento2,
+    .equipeEspacamento3,
+    .equipeCardDisponibilidadePerfil {
+        /* <- adicionado */
+        width: 100%;
+        min-width: 100%;
+
+    }
+
+}
+
+@media (max-width: 768px) {
+    .equipeCampoTelefoneCpf {
+        flex-direction: column;
+    }
+
+    .equipePerfilCargoLinha {
+        flex-wrap: wrap;
+    }
+
+    .equipePerfilCargoLinha .equipeCampoCard {
+        flex: 1 1 calc(50% - 8px);
+    }
+
+    .equipeDisponibilidadeSemana {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .equipeGrupoDisponibilidade {
+        flex-direction: column;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .equipeBtnAcoesFormularios {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .equipeAcoesEtapa {
+        flex: 1 1 auto;
+    }
+
+    .equipeAcoesEtapa .btnSalvar,
+    .equipeAcoesEtapa .btnCancelar {
+        width: auto;
+        min-width: 0;
+        flex: 1;
+        padding-right: 8px;
+        padding-left: 8px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .equipeContainerModal {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .equipeLinhaContainer {
+        display: none;
+    }
+
+    .equipeBtnCadastrarStaff {
+        width: 100%;
+    }
+
+    .equipeCadastrarModal {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        /* em telas de celular, modal ocupa a tela toda */
+        margin: 0;
+    }
+}

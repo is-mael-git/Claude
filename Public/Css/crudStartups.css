@@ -1,0 +1,781 @@
+/* Conteúdo dos modais de Startup (cadastro/edição e detalhes do fundador)
+   — o "casco" de cada modal (dialog, header, título,
+   botão de fechar, área clara) já vem de Componentes/funcaoModal.php +
+   Componentes/modal.css, igual ao resto do sistema. Este arquivo só cuida do
+   que é conteúdo exclusivo daqui.
+
+   CONVENÇÃO DE NOMENCLATURA:
+   • prefixo "cs-" nas classes de layout/aparência exclusivas desta tela;
+   • estados manipulados pelo JS (active) sem prefixo;
+   • cores: aliases globais de Public/Css/style.css.
+*/
+
+/* ── Raízes dos modais ───────────────────────────────────────────────
+   Cada .areaModal (casco compartilhado) recebe um desses como filho direto.
+   max-height + overflow-y aqui fazem o papel que .scrollCadastroParceiro
+   faz pro modal de Parceiro: o casco padrão (.templateModal/.areaModal) não
+   define altura máxima sozinho, então quem tem conteúdo mais alto que a
+   tela precisa se limitar. */
+.areaCadastroStartup,
+.areaDetalheFundador {
+  --crud-font-size-xs:  12px;
+  --crud-font-size-sm:  13px;
+  --crud-font-size-md:  14px;
+  --crud-font-size-lg:  15px;
+  --crud-font-size-xl:  17px;
+  --crud-font-size-2xl: 22px;
+  --crud-radius-card:    8px;
+  --crud-radius-input:   8px;
+  --crud-radius-btn:     8px;
+  --crud-gap-columns:   16px;
+}
+
+.areaCadastroStartup {
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+  max-width: calc(100vw - 64px);
+  max-height: 85vh;
+  overflow-y: auto;
+  gap: 0.75rem;
+}
+
+.areaDetalheFundador {
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+  max-width: calc(100vw - 64px);
+  max-height: 85vh;
+  overflow-y: auto;
+  gap: 0.75rem;
+}
+
+.cs-founderForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  align-content: start;
+  background: var(--cor-branco);
+  border: 1px solid var(--cor-placeholder);
+  border-radius: 8px;
+  padding: 20px 22px;
+}
+
+.cs-founderForm > .cs-cardTitle,
+.cs-founderForm > .cs-cardDivider,
+.cs-founderForm > .cs-founderNomeGroup,
+.cs-founderForm > .cs-secondaryModalFooter {
+  grid-column: 1 / -1;
+}
+
+.cs-founderForm > .cs-cardDivider { width: 100%; }
+
+.cs-founderFormRow { display: contents; }
+
+/* ── Stepper ─────────────────────────────────────────────────────── */
+.cs-stepper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(24px, 72px) minmax(0, 1fr) minmax(24px, 72px) minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.cs-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+}
+
+.cs-stepCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--crud-font-size-lg);
+  color: #fff;
+  flex-shrink: 0;
+  background: #98A2B3;
+}
+
+.cs-stepLabel {
+  font-weight: 700;
+  font-size: var(--crud-font-size-lg);
+  line-height: 1.2;
+  color: #98A2B3;
+}
+
+.cs-step.cs-stepAtiva .cs-stepCircle {
+  background: var(--cor-fundo-escuro);
+}
+
+.cs-step.cs-stepAtiva .cs-stepLabel {
+  color: var(--cor-fundo-escuro);
+}
+
+.cs-step.cs-stepConcluida .cs-stepCircle {
+  background: var(--cor-verde);
+}
+
+.cs-step.cs-stepConcluida .cs-stepLabel {
+  color: var(--cor-verde);
+}
+
+.cs-stepLine {
+  border-top: 1px solid var(--cor-fundo-escuro);
+  margin-top: 14px;
+}
+
+/* ── Colunas / Card ──────────────────────────────────────────────── */
+.cs-columns {
+  display: block;
+}
+
+.cs-card {
+  display: none;
+  background: var(--cor-branco);
+  border: 1px solid var(--cor-placeholder);
+  border-radius: var(--crud-radius-card);
+  padding: 20px 22px;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cs-card.active {
+  display: flex;
+}
+
+.cs-card[data-etapa="1"].active,
+.cs-card[data-etapa="2"].active {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+  align-content: start;
+}
+
+.cs-card[data-etapa="1"] > .cs-cardTitle,
+.cs-card[data-etapa="1"] > .cs-cardDivider,
+.cs-card[data-etapa="1"] > .cs-photoRow,
+.cs-card[data-etapa="2"] > .cs-cardTitle,
+.cs-card[data-etapa="2"] > .cs-cardDivider {
+  grid-column: 1 / -1;
+}
+
+.cs-card[data-etapa="1"] > .cs-cardDivider,
+.cs-card[data-etapa="2"] > .cs-cardDivider {
+  width: 100%;
+}
+
+.cs-card[data-etapa="1"] > .cs-campoLargo {
+  grid-column: 1 / -1;
+}
+
+.cs-cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cs-cardTitle h2 {
+  font-weight: 700;
+  font-size: var(--crud-font-size-2xl);
+  color: var(--cor-fundo-escuro);
+  line-height: 1.2;
+}
+
+.cs-cardDivider {
+  border: none;
+  border-top: 1px solid var(--cor-placeholder);
+  margin-bottom: 16px;
+}
+
+/* ── Photo / avatar ──────────────────────────────────────────────── */
+.cs-fileInput {
+  display: none;
+}
+
+.cs-photoRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.cs-photoUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-avatarCircle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--cor-fundo-claro);
+  border: 3px solid var(--cor-fundo-escuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.cs-avatarCircle:hover {
+  border-color: var(--cor-borda-placeholder);
+}
+
+.cs-avatarCircle img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.cs-avatarCircle img.comFoto {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cs-avatarPlus {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--cor-fundo-escuro);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cs-photoLabel {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--cor-fundo-escuro);
+}
+
+.cs-photoError {
+  max-width: 230px;
+  color: var(--cor-vermelho);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── Form groups ─────────────────────────────────────────────────── */
+.cs-formGroup {
+  margin-bottom: 12px;
+}
+
+.cs-formGroup label {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--cor-fundo-escuro);
+  margin-bottom: 5px;
+  letter-spacing: 0.02em;
+}
+
+.cs-formGroup label.campoObrigatorio.cs-labelComErro::after { content: none; }
+
+.cs-erroCampo {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-vermelho);
+}
+
+.cs-formGroup input,
+.cs-formGroup select {
+  width: 100%;
+  height: 38px;
+  background: var(--cor-branco);
+  border: 1px solid var(--cor-placeholder);
+  border-radius: var(--crud-radius-input);
+  padding: 0 12px;
+  font-weight: 600;
+  font-size: var(--crud-font-size-md);
+  color: var(--cor-fundo-escuro);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cs-formGroup input::placeholder {
+  color: var(--cor-placeholder);
+  font-weight: 500;
+}
+
+.cs-formGroup input:focus,
+.cs-formGroup select:focus {
+  outline: none;
+}
+
+/* :focus-visible em vez de :focus — some ao clicar/digitar com o mouse,
+   mas continua acessível pra quem navega com Tab/teclado. */
+.cs-formGroup input:focus-visible,
+.cs-formGroup select:focus-visible {
+  border-color: var(--cor-borda-placeholder);
+}
+
+.cs-formGroup textarea {
+  width: 100%;
+  min-height: 72px;
+  background: var(--cor-branco);
+  border: 1px solid var(--cor-placeholder);
+  border-radius: var(--crud-radius-input);
+  padding: 10px 12px;
+  font-weight: 600;
+  font-size: var(--crud-font-size-md);
+  color: var(--cor-fundo-escuro);
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.cs-formGroup textarea::placeholder {
+  color: var(--cor-placeholder);
+  font-weight: 500;
+}
+
+.cs-formGroup textarea:focus {
+  outline: none;
+}
+
+.cs-formGroup textarea:focus-visible {
+  border-color: var(--cor-borda-placeholder);
+}
+
+/* ── Select wrapper ──────────────────────────────────────────────── */
+.cs-selectWrapper {
+  position: relative;
+}
+
+.cs-selectWrapper select {
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.cs-selectWrapper::after {
+  content: '';
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--cor-fundo-escuro);
+  pointer-events: none;
+}
+
+/* ── Date selects ────────────────────────────────────────────────── */
+.cs-dateRow {
+  display: flex;
+  gap: 6px;
+}
+
+.cs-dateRow .cs-selectWrapper {
+  flex: 1;
+}
+
+/* ── Section title & divider ─────────────────────────────────────── */
+.cs-sectionTitle {
+  display: block;
+  font-weight: 700;
+  font-size: var(--crud-font-size-xl);
+  color: var(--cor-fundo-escuro);
+  margin: 8px 0 10px;
+}
+
+.cs-sectionDivider {
+  border: none;
+  border-top: 1px solid var(--cor-placeholder);
+  margin: 12px 0;
+}
+
+/* ── Tags de estágio ─────────────────────────────────────────────── */
+.cs-tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cs-tagBtn {
+  padding: 6px 14px;
+  height: 34px;
+  border: 2px solid var(--cor-fundo-escuro);
+  border-radius: var(--crud-radius-input);
+  background: transparent;
+  font-weight: 700;
+  font-size: var(--crud-font-size-sm);
+  color: var(--cor-fundo-escuro);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.cs-tagBtn:hover {
+  background: rgba(47, 60, 84, 0.07);
+}
+
+/* estado "active" adicionado via JS: classList.add('active') */
+.cs-tagBtn.active {
+  background: var(--cor-borda-placeholder);
+  color: var(--cor-fundo-claro);
+  border-color: var(--cor-borda-placeholder);
+}
+
+/* ── Founders list ───────────────────────────────────────────────── */
+.cs-foundersList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-placeholder) transparent;
+}
+
+.cs-foundersList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cs-foundersList::-webkit-scrollbar-thumb {
+  background: var(--cor-placeholder);
+  border-radius: 999px;
+}
+
+.cs-foundersList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* criado dinamicamente pelo JS: item.className = 'cs-founderItem' */
+.cs-founderItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cor-fundo-claro);
+  border: 2px solid var(--cor-placeholder);
+  border-radius: var(--crud-radius-btn);
+  padding: 8px 10px;
+  flex-shrink: 0;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cs-founderItem:hover {
+  border-color: var(--cor-fundo-escuro);
+}
+
+.cs-founderNumber {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cor-fundo-escuro);
+  color: #fff;
+  font-size: var(--crud-font-size-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-founderItem .cs-founderNome {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--cor-fundo-escuro);
+  padding: 0 4px;
+  color: var(--cor-fundo-escuro);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cs-sectorWrapper.cs-sectorOutroAtivo::after { display: none; }
+.cs-sectorWrapper #sectorOther:not([hidden]) { padding-right: 42px; }
+.cs-sectorBack:not([hidden]) {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--cor-fundo-escuro);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.cs-founderItem .cs-founderNome:focus {
+  outline: none;
+}
+
+.cs-founderItem .cs-founderNome:focus-visible {
+  border-bottom-color: var(--cor-borda-placeholder);
+}
+
+.cs-founderRemove {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cs-founderRemove:hover {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+}
+
+.cs-btnAddFounder {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--cor-branco);
+  border: 2px solid var(--cor-fundo-escuro);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: var(--crud-font-size-sm);
+  color: var(--cor-fundo-escuro);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cs-btnAddFounder:hover {
+  background: #dce8f6;
+}
+
+.cs-founderError:not([hidden]) {
+  display: block;
+  margin: 8px 0 0;
+}
+
+/* ── Detalhe do fundador (modal secundário) ──────────────────────── */
+.cs-founderDetailHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  margin-bottom: 16px;
+}
+
+.cs-founderDetailAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--cor-branco);
+  border: 3px solid var(--cor-fundo-escuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cs-founderDetailEyebrow {
+  font-size: var(--crud-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-placeholder);
+}
+
+/* linha com 2 campos lado a lado (e-mail+telefone, linkedin+participação) */
+.cs-founderFormRow .cs-formGroup {
+  min-width: 0;
+}
+
+/* ── Rodapés ─────────────────────────────────────────────────────── */
+.cs-modalFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+
+.cs-btnVoltar {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  background-color: transparent;
+  border: 3px solid var(--cor-fundo-escuro);
+  color: var(--cor-fundo-escuro);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease-in;
+}
+
+.cs-btnVoltar:hover {
+  background-color: var(--cor-fundo-escuro);
+  color: var(--cor-fundo-claro);
+}
+
+.cs-footerAcoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* rodapé do modal de fundador */
+.cs-secondaryModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* fieldset: reset global de borda. min-width:0 evita que o <fieldset> "fure"
+   o card em telas estreitas (o user-agent stylesheet dá um min-width
+   intrínseco que não encolhe sozinho). */
+fieldset {
+  border: none;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* ── Responsive — mobile ─────────────────────────────────────────── */
+@media (max-width: 639px) {
+  .areaCadastroStartup {
+    max-height: 100%;
+  }
+
+  .cs-card[data-etapa="1"].active,
+  .cs-card[data-etapa="2"].active {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-stepLabel {
+    font-size: var(--crud-font-size-xs);
+  }
+
+  .cs-founderFormRow {
+    display: contents;
+  }
+
+  .cs-founderForm { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Daqui pra baixo: só o que é da TELA (tabela, trigger, badges) — o
+   que é conteúdo dos modais fica no bloco acima.
+   ════════════════════════════════════════════════════════════════════ */
+
+.crudStartups {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.botaoAddStartup {
+    font-size: 1rem;
+    font-weight: 600;
+    width: fit-content;
+    background-color: transparent;
+    padding: 14px;
+    border-radius: 10px;
+    align-self: end;
+    cursor: pointer;
+    border: 2px solid var(--cor-fundo-escuro);
+    transition: ease-in .15s;
+
+    &:hover {
+        background-color: var(--cor-fundo-escuro);
+        color: var(--cor-branco);
+    }
+}
+
+/* Estilização da tabela */
+
+.itemTabelaStartups1 {
+    width: 20%;
+}
+
+.itemTabelaStartups2 {
+    width: 18%;
+}
+
+.itemTabelaStartups3 {
+    width: 13%;
+}
+
+.itemTabelaStartups4 {
+    width: 20%;
+}
+
+.itemTabelaStartups5 {
+    width: 13%;
+}
+
+.wrapperTabelaStartups7 {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.botaoEditarStartup {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font: inherit;
+    color: var(--cor-placeholder);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.botaoEditarStartup:hover {
+    background: #dce8f6;
+    color: var(--cor-borda-placeholder);
+}
+
+.botaoEditarStartup:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
