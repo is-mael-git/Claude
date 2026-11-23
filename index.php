@@ -32,7 +32,8 @@ define('BASE_COMPONENTES', $_SERVER['DOCUMENT_ROOT'] . $config['base_componentes
 $rotaAtual = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $rotasPublicas = [
-    BASE_URL . 'login'
+    BASE_URL . 'login',
+    BASE_URL . 'sessao/renovar'
 ];
 
 if (!in_array($rotaAtual, $rotasPublicas, true)){

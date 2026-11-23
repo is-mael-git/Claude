@@ -27,15 +27,16 @@ class auth {
         $config  = self::configJWT();
         $agora   = time();
         
-        // Colocar no futuro um javascript para quando for ter alguma atividade ele resetar o tempo
-        $ttl = $lembrarAcesso ? 60 * 60 * 24 * 30 * 12 : (int) $config['ttl'];
+        $ttl = $lembrarAcesso ? 60 * 60 * 24 * 30 : (int) $config['ttl'];
 
         $payload = [
             'sub'       => (int) $usuario['id'],
             'email'     => $usuario['email'],
             'perfil'     => $usuario['perfil'],
             'permissao' => $usuario['permissao'] ?? [],
+            'sid'       => bin2hex(random_bytes(16)),
             'iat'       => $agora,
+            'ttl'       => $ttl,
             'exp'       => $agora + $ttl
             ];
 
@@ -50,6 +51,7 @@ class auth {
         ]);
                 
         session_regenerate_id(true);
+        $_SESSION['autenticacaoAtiva'] = true;
     }
 
     public static function usuario() : ?array {
@@ -62,6 +64,7 @@ class auth {
 
         try {
             $payload = jwtToken::decode($token, $config['secret']);
+            $_SESSION['autenticacaoAtiva'] = true;
             
             return[
                 'id'        => (int) $payload['sub'],
@@ -73,6 +76,79 @@ class auth {
             self::removerCookie();
             return null;
         }
+    }
+
+    public static function renovarSessaoPorAtividade() : bool {
+        $config = self::configJWT();
+        $token = $_COOKIE[$config['cookie_name']] ?? null;
+
+        if (!$token) {
+            return false;
+        }
+
+        try {
+            $payload = jwtToken::decode($token, $config['secret']);
+            $ttl = max(1, (int) ($payload['ttl'] ?? ((int) $payload['exp'] - (int) ($payload['iat'] ?? time()))));
+            $payload['iat'] = time();
+            $payload['ttl'] = $ttl;
+            $payload['exp'] = $payload['iat'] + $ttl;
+            $tokenRenovado = jwtToken::encode($payload, $config['secret']);
+
+            setcookie($config['cookie_name'], $tokenRenovado, [
+                'expires'  => $payload['exp'],
+                'path'     => BASE_URL,
+                'secure'   => (bool) $config['cookie_secure'],
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
+
+            return true;
+        } catch (Throwable $erro) {
+            self::removerCookie();
+            return false;
+        }
+    }
+
+    public static function ttlSessaoAtual() : int {
+        $config = self::configJWT();
+        $token = $_COOKIE[$config['cookie_name']] ?? null;
+
+        if (!$token) {
+            return max(1, (int) $config['ttl']);
+        }
+
+        try {
+            $payload = jwtToken::decode($token, $config['secret']);
+            return max(1, (int) ($payload['ttl'] ?? ((int) $payload['exp'] - (int) ($payload['iat'] ?? time()))));
+        } catch (Throwable $erro) {
+            return max(1, (int) $config['ttl']);
+        }
+    }
+
+    public static function idSessaoAtual() : string {
+        $config = self::configJWT();
+        $token = $_COOKIE[$config['cookie_name']] ?? null;
+
+        if (!$token) {
+            return '';
+        }
+
+        try {
+            $payload = jwtToken::decode($token, $config['secret']);
+            if (!empty($payload['sid'])) {
+                return (string) $payload['sid'];
+            }
+
+            return hash('sha256', (string) ($payload['sub'] ?? '') . ':legacy');
+        } catch (Throwable $erro) {
+            return '';
+        }
+    }
+
+    public static function consumirMarcadorAutenticacaoAnterior() : bool {
+        $autenticadoAnteriormente = !empty($_SESSION['autenticacaoAtiva']);
+        unset($_SESSION['autenticacaoAtiva']);
+        return $autenticadoAnteriormente;
     }
     
     public static function id(): ?int {
@@ -108,9 +184,19 @@ class auth {
     }
     
     public static function requerLogin() : void {
+        $config = self::configJWT();
+        $cookieExistia = !empty($_COOKIE[$config['cookie_name']]);
+        $sessaoAutenticada = !empty($_SESSION['autenticacaoAtiva']);
+
         if(!self::checar()) {
-            self::flash('erro', 'Faz login ae');
-            header('Location: ' . BASE_URL . 'login');
+            unset($_SESSION['autenticacaoAtiva']);
+
+            if ($cookieExistia || $sessaoAutenticada) {
+                header('Location: ' . BASE_URL . 'login?sessaoExpirada=1');
+            } else {
+                self::flash('erro', 'Faz login ae');
+                header('Location: ' . BASE_URL . 'login');
+            }
             exit();
         }
     }
@@ -125,6 +211,7 @@ class auth {
     }
     public static function logout() : void {
         self::removerCookie();
+        unset($_SESSION['autenticacaoAtiva']);
         session_regenerate_id(true);
         }
     public static function flash(string $tipo, string $mensagem) : void {

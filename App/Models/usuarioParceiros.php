@@ -3,9 +3,11 @@
 namespace Models;
 
 use Core\bancoDados;
+use Core\model;
+use Core\select;
 use PDO;
 
-class usuarioParceiros
+class usuarioParceiros extends model
 {
 
     public static function cadastrarParceiro($dados)
@@ -134,51 +136,73 @@ class usuarioParceiros
 
     public static function buscarPorId($id): ?array
     {
-        $db = bancoDados::conectar();
-
-        $sql = "SELECT
-                    p.*,
-                    rp.nome AS nome_representante,
-                    rp.email AS email_representante,
-                    rp.telefone AS telefone_representante,
-                    rp.cargo AS cargo_representante
-                FROM parceiro p
-                LEFT JOIN representante_parceiro rp ON rp.id_parceiro = p.id
-                WHERE p.id = :id";
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $parceiro = $stmt->fetch();
-
-        return $parceiro ?: null;
+        return self::selecionarUm("SELECT * FROM vw_parceiros_detalhes WHERE id = :id", ['id' => $id]);
     }
 
-    public static function listar(): array
+    /**
+     * Prepara a consulta base em vw_parceiros_detalhes com filtro opcional de área.
+     *
+     * @param int|string|array|null $area ID(s) ou nome(s) das áreas de atuação.
+     */
+    private static function montarConsultaArea($area): select
     {
-        $db = bancoDados::conectar();
+        $consulta = self::select('vw_parceiros_detalhes');
 
-        $sql = "SELECT
-                    p.id,
-                    p.id_area_atuacao,
-                    p.foto,
-                    p.nome,
-                    p.cnpj,
-                    p.telefone,
-                    p.site,
-                    p.instagram,
-                    p.linkedin,
-                    CAST(p.ativo AS UNSIGNED) AS ativo,
-                    a.nome AS area_nome,
-                    rp.nome AS nome_representante,
-                    rp.email AS email_representante,
-                    rp.telefone AS telefone_representante,
-                    rp.cargo AS cargo_representante
-                FROM parceiro p
-                INNER JOIN area_atuacao a ON a.id = p.id_area_atuacao
-                LEFT JOIN representante_parceiro rp ON rp.id_parceiro = p.id";
+        if (empty($area)) {
+            return $consulta;
+        }
 
-        $stmt = $db->query($sql);
-        return $stmt->fetchAll();
+        $areasArray = is_array($area) ? $area : explode(',', (string) $area);
+        $areasArray = array_filter(array_map('trim', $areasArray), fn($v) => $v !== '');
+
+        if (empty($areasArray)) {
+            return $consulta;
+        }
+
+        $ehNumerico = true;
+        foreach ($areasArray as $item) {
+            if (!ctype_digit((string) $item)) {
+                $ehNumerico = false;
+                break;
+            }
+        }
+
+        $colunaFiltro = $ehNumerico ? 'id_area_atuacao' : 'area_nome';
+        $valores = $ehNumerico
+            ? array_map('intval', $areasArray)
+            : array_values($areasArray);
+
+        return $consulta->whereIn($colunaFiltro, $valores, 'area');
+    }
+
+    /**
+     * Conta o total de parceiros distintos conforme o filtro de área aplicado.
+     *
+     * @param int|string|array|null $area ID(s) ou nome(s) das áreas de atuação para filtrar.
+     * @return int Total de registros encontrados.
+     */
+    public static function contar($area = null): int
+    {
+        return self::montarConsultaArea($area)->contar('DISTINCT id');
+    }
+
+    /**
+     * Lista os parceiros a partir da view vw_parceiros_detalhes com suporte a ordenação,
+     * filtro por área (única ou múltipla) e paginação opcional.
+     *
+     * @param string $orderBy Expressão SQL de ordenação (ex: "nome ASC"). Padrão: "id DESC".
+     * @param int|string|array|null $area ID(s) ou nome(s) das áreas de atuação para filtrar (ex: 1, "1,2", ["1", "2"] ou "Tecnologia").
+     * @param int|null $limit Quantidade máxima de registros a retornar (ou null para listar todos).
+     * @param int|null $offset Deslocamento inicial de registros (offset de paginação).
+     * @return array Lista de registros associativos retornados do banco.
+     */
+    public static function listar(string $orderBy = "id DESC", $area = null, ?int $limit = null, ?int $offset = null): array
+    {
+        return self::montarConsultaArea($area)
+            ->distinct()
+            ->orderBy($orderBy)
+            ->limit($limit, $offset)
+            ->buscarTodos();
     }
 
 
@@ -202,10 +226,6 @@ class usuarioParceiros
 
     public static function listarAreas(): array
     {
-        $db = bancoDados::conectar();
-
-        $stmt = $db->query("SELECT id, nome FROM area_atuacao ORDER BY nome");
-
-        return $stmt->fetchAll();
+        return self::selecionarTodos("SELECT id, nome FROM area_atuacao ORDER BY nome");
     }
 }

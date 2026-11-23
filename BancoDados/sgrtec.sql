@@ -1,25 +1,24 @@
-DROP DATABASE sgrtec;
+DROP DATABASE IF EXISTS sgrtec;
 
 CREATE DATABASE sgrtec;
 
 USE sgrtec;
 
 CREATE TABLE IF NOT EXISTS `perfil` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(50) NOT NULL UNIQUE,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `usuario` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(100) NOT NULL,
 	`cpf` CHAR(11),
 	`email` VARCHAR(320) NOT NULL UNIQUE,
 	`senha` VARCHAR(255),
 	`ativo` BIT NOT NULL DEFAULT 0,
 	`criado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`id_perfil` INTEGER NOT NULL,
 	`telefone` BIGINT,
 	`foto` VARCHAR(255),
 	PRIMARY KEY(`id`)
@@ -27,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 
 
 CREATE TABLE IF NOT EXISTS `permissao` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(50) NOT NULL,
 	`descricao` VARCHAR(255) NOT NULL,
 	`ativa` BIT NOT NULL DEFAULT 1,
@@ -43,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `perfil_permissao` (
 
 
 CREATE TABLE IF NOT EXISTS `termo` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(50) NOT NULL UNIQUE,
 	`local` VARCHAR(255) NOT NULL UNIQUE,
 	PRIMARY KEY(`id`)
@@ -59,14 +58,14 @@ CREATE TABLE IF NOT EXISTS `usuario_termo` (
 
 
 CREATE TABLE IF NOT EXISTS `area_atuacao` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(50) NOT NULL,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `parceiro` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_area_atuacao` INTEGER NOT NULL,
 	`foto` VARCHAR(255) NOT NULL,
 	`nome` VARCHAR(100) NOT NULL UNIQUE,
@@ -75,42 +74,35 @@ CREATE TABLE IF NOT EXISTS `parceiro` (
 	`site` VARCHAR(255),
 	`instagram` VARCHAR(255),
 	`linkedin` VARCHAR(255),
-	`ativo` BIT DEFAULT 1,
+	`ativo` BIT NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `mentor` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`linkedin` VARCHAR(255) UNIQUE,
 	`instagram` VARCHAR(255) UNIQUE,
 	`biografia` VARCHAR(500) NOT NULL,
 	`banner` VARCHAR(255),
-	`id_parceiro` INTEGER NOT NULL,
+	`id_parceiro` INTEGER,
 	`id_usuario` INTEGER NOT NULL,
 	`id_disponibilidade` INTEGER NOT NULL,
+	`curriculo` VARCHAR(255),
+	`ativo` BIT NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id`)
 );
 
 
-CREATE TABLE IF NOT EXISTS `competencia` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`nome` VARCHAR(50) NOT NULL UNIQUE,
-	`descricao` VARCHAR(500) NOT NULL,
-	`id_eixo` INTEGER NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE TABLE IF NOT EXISTS `mentor_competencia` (
+CREATE TABLE IF NOT EXISTS `mentor_subcategoria` (
 	`id_mentor` INTEGER NOT NULL,
-	`id_competencia` INTEGER NOT NULL,
-	PRIMARY KEY(`id_mentor`, `id_competencia`)
+	`id_subcategoria` INTEGER NOT NULL,
+	PRIMARY KEY(`id_mentor`, `id_subcategoria`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `semana` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`domingo` BIT NOT NULL DEFAULT 0,
 	`segunda` BIT NOT NULL DEFAULT 0,
 	`terca` BIT NOT NULL DEFAULT 0,
@@ -123,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `semana` (
 
 
 CREATE TABLE IF NOT EXISTS `horario` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`matutino` BIT NOT NULL DEFAULT 0,
 	`vespertino` BIT NOT NULL DEFAULT 0,
 	`noturno` BIT NOT NULL DEFAULT 0,
@@ -132,16 +124,15 @@ CREATE TABLE IF NOT EXISTS `horario` (
 
 
 CREATE TABLE IF NOT EXISTS `startup` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(100) NOT NULL UNIQUE,
 	`cnpj` VARCHAR(14) NOT NULL UNIQUE,
 	`data_fundacao` DATE NOT NULL,
-	`trl` INTEGER NOT NULL DEFAULT 1,
 	`setor_atuacao` VARCHAR(150) NOT NULL,
 	`site` VARCHAR(255),
 	`instagram` VARCHAR(255),
 	`linkedin` VARCHAR(255),
-	`ativo` BIT NOT NULL DEFAULT 1,
+	`ativo` BIT NOT NULL DEFAULT 0,
 	`criado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`cep` VARCHAR(8),
 	`logradouro` VARCHAR(255) NOT NULL,
@@ -152,22 +143,24 @@ CREATE TABLE IF NOT EXISTS `startup` (
 	`cidade` VARCHAR(255) NOT NULL,
 	`logo` VARCHAR(255),
 	`outras_participacoes` VARCHAR(255),
+	`biografia` VARCHAR(3000),
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `fundador` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_startup` INTEGER NOT NULL,
 	`id_usuario` INTEGER NOT NULL,
 	`funcao` VARCHAR(100) NOT NULL,
-	`temp_empresa` DATE NOT NULL,
+	`temp_empresa` TINYINT NOT NULL,
+	`ativo` BIT NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `representante_parceiro` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_parceiro` INTEGER NOT NULL,
 	`nome` VARCHAR(100) NOT NULL,
 	`email` VARCHAR(320) NOT NULL UNIQUE,
@@ -177,49 +170,15 @@ CREATE TABLE IF NOT EXISTS `representante_parceiro` (
 );
 
 
-CREATE TABLE IF NOT EXISTS `questao` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`pergunta` VARCHAR(255) NOT NULL,
-	`id_eixo` INTEGER NOT NULL,
-	`ativo` BIT NOT NULL DEFAULT 1,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE TABLE IF NOT EXISTS `questionario` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`nome` VARCHAR(100) NOT NULL,
-	`descricao` VARCHAR(500),
-	`ativo` BIT NOT NULL DEFAULT 1,
-	`padrao` BIT NOT NULL DEFAULT 0,
-	PRIMARY KEY(`id`)
-);
-
-
 CREATE TABLE IF NOT EXISTS `questionario_startup` (
+	`id_questionario` INTEGER NOT NULL,
 	`id_startup` INTEGER NOT NULL,
-	`id_questionario` INTEGER NOT NULL,
-	PRIMARY KEY(`id_startup`, `id_questionario`)
-);
-
-
-CREATE TABLE IF NOT EXISTS `eixo` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`nome` VARCHAR(50) NOT NULL UNIQUE,
-	`descricao` VARCHAR(255) NOT NULL,
-	PRIMARY KEY(`id`)
-);
-
-
-CREATE TABLE IF NOT EXISTS `questionario_questao` (
-	`id_questao` INTEGER NOT NULL,
-	`id_questionario` INTEGER NOT NULL,
-	PRIMARY KEY(`id_questao`, `id_questionario`)
+	PRIMARY KEY(`id_questionario`, `id_startup`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `notificacao` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_usuario` INTEGER NOT NULL,
 	`mensagem` VARCHAR(255) NOT NULL,
 	`enviado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -244,8 +203,8 @@ CREATE TABLE IF NOT EXISTS `mentoria` (
 
 CREATE TABLE IF NOT EXISTS `reuniao` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
-	`id_startup` INTEGER NOT NULL,
 	`id_mentor` INTEGER NOT NULL,
+	`id_startup` INTEGER NOT NULL,
 	`assunto` VARCHAR(50) NOT NULL,
 	`status` BIT NOT NULL DEFAULT 1,
 	`inicio` DATETIME NOT NULL,
@@ -257,36 +216,34 @@ CREATE TABLE IF NOT EXISTS `reuniao` (
 
 
 CREATE TABLE IF NOT EXISTS `respos_questao` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`id_startup` INTEGER NOT NULL,
 	`id_questao` INTEGER NOT NULL,
+	`id_startup` INTEGER NOT NULL,
 	`valor` TINYINT NOT NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`id_questao`, `id_startup`)
 );
 
 
-CREATE TABLE IF NOT EXISTS `resul_quest_eixo` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
-	`id_eixo` INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS `resul_quest_categoria` (
 	`id_startup` INTEGER NOT NULL,
 	`id_questionario` INTEGER NOT NULL,
 	`valor` SMALLINT NOT NULL,
 	`data` DATE NOT NULL,
-	PRIMARY KEY(`id`)
+	PRIMARY KEY(`id_startup`, `id_questionario`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `equipe` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_usuario` INTEGER NOT NULL,
-	`cargo` VARCHAR(50) NOT NULL,
 	`id_disponibilidade` INTEGER NOT NULL,
+	`cargo` VARCHAR(50) NOT NULL,
+	`ativo` BIT NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id`)
 );
 
 
 CREATE TABLE IF NOT EXISTS `relato` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`destinatario` ENUM('mentor', 'startup') NOT NULL,
 	`pergunta` JSON NOT NULL,
 	`ativo` BIT NOT NULL DEFAULT 0,
@@ -295,7 +252,7 @@ CREATE TABLE IF NOT EXISTS `relato` (
 
 
 CREATE TABLE IF NOT EXISTS `respos_relato` (
-	`id` INTEGER NOT NULL AUTO_INCREMENT,
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_reuniao` INTEGER NOT NULL,
 	`resposta` JSON NOT NULL,
 	`enviado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -318,8 +275,97 @@ CREATE TABLE IF NOT EXISTS `disponibilidade` (
 );
 
 
-ALTER TABLE `usuario`
-ADD FOREIGN KEY(`id_perfil`) REFERENCES `perfil`(`id`)
+CREATE TABLE IF NOT EXISTS `avaliacao` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`nome` VARCHAR(50) NOT NULL UNIQUE,
+	`minimo` INTEGER NOT NULL,
+	`maximo` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `categoria` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`nome` VARCHAR(100) NOT NULL,
+	`descricao` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `subcategoria` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`nome` VARCHAR(100) NOT NULL,
+	`descricao` VARCHAR(255) NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `avaliacao_categoria` (
+	`id_avaliacao` INTEGER NOT NULL,
+	`id_categoria` INTEGER NOT NULL,
+	PRIMARY KEY(`id_avaliacao`, `id_categoria`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `categoria_subcategoria` (
+	`id_categoria` INTEGER NOT NULL,
+	`id_subcategoria` INTEGER NOT NULL,
+	PRIMARY KEY(`id_categoria`, `id_subcategoria`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `questao` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`pergunta` VARCHAR(255) NOT NULL,
+	`ativo` BIT NOT NULL DEFAULT 1,
+	`id_subcategoria` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `questionario` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`nome` VARCHAR(100) NOT NULL UNIQUE,
+	`descricao` VARCHAR(500),
+	`ativo` BIT NOT NULL DEFAULT 1,
+	`padrao` BIT NOT NULL DEFAULT 0,
+	`id_avaliacao` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `questionario_questao` (
+	`id_questionario` INTEGER NOT NULL,
+	`id_questao` INTEGER NOT NULL,
+	PRIMARY KEY(`id_questionario`, `id_questao`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `anexo` (
+	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+	`local` VARCHAR(255) NOT NULL,
+	`id_respos_relato` INTEGER NOT NULL,
+	PRIMARY KEY(`id`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `usuario_perfil` (
+	`id_usuario` INTEGER NOT NULL,
+	`id_perfil` INTEGER NOT NULL,
+	PRIMARY KEY(`id_usuario`, `id_perfil`)
+);
+
+
+CREATE TABLE IF NOT EXISTS `questionario_categoria` (
+	`id_questionario` INTEGER NOT NULL,
+	`id_categoria` INTEGER NOT NULL,
+	`quant_quest` INTEGER NOT NULL,
+	PRIMARY KEY(`id_questionario`, `id_categoria`)
+);
+
+
+ALTER TABLE `anexo`
+ADD FOREIGN KEY(`id_respos_relato`) REFERENCES `respos_relato`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `perfil_permissao`
 ADD FOREIGN KEY(`id_perfil`) REFERENCES `perfil`(`id`)
@@ -342,11 +388,8 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `mentor`
 ADD FOREIGN KEY(`id_usuario`) REFERENCES `usuario`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `mentor_competencia`
+ALTER TABLE `mentor_subcategoria`
 ADD FOREIGN KEY(`id_mentor`) REFERENCES `mentor`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `mentor_competencia`
-ADD FOREIGN KEY(`id_competencia`) REFERENCES `competencia`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `fundador`
 ADD FOREIGN KEY(`id_startup`) REFERENCES `startup`(`id`)
@@ -356,9 +399,6 @@ ADD FOREIGN KEY(`id_parceiro`) REFERENCES `parceiro`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `questionario_startup`
 ADD FOREIGN KEY(`id_startup`) REFERENCES `startup`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `questionario_startup`
-ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `fundador`
 ADD FOREIGN KEY(`id_usuario`) REFERENCES `usuario`(`id`)
@@ -375,9 +415,6 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `equipe`
 ADD FOREIGN KEY(`id_usuario`) REFERENCES `usuario`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `questionario_questao`
-ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `notificacao`
 ADD FOREIGN KEY(`id_usuario`) REFERENCES `usuario`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -387,23 +424,8 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `reuniao`
 ADD FOREIGN KEY(`id_mentor`) REFERENCES `mentor`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `resul_quest_eixo`
-ADD FOREIGN KEY(`id_eixo`) REFERENCES `eixo`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `resul_quest_eixo`
+ALTER TABLE `resul_quest_categoria`
 ADD FOREIGN KEY(`id_startup`) REFERENCES `startup`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `resul_quest_eixo`
-ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `respos_questao`
-ADD FOREIGN KEY(`id_questao`) REFERENCES `questao`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `questionario_questao`
-ADD FOREIGN KEY(`id_questao`) REFERENCES `questao`(`id`)
-ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `questao`
-ADD FOREIGN KEY(`id_eixo`) REFERENCES `eixo`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `respos_relato`
 ADD FOREIGN KEY(`id_reuniao`) REFERENCES `reuniao`(`id`)
@@ -423,247 +445,298 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `equipe`
 ADD FOREIGN KEY(`id_disponibilidade`) REFERENCES `disponibilidade`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
-ALTER TABLE `competencia`
-ADD FOREIGN KEY(`id_eixo`) REFERENCES `eixo`(`id`)
+ALTER TABLE `avaliacao_categoria`
+ADD FOREIGN KEY(`id_avaliacao`) REFERENCES `avaliacao`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `avaliacao_categoria`
+ADD FOREIGN KEY(`id_categoria`) REFERENCES `categoria`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `categoria_subcategoria`
+ADD FOREIGN KEY(`id_categoria`) REFERENCES `categoria`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `categoria_subcategoria`
+ADD FOREIGN KEY(`id_subcategoria`) REFERENCES `subcategoria`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario`
+ADD FOREIGN KEY(`id_avaliacao`) REFERENCES `avaliacao`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario_questao`
+ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario_questao`
+ADD FOREIGN KEY(`id_questao`) REFERENCES `questao`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questao`
+ADD FOREIGN KEY(`id_subcategoria`) REFERENCES `subcategoria`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario_startup`
+ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `respos_questao`
+ADD FOREIGN KEY(`id_questao`) REFERENCES `questao`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `resul_quest_categoria`
+ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_perfil`
+ADD FOREIGN KEY(`id_usuario`) REFERENCES `usuario`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `usuario_perfil`
+ADD FOREIGN KEY(`id_perfil`) REFERENCES `perfil`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario_categoria`
+ADD FOREIGN KEY(`id_questionario`) REFERENCES `questionario`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `questionario_categoria`
+ADD FOREIGN KEY(`id_categoria`) REFERENCES `categoria`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `mentor_subcategoria`
+ADD FOREIGN KEY(`id_subcategoria`) REFERENCES `subcategoria`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 -- Inserções das tabelas ------------------------------
 
--- area de atuação
-INSERT INTO area_atuacao(nome) VALUES ("Comércio");
-INSERT INTO area_atuacao(nome) VALUES ("Indústria");
-INSERT INTO area_atuacao(nome) VALUES ("Serviço");
+-- Area de atuação
+INSERT INTO area_atuacao (nome) VALUES ('Comércio');
+INSERT INTO area_atuacao (nome) VALUES ('Indústria');
+INSERT INTO area_atuacao (nome) VALUES ('Serviço');
 
--- representanto do parceiro
+-- Parceiro
+INSERT INTO parceiro (id_area_atuacao, foto, nome, cnpj, telefone, site, instagram, linkedin, ativo) 
+VALUES (1, 'logoSenac.png', 'Senac Hub Academy', '03644843000119', 6733126260, 'https://ms.senac.br/', 'https://www.instagram.com/senacbrasil/', 'https://www.linkedin.com/company/senacms/', 1);
 
-INSERT INTO parceiro (id_area_atuacao, foto, nome, cnpj, telefone, site, instagram, linkedin) VALUES (1, "logoSenac.png", "Senac Hub Academy", "03644843000119", 6733126260, "https://ms.senac.br/", "https://www.instagram.com/senacbrasil/", "https://www.linkedin.com/company/senacms/");
+-- Representante do parceiro
+INSERT INTO representante_parceiro (id_parceiro, nome, email, telefone, cargo) 
+VALUES (1, 'Luiz Nicolas Da Silva', 'luiz@gmail.com', '6792421028', 'Gerente');
 
--- representanto do parceiro
+-- Perfil de acesso
+INSERT INTO perfil (nome) VALUES ('master');
+INSERT INTO perfil (nome) VALUES ('adm');
+INSERT INTO perfil (nome) VALUES ('mentor');
+INSERT INTO perfil (nome) VALUES ('fundador');
 
-INSERT INTO representante_parceiro (id_parceiro, nome, email, telefone, cargo) VALUES (1,  "Luiz Nicolas Da Silva", "luiz@gmail.com", 6792421028, "Gerente");
+-- Permissões
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar formulário de relatos', 'Criar novo formulário de relato');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos os formulários de relato', 'Ver as perguntas no formulário de relato que serão respondidas');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar formulário de relato', 'Editar formulário de relato existente e selecionar qual formulário todos os mentores e startups irão realizar');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar formulário de relato', 'Remover formulário de relato cadastrado no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar formulário de relato', 'Ativar ou inativar formulário de relato');
+INSERT INTO permissao (nome, descricao) VALUES ('responder relato', 'Responder ao relato conforme o que está assignado');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos relato respondidos', 'Visualizar todas as respostas dos relatos tanto do mentor, quanto da startup');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar resposta do seu relato', 'Visualizar as respostas que fez do seu próprio relato');
+INSERT INTO permissao (nome, descricao) VALUES ('observações no relato', 'Adicionar comentários no relato respondido da startup e do mentor');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar termos', 'Adicionar novos termos de uso');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos termos', 'Visualizar todos os termos de uso cadastrados');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar termos', 'Editar termos de uso');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar termos', 'Remover termos de uso');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar termos', 'Ativar ou inativar um termo a ser assinado');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar perfis de acesso', 'Adicionar novos perfis de acesso');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos perfis de acesso', 'Visualizar todos os perfis de acesso cadastrados');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar perfis de acesso', 'Editar perfis de acesso');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar perfis de acesso', 'Remover perfis de acesso');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar perfil de acesso', 'Ativar ou inativar um perfil de acesso');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar startups', 'Cadastrar novas startups no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todas startups', 'Visualizar todas as startups cadastradas no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar startups', 'Editar informações de startups do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar startups', 'Remover startups do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar startups', 'Ativar ou inativar startups no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar mentores', 'Cadastrar novos mentores no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos mentores', 'Visualizar todos os mentores cadastrados no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar mentores', 'Editar informações dos mentores do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar mentores', 'Remover mentores do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar mentores', 'Ativar ou inativar mentores no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('aprovar/recusar cadastro novo mentor', 'Aprovar ou recusar um mentor que solicitou o cadastro no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar parceiros', 'Cadastrar novos parceiros no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos parceiros', 'Visualizar todos os parceiros cadastrados no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar parceiros', 'Editar informações dos parceiros do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar parceiros', 'Remover parceiros do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar parceiros', 'Ativar ou inativar parceiros no sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar questionários', 'Criar novos questionários');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todos questionários', 'Visualizar todos os questionários cadastrados');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar questionários', 'Editar perguntas e configurações dos questionários');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar questionários', 'Remover questionários do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar questionários', 'Ativar ou inativar questionários para preenchimento');
+INSERT INTO permissao (nome, descricao) VALUES ('responder questionário', 'Responder a questionários conforme o que está destinado ao período da startup');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar questões', 'Cadastrar novas questões');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar todas questões', 'Visualizar todas as questões cadastradas');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar questões', 'Editar enunciados, eixos cernes e configurações das questões');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar questões', 'Remover questões do sistema');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar questões', 'Ativar ou inativar questões para uso em questionários');
+INSERT INTO permissao (nome, descricao) VALUES ('cadastrar equipe', 'Cadastrar novos membros na equipe');
+INSERT INTO permissao (nome, descricao) VALUES ('visualizar toda equipe', 'Visualizar todos os membros da equipe');
+INSERT INTO permissao (nome, descricao) VALUES ('atualizar equipe', 'Editar informações e cargos dos membros da equipe');
+INSERT INTO permissao (nome, descricao) VALUES ('deletar equipe', 'Remover membros da equipe');
+INSERT INTO permissao (nome, descricao) VALUES ('ativar/inativar equipe', 'Ativar ou inativar acesso de membros da equipe');
 
--- perfil de acesso
-
-INSERT INTO perfil (nome) VALUES ("master");
-INSERT INTO perfil (nome) VALUES ("adm");
-INSERT INTO perfil (nome) VALUES ("mentor");
-INSERT INTO perfil (nome) VALUES ("fundador");
+-- Perfil permissao
+INSERT INTO perfil_permissao (id_perfil, id_permissao) VALUES (1, 1);
 
 -- Usuários
-INSERT INTO usuario (nome, cpf, email, senha, ativo, id_perfil, telefone) VALUES ('Renata', '10956362182','renata@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 1, 67948574682);
--- vai ser master
-INSERT INTO usuario (nome, cpf, email, senha, ativo, id_perfil, telefone) VALUES ('Carlos', '01928163721','carlos@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 2, 67948572943);
--- vai ser adm
-INSERT INTO usuario (nome, email, senha, ativo, id_perfil, telefone) VALUES ('Roberto', 'roberto@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 3, 67917243212);
--- vai ser mentor
-INSERT INTO usuario (nome, cpf, email, senha, ativo, id_perfil, telefone) VALUES ('Rafaela', '09045623103','rafaela@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 4, 67089461785);
--- vai ser fundador
+INSERT INTO usuario (nome, cpf, email, senha, ativo, telefone, foto) 
+VALUES ('Renata', '10956362182', 'renata@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67948574682, 'renata.jpeg');
+INSERT INTO usuario (nome, cpf, email, senha, ativo, telefone, foto) 
+VALUES ('Carlos', '01928163721', 'carlos@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67948572943, 'huang.jpeg');
+INSERT INTO usuario (nome, email, senha, ativo, telefone, foto)
+VALUES ('Roberto', 'roberto@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67917243212, 'zuckerberg.jpg');
 
--- horario
-INSERT INTO horario(matutino) VALUES(1);
+-- Vínculo Usuário x Perfil
+INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (1, 1);
+INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (2, 2);
+INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (3, 3);
+INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (4, 4);
 
--- semana
-INSERT INTO semana(segunda) VALUES (1);
+-- Termo e Usuário Termo
+INSERT INTO termo (nome, local) VALUES ('Termos de Uso v1', '/docs/termos_v1.pdf');
+INSERT INTO usuario_termo (id_usuario, id_termo, aceito) VALUES (1, 1, 1);
 
--- disponibilidade
-INSERT INTO disponibilidade(id_semana, id_horario, modalidade) VALUES (1, 1, 'presencial');
+-- Horário, Semana e Disponibilidade
+INSERT INTO horario (matutino) VALUES (1);
+INSERT INTO semana (segunda) VALUES (1);
+INSERT INTO disponibilidade (id_semana, id_horario, modalidade) VALUES (1, 1, 'PRESENCIAL');
 
--- mentor
-INSERT INTO mentor (linkedin, instagram, biografia, banner, id_parceiro, id_usuario, id_disponibilidade) VALUES ('https://www.linkedin.com/in/italo-almeida-966b42354/', 'https://www.instagram.com/it_1luan/', 'Entuasiata da tecnologia, formado em engenheiro de software na  Harvard Uniersity ', 'nothing', 1, 3, 1);
+-- Mentor
+INSERT INTO mentor (linkedin, instagram, biografia, banner, id_parceiro, id_usuario, id_disponibilidade, curriculo, ativo) 
+VALUES ('https://www.linkedin.com/in/italo-almeida-966b42354/', 'https://www.instagram.com/it_1luan/', 'Entusiasta da tecnologia, formado em engenharia de software na Harvard University', 'nothing', 1, 3, 1, NULL, 1);
 
--- startup
-INSERT INTO startup(nome, cnpj, data_fundacao, trl, setor_atuacao, site, instagram, linkedin, cep,  logradouro, numero, complemento, bairro, uf, cidade, logo, outras_participacoes) VALUES('Nubank', 18236120000158, '2023-05-06', 1, 'financeiro', 'https://nubank.com.br/', 'https://www.instagram.com/nubank/', 'https://www.linkedin.com/company/nubank/', '05409000', 'Rua Capote Valente, 39, Pinheiros, São Paulo - SP, CEP 05409-000', 39, '9º ao 14º andares, andares 17 e 18, e conjuntos 31, 41, 51 e 61', 'Pinheiros ', 'SP', 'São Paulo', 'nothing', 'acelerações de IA');
+-- Startup
+INSERT INTO startup (nome, cnpj, data_fundacao, setor_atuacao, site, instagram, linkedin, cep, logradouro, numero, complemento, bairro, uf, cidade, logo, outras_participacoes, biografia, ativo) 
+VALUES ('Nubank', '18236120000158', '2023-05-06', 'financeiro', 'https://nubank.com.br/', 'https://www.instagram.com/nubank/', 'https://www.linkedin.com/company/nubank/', '05409000', 'Rua Capote Valente, 39, Pinheiros', 39, '9º ao 14º andares', 'Pinheiros', 'SP', 'São Paulo', 'nothing', 'acelerações de IA', 'Maior banco digital.', 1);
 
--- fundador
-INSERT INTO fundador(id_startup, id_usuario, funcao, temp_empresa) VALUES (1, 4, 'estagiário', '2024-01-01');
+-- Fundador
+INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa, ativo) 
+VALUES (1, 4, 'estagiário', 6, 1);
 
--- equipe
-INSERT INTO equipe (id_usuario, cargo, id_disponibilidade) VALUES (2, 'Representante da ParkTec', 1);
+-- Equipe
+INSERT INTO equipe (id_usuario, id_disponibilidade, cargo, ativo) 
+VALUES (2, 1, 'Representante da ParkTec', 1);
 
--- eixo
-INSERT INTO eixo (nome, descricao) VALUES ('Empreendedor', 'Foca no fundador. Avalia sua capacidade de liderança, visão, tomada de decisão, maturidade empreendedora e habilidade de conduzir o negócio. É onde medimos se o empreendedor tem preparo e mentalidade para fazer a startup avançar.');
-INSERT INTO eixo (nome, descricao) VALUES ('Mercado', 'Analisa o quanto a startup entende o cliente e o mercado que quer atender. Aqui medimos validação de problema, proposta de valor, tração, vendas, posicionamento e estratégias de crescimento. É o eixo que mostra se existe mercado real para o negócio.');
-INSERT INTO eixo (nome, descricao) VALUES ('Produto', 'Avalia o desenvolvimento da solução: tecnologia, protótipo, testes, TRL, usabilidade e capacidade técnica. Esse eixo mostra se o produto está evoluindo de forma consistente e se tem potencial de entrega em escala.');
-INSERT INTO eixo (nome, descricao) VALUES ('Gestão', 'Examina a estrutura interna da startup: organização, processos, finanças, jurídico, métricas e capacidade de gestão. É o eixo da profissionalização — o quanto a startup está preparada para operar com eficiência e crescer de forma estruturada.');
-INSERT INTO eixo (nome, descricao) VALUES ('Capital', 'Avalia a capacidade de captar recursos e se relacionar com investidores ou fontes de financiamento. Inclui pitch, valuation, governança, editais e estratégias de investimento. Mostra se a startup está pronta para atrair e usar capital de forma inteligente');
+-- Avaliação
+INSERT INTO avaliacao (nome, minimo, maximo) VALUES ('Escala 0 a 4', 0, 4);
 
--- competencia
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Pessoas & Cultura', 'Estruturação de Time e Cultura Organizacional / Mentalidade Empreendedora', 1);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Estratégia', 'Estruturação de Time e Cultura Organizacional / Mentalidade Empreendedora', 1);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Produto & Tecnologia', 'Tecnologia e Desenvolvimento de Produtos', 3);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Operações', 'Parte técnica – execução do produto', 3);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Finanças', 'Gestão Financeira e Captação de Recursos', 5);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Capital & Investimentos', 'Gestão Financeira e Captação de Recursos', 5);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Mercado & Clientes', 'Validação de Produtos', 2);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Marketing & Vendas', 'Análise de Mercado / Marketing e Growth', 2);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Networking & Conexões', 'Networking e Conexões Estratégicas', 2);
-INSERT INTO competencia (nome, descricao, id_eixo) VALUES ('Jurídico & PI', 'Estratégia e Modelagem de Negócios / Regulação e Compliance', 4);
+-- Categorias (Antigos Eixos Cerne)
+INSERT INTO categoria (nome, descricao) VALUES ('Empreendedor', 'Foca no fundador. Avalia sua capacidade de liderança, visão, tomada de decisão, maturidade empreendedora e habilidade de conduzir o negócio.');
+INSERT INTO categoria (nome, descricao) VALUES ('Mercado', 'Analisa o quanto a startup entende o cliente e o mercado que quer atender.');
+INSERT INTO categoria (nome, descricao) VALUES ('Produto', 'Avalia o desenvolvimento da solução: tecnologia, protótipo, testes, TRL, usabilidade e capacidade técnica.');
+INSERT INTO categoria (nome, descricao) VALUES ('Gestão', 'Examina a estrutura interna da startup: organização, processos, finanças, jurídico, métricas e capacidade de gestão.');
+INSERT INTO categoria (nome, descricao) VALUES ('Capital', 'Avalia a capacidade de captar recursos e se relacionar com investidores ou fontes de financiamento.');
 
--- relação mentor competencia
-INSERT INTO mentor_competencia(id_mentor, id_competencia) VALUES(1, 1);
-INSERT INTO mentor_competencia(id_mentor, id_competencia) VALUES(1, 2);
+-- Vínculo Avaliação x Categoria
+INSERT INTO avaliacao_categoria (id_avaliacao, id_categoria) VALUES (1, 1);
+INSERT INTO avaliacao_categoria (id_avaliacao, id_categoria) VALUES (1, 2);
+INSERT INTO avaliacao_categoria (id_avaliacao, id_categoria) VALUES (1, 3);
+INSERT INTO avaliacao_categoria (id_avaliacao, id_categoria) VALUES (1, 4);
+INSERT INTO avaliacao_categoria (id_avaliacao, id_categoria) VALUES (1, 5);
 
--- notificação
+-- Subcategorias (Antigas Competências)
+INSERT INTO subcategoria (nome, descricao) VALUES ('Pessoas & Cultura', 'Estruturação de Time e Cultura Organizacional');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Estratégia', 'Mentalidade Empreendedora');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Produto & Tecnologia', 'Tecnologia e Desenvolvimento de Produtos');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Operações', 'Parte técnica – execução do produto');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Finanças', 'Gestão Financeira');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Capital & Investimentos', 'Captação de Recursos');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Mercado & Clientes', 'Validação de Produtos');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Marketing & Vendas', 'Análise de Mercado / Marketing e Growth');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Networking & Conexões', 'Networking e Conexões Estratégicas');
+INSERT INTO subcategoria (nome, descricao) VALUES ('Jurídico & PI', 'Estratégia e Modelagem de Negócios / Regulação e Compliance');
+
+-- Vínculo Categoria x Subcategoria (Atualizado para utilizar id_subcategoria)
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (1, 1);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (1, 2);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (3, 3);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (3, 4);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (5, 5);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (5, 6);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (2, 7);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (2, 8);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (2, 9);
+INSERT INTO categoria_subcategoria (id_categoria, id_subcategoria) VALUES (4, 10);
+
+-- Relação Mentor x Subcategoria
+INSERT INTO mentor_subcategoria (id_mentor, id_subcategoria) VALUES (1, 1);
+INSERT INTO mentor_subcategoria (id_mentor, id_subcategoria) VALUES (1, 2);
+
+-- Notificações
 INSERT INTO notificacao (id_usuario, mensagem, tipo, id_tipo) VALUES (1, 'Startup e Mentor estão em mentoria', 'mentoria', 1);
 INSERT INTO notificacao (id_usuario, mensagem, tipo, id_tipo) VALUES (1, 'Mentor cadastrado', 'cadastro', 1);
 INSERT INTO notificacao (id_usuario, mensagem, tipo, id_tipo) VALUES (1, 'Startup X enviou o relato para avaliação', 'relato', 1);
 INSERT INTO notificacao (id_usuario, mensagem, tipo, id_tipo) VALUES (1, 'Startup e Mentor agendaram a reunião', 'reuniao', 1);
 
--- questionario 
-INSERT INTO questionario (nome, descricao, ativo, padrao) VALUES ('Questionário sobre a startup', 'Teste de descricão', 1, 0);
-INSERT INTO questionario (nome, descricao, ativo, padrao) VALUES ('Questionário sobre a startup 2.0',  NULL, 1, 1);
-INSERT INTO questionario (nome, descricao, ativo, padrao) VALUES ('Questionário sobre a startup Y', 'Teste de descricão', 0, 0);
+-- Questionários
+INSERT INTO questionario (nome, descricao, ativo, padrao, id_avaliacao) VALUES ('Questionário sobre a startup', 'Teste de descricão', 1, 0, 1);
+INSERT INTO questionario (nome, descricao, ativo, padrao, id_avaliacao) VALUES ('Questionário sobre a startup 2.0', NULL, 1, 1, 1);
+INSERT INTO questionario (nome, descricao, ativo, padrao, id_avaliacao) VALUES ('Questionário sobre a startup Y', 'Teste de descricão', 0, 0, 1);
 
--- questao
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui funções e responsabilidades bem definidas entre os membros da equipe?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma cultura organizacional clara e compartilhada pela equipe?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a equipe está alinhada com os objetivos e valores da empresa?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa incentiva o desenvolvimento e a capacitação dos membros da equipe?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a equipe demonstra mentalidade empreendedora na resolução de problemas e busca por oportunidades?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui objetivos estratégicos claramente definidos?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui um modelo de negócio bem estruturado e compreendido pela equipe?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto as decisões da empresa são tomadas com base em planejamento e informações do negócio?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa acompanha o cumprimento de suas metas estratégicas?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa consegue adaptar sua estratégia diante de mudanças e novas oportunidades?', 1, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto o produto ou serviço desenvolvido pela empresa atende às necessidades dos usuários?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza tecnologia de forma adequada no desenvolvimento de seus produtos ou serviços?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa realiza melhorias contínuas em seu produto com base nos feedbacks dos usuários?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto o produto da empresa apresenta diferenciais tecnológicos ou inovadores?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a tecnologia utilizada pela empresa está preparada para acompanhar o crescimento do negócio?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui processos operacionais claramente definidos?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa consegue executar e entregar seus produtos ou serviços dentro dos prazos estabelecidos?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa monitora a qualidade durante a execução de seus produtos ou serviços?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto os processos internos da empresa são eficientes e evitam retrabalho?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a operação da empresa está preparada para atender um aumento na demanda?', 3, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui controle organizado de receitas, despesas e fluxo de caixa?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui planejamento financeiro para curto, médio e longo prazo?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece seus custos, despesas e margem de lucro?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza informações financeiras para apoiar suas decisões?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa está preparada financeiramente para manter suas operações e financiar seu crescimento?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece suas necessidades de capital para continuar crescendo?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece as diferentes formas de captação de recursos disponíveis?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa está preparada para apresentar seu negócio a possíveis investidores?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui projeções financeiras que demonstrem seu potencial de crescimento?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma estratégia definida para utilização de possíveis investimentos recebidos?', 5, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece claramente o perfil e as necessidades do seu público-alvo?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto o produto ou serviço da empresa foi validado com clientes reais?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa coleta e utiliza feedback dos clientes para melhorar sua solução?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece seus concorrentes e as alternativas existentes no mercado?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui evidências de que existe demanda pelo produto ou serviço oferecido?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma estratégia de marketing claramente definida?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza canais adequados para alcançar seu público-alvo?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui um processo estruturado para transformar potenciais clientes em compradores?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa acompanha indicadores de marketing e vendas para avaliar seus resultados?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza estratégias para aumentar a aquisição e retenção de clientes?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma rede de contatos que contribui para o desenvolvimento do negócio?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa busca estabelecer parcerias estratégicas com outras organizações?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa participa de eventos, programas ou ambientes que possibilitam novas conexões?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto as conexões da empresa contribuem para gerar oportunidades comerciais ou estratégicas?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa mantém relacionamento ativo com parceiros, mentores e outros integrantes do ecossistema empreendedor?', 2, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui sua estrutura jurídica adequada ao modelo de negócio?', 4, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece e cumpre as normas e regulamentações relacionadas à sua atividade?', 4, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza contratos adequados em suas relações com clientes, parceiros e fornecedores?', 4, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa protege adequadamente sua marca, tecnologia, produto ou propriedade intelectual?', 4, 1);
-INSERT INTO questao (pergunta, id_eixo, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui conhecimento e práticas relacionadas à proteção de dados, compliance e obrigações legais?', 4, 1);
+-- Questões (vinculadas às subcategorias)
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui funções e responsabilidades bem definidas entre os membros da equipe?', 1, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma cultura organizacional clara e compartilhada pela equipe?', 1, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a equipe está alinhada com os objetivos e valores da empresa?', 1, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa incentiva o desenvolvimento e a capacitação dos membros da equipe?', 1, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a equipe demonstra mentalidade empreendedora na resolução de problemas e busca por oportunidades?', 1, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui objetivos estratégicos claramente definidos?', 2, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui um modelo de negócio bem estruturado e compreendido pela equipe?', 2, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto as decisões da empresa são tomadas com base em planejamento e informações do negócio?', 2, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa acompanha o cumprimento de suas metas estratégicas?', 2, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa consegue adaptar sua estratégia diante de mudanças e novas oportunidades?', 2, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto o produto ou serviço desenvolvido pela empresa atende às necessidades dos usuários?', 3, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza tecnologia de forma adequada no desenvolvimento de seus produtos ou serviços?', 3, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa realiza melhorias contínuas em seu produto com base nos feedbacks dos usuários?', 3, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto o produto da empresa apresenta diferenciais tecnológicos ou inovadores?', 3, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a tecnologia utilizada pela empresa está preparada para acompanhar o crescimento do negócio?', 3, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui processos operacionais claramente definidos?', 4, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa consegue executar e entregar seus produtos ou serviços dentro dos prazos estabelecidos?', 4, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa monitora a qualidade durante a execução de seus produtos ou serviços?', 4, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto os processos internos da empresa são eficientes e evitam retrabalho?', 4, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a operação da empresa está preparada para atender um aumento na demanda?', 4, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui controle organizado de receitas, despesas e fluxo de caixa?', 5, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui planejamento financeiro para curto, médio e longo prazo?', 5, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece seus custos, despesas e margem de lucro?', 5, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza informações financeiras para apoiar suas decisões?', 5, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa está preparada financeiramente para manter suas operações e financiar seu crescimento?', 5, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece suas necessidades de capital para continuar crescendo?', 6, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece as diferentes formas de captação de recursos disponíveis?', 6, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa está preparada para apresentar seu negócio a possíveis investidores?', 6, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui projeções financeiras que demonstrem seu potencial de crescimento?', 6, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma estratégia definida para utilização de possíveis investimentos recebidos?', 6, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece claramente o perfil e as necessidades do seu público-alvo?', 7, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto o produto ou serviço da empresa foi validado com clientes reais?', 7, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa coleta e utiliza feedback dos clientes para melhorar sua solução?', 7, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece seus concorrentes e as alternativas existentes no mercado?', 7, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui evidências de que existe demanda pelo produto ou serviço oferecido?', 7, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma estratégia de marketing claramente definida?', 8, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza canais adequados para alcançar seu público-alvo?', 8, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui um processo estruturado para transformar potenciais clientes em compradores?', 8, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa acompanha indicadores de marketing e vendas para avaliar seus resultados?', 8, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza estratégias para aumentar a aquisição e retenção de clientes?', 8, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui uma rede de contatos que contribui para o desenvolvimento do negócio?', 9, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa busca estabelecer parcerias estratégicas com outras organizações?', 9, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa participa de eventos, programas ou ambientes que possibilitam novas conexões?', 9, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto as conexões da empresa contribuem para gerar oportunidades comerciais ou estratégicas?', 9, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa mantém relacionamento ativo com parceiros, mentores e outros integrantes do ecossistema empreendedor?', 9, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui sua estrutura jurídica adequada ao modelo de negócio?', 10, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa conhece e cumpre as normas e regulamentações relacionadas à sua atividade?', 10, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa utiliza contratos adequados em suas relações com clientes, parceiros e fornecedores?', 10, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa protege adequadamente sua marca, tecnologia, produto ou propriedade intelectual?', 10, 1);
+INSERT INTO questao (pergunta, id_subcategoria, ativo) VALUES ('Numa escala de 0-4, quanto a empresa possui conhecimento e práticas relacionadas à proteção de dados, compliance e obrigações legais?', 10, 1);
 
--- permissões -----------------
+-- Questionário Startup, Questionário Questão e Questionário Categoria
+INSERT INTO questionario_startup (id_questionario, id_startup) VALUES (1, 1);
+INSERT INTO questionario_questao (id_questionario, id_questao) VALUES (1, 1);
 
--- Gerenciar Relatos
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar formulário de relatos', 'Criar novo formulário de relato');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos os formulários de relato', 'Ver as perguntas no formulário de relato que serão respondidas');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar formulário de relato', 'Editar formulário de relato existente e selecionar qual formulário todos os mentores e startups irão realizar');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar formulário de relato', 'Remover formulário de relato cadastrado no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar formulário de relato', 'Ativar ou inativar formulário de relato');
-INSERT INTO permissao(nome, descricao) VALUES ('responder relato', 'Responder ao relato conforme o que está assignado');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos relato respondidos', 'Visualizar todas as respostas dos relatos tanto do mentor, quanto da startup');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar resposta do seu relato', 'Visualizar as respostas que fez do seu próprio relato');
-INSERT INTO permissao(nome, descricao) VALUES ('observações no relato', 'Adicionar comentários no relato respondido da startup e do mentor'); 
+INSERT INTO questionario_categoria (id_questionario, id_categoria, quant_quest) VALUES (1, 1, 10);
+INSERT INTO questionario_categoria (id_questionario, id_categoria, quant_quest) VALUES (1, 2, 15);
+INSERT INTO questionario_categoria (id_questionario, id_categoria, quant_quest) VALUES (1, 3, 10);
+INSERT INTO questionario_categoria (id_questionario, id_categoria, quant_quest) VALUES (1, 4, 5);
+INSERT INTO questionario_categoria (id_questionario, id_categoria, quant_quest) VALUES (1, 5, 10);
 
--- Gerenciar Termos
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar termos', 'Adicionar novos termos de uso');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos termos', 'Visualizar todos os termos de uso cadastrados');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar termos', 'Editar termos de uso');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar termos', 'Remover termos de uso');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar termos', 'Ativar ou inativar um termo a ser assinado');
-
--- Gerenciar Perfis de Acesso
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar perfis de acesso', 'Adicionar novos perfis de acesso');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos perfis de acesso', 'Visualizar todos os perfis de acesso cadastrados');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar perfis de acesso', 'Editar perfis de acesso');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar perfis de acesso', 'Remover perfis de acesso');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar perfil de acesso', 'Ativar ou inativar um perfil de acesso');
-
--- Gerenciar Startups
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar startups', 'Cadastrar novas startups no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todas startups', 'Visualizar todas as startups cadastradas no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar startups', 'Editar informações de startups do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar startups', 'Remover startups do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar startups', 'Ativar ou inativar startups no sistema');
-
--- Gerenciar Mentores
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar mentores', 'Cadastrar novos mentores no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos mentores', 'Visualizar todos os mentores cadastrados no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar mentores', 'Editar informações dos mentores do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar mentores', 'Remover mentores do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar mentores', 'Ativar ou inativar mentores no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('aprovar/recusar cadastro novo mentor', 'Aprovar ou recusar um mentor que solicitou o cadastro no sistema');
-
--- Gerenciar Parceiros
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar parceiros', 'Cadastrar novos parceiros no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos parceiros', 'Visualizar todos os parceiros cadastrados no sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar parceiros', 'Editar informações dos parceiros do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar parceiros', 'Remover parceiros do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar parceiros', 'Ativar ou inativar parceiros no sistema');
-
--- Gerenciar Questionários
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar questionários', 'Criar novos questionários');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todos questionários', 'Visualizar todos os questionários cadastrados');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar questionários', 'Editar perguntas e configurações dos questionários');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar questionários', 'Remover questionários do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar questionários', 'Ativar ou inativar questionários para preenchimento');
-INSERT INTO permissao(nome, descricao) VALUES ('responder questionário', 'Responder a questionários conforme o que está destinado ao período da startup');
-
--- Gerenciar Questões
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar questões', 'Cadastrar novas questões');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar todas questões', 'Visualizar todas as questões cadastradas');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar questões', 'Editar enunciados, eixos cernes e configurações das questões');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar questões', 'Remover questões do sistema');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar questões', 'Ativar ou inativar questões para uso em questionários');
-
--- Gerenciar Equipe 
-INSERT INTO permissao(nome, descricao) VALUES ('cadastrar equipe', 'Cadastrar novos membros na equipe');
-INSERT INTO permissao(nome, descricao) VALUES ('visualizar toda equipe', 'Visualizar todos os membros da equipe');
-INSERT INTO permissao(nome, descricao) VALUES ('atualizar equipe', 'Editar informações e cargos dos membros da equipe');
-INSERT INTO permissao(nome, descricao) VALUES ('deletar equipe', 'Remover membros da equipe');
-INSERT INTO permissao(nome, descricao) VALUES ('ativar/inativar equipe', 'Ativar ou inativar acesso de membros da equipe'); 
-
--- perfil permissao
-INSERT INTO perfil_permissao (id_perfil, id_permissao) VALUES (1, 1);
-
--- termo
-INSERT INTO termo (nome, local) VALUES ('Termos de Uso v1', '/docs/termos_v1.pdf');
-
--- usuario termo
-INSERT INTO usuario_termo (id_usuario, id_termo, aceito) VALUES (1, 1, 1);
-
--- questionario startup
-INSERT INTO questionario_startup (id_startup, id_questionario) VALUES (1, 1);
-
--- questionario questão
-INSERT INTO questionario_questao (id_questao, id_questionario) VALUES (1, 1);
-
--- mentoria
+-- Mentoria e Reunião
 INSERT INTO mentoria (id_mentor, id_startup, inici_em, aprovado, status) VALUES (1, 1, '2026-03-01', 1, 1);
+INSERT INTO reuniao (id_mentor, id_startup, assunto, status, inicio, fim, local, observacao) VALUES (1, 1, 'Alinhamento Estratégico', 1, '2026-03-10 14:00:00', '2026-03-10 15:00:00', 'Google Meet', 'Trazer relatório de métricas.');
 
--- reunião
-INSERT INTO reuniao ( id_startup, id_mentor, assunto, status, inicio, fim, local, observacao) VALUES (1, 1, 'Alinhamento Estratégico', 1, '2026-03-10 14:00:00', '2026-03-10 15:00:00', 'Google Meet', 'Trazer relatório de métricas.');
+-- Resposta Questão e Resultado Questionário Categoria
+INSERT INTO respos_questao (id_questao, id_startup, valor) VALUES (1, 1, 4);
+INSERT INTO resul_quest_categoria (id_startup, id_questionario, valor, data) VALUES (1, 1, 85, '2026-03-01');
 
--- resposta questão
-INSERT INTO respos_questao (id_startup, id_questao, valor) VALUES (1, 1, 5);
-
--- resultado da questão por eixo
-INSERT INTO resul_quest_eixo (id_eixo, id_startup, id_questionario, valor, data) VALUES (1, 1, 1, 85, '2026-03-01');
-
+-- Relatos
 INSERT INTO relato (destinatario, pergunta, ativo) VALUES ('startup',
     '[
         {
@@ -768,8 +841,8 @@ INSERT INTO relato (destinatario, pergunta, ativo) VALUES ('mentor',
     1
 );
  
--- respota relato
-INSERT INTO respos_relato(id_reuniao, resposta, emissor,id_relato,id_mentor,id_startup,comentario,visto) VALUES( 1,
+-- Respostas dos Relatos
+INSERT INTO respos_relato (id_reuniao, resposta, emissor, id_relato, id_mentor, id_startup, comentario, visto) VALUES (1,
     '[
         {
             "numero": 1,
@@ -796,9 +869,10 @@ INSERT INTO respos_relato(id_reuniao, resposta, emissor,id_relato,id_mentor,id_s
             "resposta": 5
         }
     ]',
-    'startup', 1, 1, 1, NULL, 0);
+    'startup', 1, 1, NULL, NULL, 0
+);
  
-INSERT INTO respos_relato(id_reuniao,resposta,emissor,id_relato,id_mentor,id_startup,comentario,visto) VALUES(1,
+INSERT INTO respos_relato (id_reuniao, resposta, emissor, id_relato, id_mentor, id_startup, comentario, visto) VALUES (1,
     '[
         {
             "numero": 1,
@@ -832,5 +906,32 @@ INSERT INTO respos_relato(id_reuniao,resposta,emissor,id_relato,id_mentor,id_sta
             "numero": 6,
             "resposta": "A startup demonstra potencial de evolução, mas deve concentrar esforços na validação das hipóteses mais relevantes antes de ampliar investimentos em desenvolvimento e crescimento. Recomenda-se acompanhar a execução dos compromissos definidos na próxima sessão."
         }
-    ]', 'mentor', 2, 1, 1, NULL, 0);
+    ]',
+    'mentor', 2, 1, 1, NULL, 0
+);
 
+-- Anexo
+INSERT INTO anexo (local, id_respos_relato) VALUES ('/anexos/relatorio_mentoria.pdf', 1);
+
+-- =========================VIEWS=================================--
+
+CREATE OR REPLACE VIEW vw_parceiros_detalhes AS
+SELECT
+    p.id,
+    p.id_area_atuacao,
+    p.foto,
+    p.nome,
+    p.cnpj,
+    p.telefone,
+    p.site,
+    p.instagram,
+    p.linkedin,
+    CAST(p.ativo AS UNSIGNED) AS ativo,
+    a.nome AS area_nome,
+    rp.nome AS nome_representante,
+    rp.email AS email_representante,
+    rp.telefone AS telefone_representante,
+    rp.cargo AS cargo_representante
+FROM parceiro p
+INNER JOIN area_atuacao a ON a.id = p.id_area_atuacao
+LEFT JOIN representante_parceiro rp ON rp.id_parceiro = p.id;

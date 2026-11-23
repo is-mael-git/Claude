@@ -1,3 +1,14 @@
 .DS_Store
 aplicativo.php
 .vscode
+
+# Ignorar arquivos uploads de teste
+
+Public/Upload/**/*
+!Public/Upload/**/
+!Public/Upload/**/.gitkeep
+
+# Pastas do postman
+
+.postman
+postman

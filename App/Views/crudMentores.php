@@ -3,6 +3,7 @@ require_once BASE_MODAL;
 include_once BASE_MENU;
 require_once BASE_COMPONENTES . "/adicionarMentor.php";
 require_once BASE_COMPONENTES . "/modalInativar.php";
+require_once BASE_COMPONENTES . "/visualizarMentor.php";
 
 modalInativar("inativar");
 
@@ -68,5 +69,6 @@ if (!empty($salvo)) {
 <script src="<?= BASE_JS ?>Componentes/mascaras.js"></script>
 <script src="<?= BASE_JS ?>Componentes/selectCustomizado.js"></script>
 <script src="<?= BASE_JS ?>Componentes/btnAtivoParceiro.js"></script>
+<script src="<?= BASE_JS ?>Componentes/visualizarMentor.js"></script>
 <script src="<?= BASE_JS ?>crudMentores.js"></script>
 <script src="<?= BASE_JS ?>Componentes/validadorCampos.js"></script>

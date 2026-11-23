@@ -11,12 +11,12 @@ class controllerQuestionario extends controller
 {
     public function index()
     {
-        $eixos = questao::listarEixos();
-        $competencias = questao::listarCompetencias();
+        $categorias = questao::listarCategorias();
+        $subcategorias = questao::listarSubcategorias();
 
         $this->mostrarTela("/questionario", [
-            'eixos' => $eixos,
-            'competencias' => $competencias
+            'categorias' => $categorias,
+            'subcategorias' => $subcategorias
         ]);
     }
 

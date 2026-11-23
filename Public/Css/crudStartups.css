@@ -274,7 +274,7 @@
 .cs-photoError {
   max-width: 230px;
   color: var(--cor-vermelho);
-  font-size: 13px;
+  font-size: var(--crud-font-size-sm);
   font-weight: 600;
   text-align: center;
 }
@@ -293,11 +293,24 @@
   letter-spacing: 0.02em;
 }
 
-.cs-formGroup label.campoObrigatorio.cs-labelComErro::after { content: none; }
+/* Com erro, a mensagem fica dentro do <label> (ver mostrarErroCampoStartup).
+   O flex mantém o "*" logo depois do texto do label e a mensagem depois dele. */
+.cs-formGroup label.cs-labelComErro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.cs-formGroup label.campoObrigatorio.cs-labelComErro::after {
+  order: 1;
+  margin-left: 0.25em;
+}
+
+.cs-formGroup label.cs-labelComErro .cs-erroCampo { order: 2; }
 
 .cs-erroCampo {
   margin-left: 8px;
-  font-size: 13px;
+  font-size: var(--crud-font-size-sm);
   font-weight: 600;
   color: var(--cor-vermelho);
 }
@@ -326,6 +339,12 @@
 .cs-formGroup input:focus,
 .cs-formGroup select:focus {
   outline: none;
+}
+
+/* Preenchido pela ViaCEP: azul claro, como o autopreenchimento do navegador.
+   O JS tira a classe quando a pessoa edita o campo ou muda o CEP. */
+.cs-formGroup input.cs-autopreenchido {
+  background-color: var(--cor-fundo-claro);
 }
 
 /* :focus-visible em vez de :focus — some ao clicar/digitar com o mouse,
@@ -362,38 +381,14 @@
   border-color: var(--cor-borda-placeholder);
 }
 
-/* ── Select wrapper ──────────────────────────────────────────────── */
-.cs-selectWrapper {
-  position: relative;
-}
-
-.cs-selectWrapper select {
-  padding-right: 32px;
-  cursor: pointer;
-}
-
-.cs-selectWrapper::after {
-  content: '';
-  position: absolute;
-  right: 11px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 6px solid var(--cor-fundo-escuro);
-  pointer-events: none;
-}
-
-/* ── Date selects ────────────────────────────────────────────────── */
-.cs-dateRow {
-  display: flex;
-  gap: 6px;
-}
-
-.cs-dateRow .cs-selectWrapper {
-  flex: 1;
+/* Contador da biografia (X/3000) */
+.cs-contador {
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+  font-size: var(--crud-font-size-xs);
+  font-weight: 600;
+  color: var(--cor-placeholder);
 }
 
 /* ── Section title & divider ─────────────────────────────────────── */
@@ -506,27 +501,10 @@
   min-height: 30px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--cor-fundo-escuro);
   padding: 0 4px;
   color: var(--cor-fundo-escuro);
   text-align: left;
   font: inherit;
-  cursor: pointer;
-}
-
-.cs-sectorWrapper.cs-sectorOutroAtivo::after { display: none; }
-.cs-sectorWrapper #sectorOther:not([hidden]) { padding-right: 42px; }
-.cs-sectorBack:not([hidden]) {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  border: 0;
-  background: transparent;
-  color: var(--cor-fundo-escuro);
-  font-size: 22px;
   cursor: pointer;
 }
 
@@ -535,7 +513,8 @@
 }
 
 .cs-founderItem .cs-founderNome:focus-visible {
-  border-bottom-color: var(--cor-borda-placeholder);
+  outline: 2px solid var(--cor-borda-placeholder);
+  outline-offset: 2px;
 }
 
 .cs-founderRemove {
@@ -747,7 +726,7 @@ fieldset {
     width: 13%;
 }
 
-.wrapperTabelaStartups7 {
+.wrapperTabelaStartups6 {
     display: flex;
     gap: 6px;
     align-items: center;

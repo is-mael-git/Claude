@@ -52,16 +52,23 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   }
 
   /* ---------- Contador da biografia ---------- */
-  const textarea = modal.querySelector('.biografiaInput textarea');
-  const contador = modal.querySelector('.qtdCaracter');
-  if (textarea && contador) {
-    const limite = Number(textarea.maxLength) || 500;
-    textarea.addEventListener('input', () => {
-      const qtd = textarea.value.length;
-      contador.textContent = `${qtd}/${limite}`;
-      contador.classList.toggle('limiteAtingido', qtd >= limite);
-    });
-  }
+if (!modal) return;
+
+const textarea = modal.querySelector('.biografiaInput textarea');
+const contador = modal.querySelector('.qtdCaracter');
+
+if (textarea && contador) {
+  const limite = textarea.maxLength > 0 ? textarea.maxLength : 500;
+
+  const atualizarContador = () => {
+    const qtd = textarea.value.length;
+    contador.textContent = `${qtd}/${limite}`;
+    contador.classList.toggle('limiteAtingido', qtd >= limite);
+  };
+
+  textarea.addEventListener('input', atualizarContador);
+  atualizarContador(); // inicializa com o valor atual
+}
 
   /* ---------- Texto do botão dos dropdowns (um único listener) ---------- */
   modal.addEventListener('change', (e) => {
@@ -79,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   });
 
   modal.addEventListener('click', (e) => {
-    const botao = e.target.closest('.dropHorarios .dropDisponibilidade, .dropModalidade .dropDisponibilidade');
+    const botao = e.target.closest('.dropDias .dropDisponibilidade, .dropHorarios .dropDisponibilidade, .dropModalidade .dropDisponibilidade');
     if (!botao) return;
 
     const areaDrop = botao.closest('.areaDrop');
@@ -94,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   });
 
   document.addEventListener('click', (e) => {
-    const areaDropAberta = modal.querySelector('.dropHorarios .areaDrop.aberto, .dropModalidade .areaDrop.aberto');
+    const areaDropAberta = modal.querySelector('.dropDias .areaDrop.aberto, .dropHorarios .areaDrop.aberto, .dropModalidade .areaDrop.aberto');
     if (!areaDropAberta || areaDropAberta.contains(e.target)) return;
 
     areaDropAberta.classList.remove('aberto');
@@ -134,16 +141,16 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   });
 
   const IDS_COMPETENCIAS = {
-    'estrategia': 1,
-    'networking&conexoes': 2,
+    'gestao': 1,
+    'estrategia': 2,
     'produto&tecnologia': 3,
-    'operacoes': 3,
-    'gestao': 4,
-    'juridico&pi': 4,
-    'capital&investimentos': 5,
+    'operacoes': 4,
     'financas': 5,
-    'marketing&vendas': 2,
-    'mercados&clientes': 2,
+    'capital&investimentos': 6,
+    'mercados&clientes': 7,
+    'marketing&vendas': 8,
+    'networking&conexoes': 9,
+    'juridico&pi': 10,
   };
 
   if (!modal.dataset.step) modal.dataset.step = '1';
@@ -270,11 +277,8 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
 
     const ok = Array.from(inputs).some((i) => {
       if (i.type === 'file') {
-        const fotoExistenteCarregada = i === inputFoto
-          && possuiFotoExistente
-          && fotoPerfil?.complete
-          && fotoPerfil.naturalWidth > 0;
-        return i.files?.length > 0 || fotoExistenteCarregada;
+        const temFotoNoBanco = i === inputFoto && possuiFotoExistente;
+        return (i.files?.length > 0) || temFotoNoBanco;
       }
       return i.matches('input[type="checkbox"], input[type="radio"]') ? i.checked : i.value !== '';
     });
@@ -326,19 +330,46 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
     }
 
     // Instagram e LinkedIn: opcionais, mas se preenchidos precisam ser links http(s)
-    if (passo === 1) {
-      [inputInstagram, inputLinkedin].forEach((campo) => {
-        if (!campo) return;
-        const valor = campo.value.trim();
-        if (valor !== '' && !/^https?:\/\/\S+$/i.test(valor)) {
-          mostrarErro(campo, 'O link deve começar com http:// ou https://.');
-          registrarInvalido(campo);
-          valido = false;
-        } else {
-          limparErro(campo);
-        }
-      });
+if (passo === 1) {
+  const regras = [
+    {
+      campo: inputInstagram,
+      regex: /^https?:\/\/(www\.)?instagram\.com\/[A-Za-z0-9._]+\/?(\?.*)?$/i,
+      msg: 'Informe um link válido do Instagram.',
+    },
+    {
+      campo: inputLinkedin,
+      regex: /^https?:\/\/([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[^\s\/?#]+\/?(\?.*)?$/i,
+      msg: 'Informe um link válido do LinkedIn.',
+    },
+  ];
+
+  regras.forEach(({ campo, regex, msg }) => {
+    if (!campo) return;
+    const valor = campo.value.trim();
+    if (valor !== '' && !regex.test(valor)) {
+      mostrarErro(campo, msg);
+      registrarInvalido(campo);
+      valido = false;
+    } else {
+      limparErro(campo);
     }
+  });
+}
+
+function hostPermitido(valor, dominio) {
+  try {
+    const { protocol, hostname } = new URL(valor);
+    return (
+      (protocol === 'http:' || protocol === 'https:') &&
+      (hostname === dominio || hostname.endsWith('.' + dominio))
+    );
+  } catch {
+    return false;
+  }
+}
+
+// uso: hostPermitido(valor, 'instagram.com')
 
     // Grupos: percorre TODOS
     for (const [seletor, msg] of GRUPOS[passo] || []) {
@@ -357,6 +388,11 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
 
   modal.addEventListener('change', (e) => {
     const alvo = e.target;
+
+    if (alvo.name === 'id_parceiro' || alvo.tagName === 'SELECT') {
+      alvo.setCustomValidity?.('');
+      limparErro(alvo);
+    }
 
     if (alvo.matches('input[type="checkbox"], input[type="radio"]')) {
       modal
@@ -455,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   }
 
   function trocarTituloModal(texto) {
-    const titulo = modal.querySelector('.modalTitulo');
+    const titulo = modal.closest('dialog')?.querySelector('.modalTitulo') || document.querySelector('#modalCadastroMentor .modalTitulo');
     const textoTitulo = titulo && Array.from(titulo.childNodes)
       .reverse()
       .find((node) => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== '');
@@ -501,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
       if (campo) campo.value = mentor[nome] ?? '';
     });
     if (inputTelefone) inputTelefone.value = window.Mascara.aplicarEm(inputTelefone.value, 'telefone');
+    modal.querySelector('.biografiaInput textarea')?.dispatchEvent(new Event('input'));
 
     const parceiro = form.querySelector('select[name="id_parceiro"]');
     if (parceiro) {
@@ -561,14 +598,34 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
       window.alert('Erro de conexão ao carregar o mentor.');
     }
   }
+  async function abrirVisualizarMentor(id) {
+    try {
+      const resposta = await fetch(`/ParkTec/mentores/buscar?id=${encodeURIComponent(id)}`);
+      const resultado = await resposta.json();
+      if (!resposta.ok || !resultado.sucesso || !resultado.mentor) {
+        window.alert(resultado.erro || 'Não foi possível carregar esse mentor.');
+        return;
+      }
+
+      window.preencherVisualizacaoMentor?.(resultado.mentor);
+      window.abrirModal('visualizarMentor');
+    } catch (erro) {
+      window.alert('Erro de conexão ao carregar o mentor.');
+    }
+  }
 
   document.addEventListener('click', (evento) => {
     const botaoEditar = evento.target.closest('.botaoEditarMentor');
+    const botaoVisualizar = evento.target.closest('.botaoVisualizarMentor')
     if (botaoEditar) {
       abrirEdicaoMentor(botaoEditar.dataset.id);
       return;
     }
-    if (evento.target.closest('.btnCadastroMentor')) {
+    if(botaoVisualizar){
+      abrirVisualizarMentor(botaoVisualizar.dataset.id);
+      return;
+    }
+    if (evento.target.closest('.btnCadastroMentor, .botaoAddMentor')) {
       resetarFormularioMentor();
     }
   });

@@ -1,15 +1,23 @@
+
 (function () {
     console.log("calendarioAdm.js carregado");
 
     const calendario = document.getElementById("calendario");
-    const mesAno = document.getElementById("mesAno");
+    const mesAno = document.querySelector("h2#mesAno");
+    const quantidadeReuniao = document.getElementById("quantidadeReuniao");
+    const mesReunioesLabel = document.getElementById("mesReunioesLabel");
     const btnAnterior = document.getElementById("anterior");
     const btnProximo = document.getElementById("proximo");
 
-    if (!calendario || !mesAno || !btnAnterior || !btnProximo) {
-        console.error("Calendário: elemento não encontrado no HTML", {
-            calendario, mesAno, btnAnterior, btnProximo
-        });
+    if (
+        !calendario ||
+        !mesAno ||
+        !btnAnterior ||
+        !btnProximo ||
+        !quantidadeReuniao ||
+        !mesReunioesLabel
+    ) {
+        console.error("Calendário: elemento não encontrado no HTML");
         return;
     }
 
@@ -37,13 +45,41 @@
         "2026-10-15": [
             { id: 2, mentor: "Carlos Lima", startup: "FinPay", hora: "10:00" },
             { id: 3, mentor: "Ana Souza", startup: "EduHub", hora: "16:30" }
+        ],
+        "2026-11-08": [
+            { id: 1, mentor: "Ana Souza", startup: "AgroTech", hora: "14:00" }
         ]
     };
 
+    /* =========================================
+       ATUALIZAR CARD DE REUNIÕES
+    ========================================= */
+
+    function atualizarQuantidadeReunioes() {
+
+        const mesSelecionado = String(mes + 1).padStart(2, "0");
+
+        const prefixoMes = `${ano}-${mesSelecionado}-`;
+
+        let totalReunioes = 0;
+
+        Object.entries(reunioes).forEach(([data, lista]) => {
+
+            if (data.startsWith(prefixoMes)) {
+                totalReunioes += lista.length;
+            }
+
+        });
+
+        quantidadeReuniao.textContent = totalReunioes;
+
+        mesReunioesLabel.textContent = `Reuniões em ${meses[mes]}`;
+    }
+
     /* ===================== MODAL ===================== */
 
-    // CSS do modal injetado pelo JS (prefixo rm- para não conflitar com o site)
     const estilo = document.createElement("style");
+
     estilo.textContent = `
         .rm-overlay {
             position: fixed;
@@ -55,6 +91,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .rm-caixa {
             background: #fff;
             color: #000;
@@ -66,6 +103,7 @@
             padding-bottom: 10px;
             font-family: inherit;
         }
+
         .rm-topo {
             display: flex;
             align-items: center;
@@ -75,11 +113,13 @@
             padding: 12px 16px;
             border-radius: 10px 10px 0 0;
         }
+
         .rm-titulo {
             font-size: 16px;
             margin: 0;
             color: var(--cor-branco, #fff);
         }
+
         .rm-fechar {
             background: none;
             border: none;
@@ -88,6 +128,7 @@
             line-height: 1;
             cursor: pointer;
         }
+
         .rm-item {
             display: flex;
             gap: 12px;
@@ -95,6 +136,7 @@
             padding: 12px 16px;
             border-bottom: 1px solid #e5e5e5;
         }
+
         .rm-hora {
             background: #6838d8;
             color: var(--cor-branco, #fff);
@@ -103,6 +145,7 @@
             padding: 4px 8px;
             border-radius: 6px;
         }
+
         .rm-info {
             display: flex;
             flex-direction: column;
@@ -110,6 +153,7 @@
             font-size: 14px;
         }
     `;
+
     document.head.appendChild(estilo);
 
     function escapeHTML(texto) {
@@ -119,7 +163,9 @@
     }
 
     const overlay = document.createElement("div");
+
     overlay.className = "rm-overlay";
+
     overlay.innerHTML = `
         <div class="rm-caixa">
             <div class="rm-topo">
@@ -129,12 +175,14 @@
             <div class="rm-lista"></div>
         </div>
     `;
+
     document.body.appendChild(overlay);
 
     const tituloModal = overlay.querySelector(".rm-titulo");
     const listaModal = overlay.querySelector(".rm-lista");
 
     function abrirModal(chave) {
+
         console.log("Abrindo modal para:", chave);
 
         const lista = reunioes[chave] || [];
@@ -162,13 +210,19 @@
     }
 
     overlay.addEventListener("click", (e) => {
+
         if (e.target === overlay || e.target.closest(".rm-fechar")) {
             fecharModal();
         }
+
     });
 
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") fecharModal();
+
+        if (e.key === "Escape") {
+            fecharModal();
+        }
+
     });
 
     /* ===================== CALENDÁRIO ===================== */
@@ -178,19 +232,25 @@
     }
 
     function criarDia(data, foraDoMes) {
+
         const divDia = document.createElement("div");
+
         divDia.classList.add("dia");
 
         const hoje = new Date();
 
         if (foraDoMes) {
+
             divDia.classList.add("fora-mes");
+
         } else if (
             data.getDate() === hoje.getDate() &&
             data.getMonth() === hoje.getMonth() &&
             data.getFullYear() === hoje.getFullYear()
         ) {
+
             divDia.classList.add("hoje");
+
         }
 
         divDia.innerHTML = `
@@ -199,72 +259,121 @@
         `;
 
         if (!foraDoMes) {
-            const chave = gerarChave(data.getFullYear(), data.getMonth(), data.getDate());
+
+            const chave = gerarChave(
+                data.getFullYear(),
+                data.getMonth(),
+                data.getDate()
+            );
+
             const reunioesDoDia = reunioes[chave] || [];
 
             if (reunioesDoDia.length > 0) {
+
                 divDia.classList.add("com-reuniao");
                 divDia.style.cursor = "pointer";
+
                 divDia.addEventListener("click", () => abrirModal(chave));
 
                 const marca = document.createElement("span");
+
                 marca.classList.add("reuniao-marca");
+
                 marca.textContent = reunioesDoDia.length;
+
                 marca.title = reunioesDoDia
                     .map((r) => `${r.hora} - ${r.mentor} x ${r.startup}`)
                     .join("\n");
 
                 divDia.appendChild(marca);
+
             }
+
         }
 
         return divDia;
     }
 
     function renderizarCalendario() {
+
         calendario.innerHTML = "";
+
         mesAno.textContent = `${meses[mes]} ${ano}`;
 
+        // Atualiza automaticamente o card conforme o mês selecionado.
+        atualizarQuantidadeReunioes();
+
         const ultimoDia = new Date(ano, mes + 1, 0).getDate();
+
         const ultimoDiaMesAnterior = new Date(ano, mes, 0).getDate();
+
         const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
 
         for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
+
             const data = new Date(ano, mes - 1, ultimoDiaMesAnterior - i);
+
             calendario.appendChild(criarDia(data, true));
+
         }
 
         for (let dia = 1; dia <= ultimoDia; dia++) {
-            calendario.appendChild(criarDia(new Date(ano, mes, dia), false));
+
+            calendario.appendChild(
+                criarDia(new Date(ano, mes, dia), false)
+            );
+
         }
 
         const resto = (primeiroDiaSemana + ultimoDia) % 7;
+
         if (resto !== 0) {
+
             for (let dia = 1; dia <= 7 - resto; dia++) {
-                calendario.appendChild(criarDia(new Date(ano, mes + 1, dia), true));
+
+                calendario.appendChild(
+                    criarDia(new Date(ano, mes + 1, dia), true)
+                );
+
             }
+
         }
 
-        calendario.classList.toggle("seis-semanas", primeiroDiaSemana + ultimoDia > 35);
+        calendario.classList.toggle(
+            "seis-semanas",
+            primeiroDiaSemana + ultimoDia > 35
+        );
+
     }
 
+    /* ===================== NAVEGAÇÃO ===================== */
+
     btnProximo.addEventListener("click", () => {
+
         mes++;
+
         if (mes > 11) {
             mes = 0;
             ano++;
         }
+
         renderizarCalendario();
+
     });
 
     btnAnterior.addEventListener("click", () => {
+
         mes--;
+
         if (mes < 0) {
             mes = 11;
             ano--;
         }
+
         renderizarCalendario();
+
     });
 
     renderizarCalendario();
+
 })();

@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </th>
 
                     <th class="itemTabelaCabecalho itemTabelaQuestionario2">
-                        Eixo Cerne
+                        Subcategoria
                     </th>
 
                     <th class="itemTabelaCabecalho itemTabelaQuestionario3">

@@ -1,7 +1,6 @@
 <?php
 use Core\auth;
 require_once BASE_MODAL;
-require_once BASE_COMPONENTES . "adicionarMentor.php";
 ?>
 
 <!DOCTYPE html>
@@ -10,14 +9,15 @@ require_once BASE_COMPONENTES . "adicionarMentor.php";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/Public/Css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>Public/Css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>Public/Css/Componentes/modalSessaoExpirada.css?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <script src="<?= BASE_JS ?>/login.js" defer></script>
+    <script src="<?= BASE_JS ?>login.js" defer></script>
     <script src= "<?=  BASE_JS ?>Componentes/modal.js"></script>
-
+    <link rel="icon" type="image/jpeg" href="<?= BASE_IMGSIS ?>logo1.jpg?v=3">
     <title>ParkTec</title>
 </head>
 
@@ -77,6 +77,8 @@ require_once BASE_COMPONENTES . "adicionarMentor.php";
             </div>
         </form>   
     </main>
+<?php if (!empty($sessaoExpirada)) require BASE_COMPONENTES . "modalSessaoExpirada.php"; ?>
+<?php require_once BASE_COMPONENTES . "adicionarMentor.php"; ?>
 <script src="<?= BASE_JS ?>crudMentores.js"></script>
 </body>
 </html>

@@ -27,17 +27,12 @@ use Controller\controllerMenuLateral;
         </div>
     </button>
     <div class="menuLateralLinhaPerfil"></div>
-    <!-- <div class="menuLateralConfiguracaoPerfil">
-        <button class="menuLateralBotaoConfigPerfil" type="button">
-            <i id="menuLateralImgConfig" class="fa-solid fa-gear"></i>
-            Configurações</button>
-    </div>
-    <div class="menuLateralLinhaPerfil"></div> -->
     <form class="menuLateralConfiguracaoPerfil" action="<?= BASE_URL ?>logout" method="POST">
-        <button class="menuLateralBotaoConfigPerfil" type="submit">
+        <button class="sairMenuLateral" type="submit">
             <i class="menuLateralIconeMenuSair">
                 <?= ControllerMenuLateral::icone('sair') ?>
             </i> Sair
             </button>
     </form>
 </dialog>
+

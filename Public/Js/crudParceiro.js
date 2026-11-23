@@ -1,5 +1,4 @@
 
-document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo());
 const ENDPOINT_BUSCAR_PARCEIRO = '/ParkTec/parceiros/buscar';
 const ACAO_ADICIONAR_PARCEIRO = '/ParkTec/parceiros/adicionar';
 const ACAO_ATUALIZAR_PARCEIRO = '/ParkTec/parceiros/atualizar';
@@ -19,7 +18,7 @@ const CAMPOS_PARCEIRO = {
     idAreaAtuacao: 'id_area_atuacao'
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+function inicializarCrudParceiro() {
 
     const modalParceiro = document.getElementById('modalCadastroParceiro');
     const formParceiro = modalParceiro?.querySelector('form');
@@ -194,12 +193,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    envioFormulario(formParceiro);
+
+    formParceiro.addEventListener('envioSucesso', () => {
+        resetarModalParceiro();
+        if (typeof window.recarregarTabela === 'function') {
+            window.recarregarTabela();
+        }
+    });
+
     // os botões do modal chamam essas duas pelo onclick
     window.avancarParceiro = avancarParceiro;
     window.voltarParceiro = voltarParceiro;
 
     function trocarTituloModal(texto) {
-        const titulo = modalParceiro.querySelector('.modal-titulo');
+        const titulo = modalParceiro.querySelector('.modalTitulo, .modal-titulo');
 
         if (!titulo) {
             return;
@@ -219,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (inputIdParceiro) {
             inputIdParceiro.value = '';
+        }
+
+        if (inputFoto) {
+            inputFoto.value = '';
+            inputFoto.required = true;
         }
 
         formParceiro.action = ACAO_ADICIONAR_PARCEIRO;
@@ -255,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (inputFoto) {
             inputFoto.value = '';
+            inputFoto.required = !parceiro.foto;
         }
 
         mostrarCampoNovaArea(false);
@@ -287,6 +301,126 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const imgVisFoto = document.getElementById('visFotoParceiro');
+    const iconeVisFoto = document.getElementById('visIconeFotoParceiro');
+
+    function normalizarUrl(url) {
+        const limpo = String(url ?? '').trim();
+        if (!limpo) {
+            return '';
+        }
+        return /^https?:\/\//i.test(limpo) ? limpo : `https://${limpo}`;
+    }
+
+    function extrairHandleInstagram(url) {
+        const limpo = String(url ?? '').trim();
+        if (!limpo) {
+            return '';
+        }
+        if (limpo.startsWith('@')) {
+            return limpo;
+        }
+        const match = limpo.match(/instagram\.com\/([^/?#]+)/i);
+        return match?.[1] ? `@${match[1]}` : '';
+    }
+
+    function mostrarFotoVisualizacao(urlFoto) {
+        if (!imgVisFoto || !iconeVisFoto) {
+            return;
+        }
+
+        if (!urlFoto) {
+            imgVisFoto.removeAttribute('src');
+            imgVisFoto.hidden = true;
+            iconeVisFoto.hidden = false;
+            return;
+        }
+
+        imgVisFoto.onerror = () => {
+            imgVisFoto.onerror = null;
+            imgVisFoto.hidden = true;
+            iconeVisFoto.hidden = false;
+        };
+        imgVisFoto.src = urlFoto;
+        imgVisFoto.hidden = false;
+        iconeVisFoto.hidden = true;
+    }
+
+    function definirTexto(id, valor) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = valor ?? '';
+        }
+    }
+
+    function definirLink(id, valor, prefixoHref = '', textoExibicao = '') {
+        const el = document.getElementById(id);
+        if (!el) {
+            return;
+        }
+        const limpo = String(valor ?? '').trim();
+        if (!limpo) {
+            el.textContent = '—';
+            el.removeAttribute('href');
+            return;
+        }
+        const texto = String(textoExibicao ?? '').trim() || limpo;
+        el.textContent = texto;
+        el.href = prefixoHref ? `${prefixoHref}${limpo}` : normalizarUrl(limpo);
+    }
+
+    function preencherVisualizarParceiro(parceiro) {
+        definirTexto('visNomeParceiro', parceiro.nome);
+        definirTexto('visCnpjParceiro', mascaraCnpj(parceiro.cnpj));
+        definirTexto('visTelefoneParceiro', mascaraTelefone(parceiro.telefone));
+        definirTexto('visAreaAtuacaoParceiro', parceiro.area_nome);
+
+        const elStatus = document.getElementById('visStatusParceiro');
+        if (elStatus) {
+            const ativo = Number(parceiro.ativo ?? 1) === 1;
+            elStatus.textContent = ativo ? 'Ativo' : 'Inativo';
+            elStatus.classList.toggle('inativo', !ativo);
+        }
+
+        definirLink('visSiteParceiro', parceiro.site);
+        definirLink(
+            'visInstagramParceiro',
+            parceiro.instagram,
+            '',
+            extrairHandleInstagram(parceiro.instagram)
+        );
+        definirLink(
+            'visLinkedinParceiro',
+            parceiro.linkedin,
+            '',
+            parceiro.linkedin ? (parceiro.nome ?? '') : ''
+        );
+
+        definirTexto('visNomeRepresentanteParceiro', parceiro.nome_representante);
+        definirTexto('visCargoRepresentanteParceiro', parceiro.cargo_representante);
+        definirTexto('visTelefoneRepresentanteParceiro', mascaraTelefone(parceiro.telefone_representante));
+        definirLink('visEmailRepresentanteParceiro', parceiro.email_representante, 'mailto:');
+
+        mostrarFotoVisualizacao(parceiro.foto ? `${UPLOAD_PARCEIROS}${parceiro.foto}` : '');
+    }
+
+    async function abrirVisualizacaoParceiro(id) {
+        try {
+            const resposta = await fetch(`${ENDPOINT_BUSCAR_PARCEIRO}?id=${encodeURIComponent(id)}`);
+            const dados = await resposta.json();
+
+            if (!dados.sucesso || !dados.parceiro) {
+                alert(dados.erro || 'Não foi possível carregar esse parceiro.');
+                return;
+            }
+
+            preencherVisualizarParceiro(dados.parceiro);
+            abrirModal('visualizarParceiro');
+        } catch (erro) {
+            alert('Erro de conexão ao carregar o parceiro.');
+        }
+    }
+
     document.addEventListener('click', (evento) => {
         const botaoEditar = evento.target.closest('.botaoEditarParceiro');
 
@@ -296,9 +430,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const botaoVisualizar = evento.target.closest('.botaoVisualizarParceiro, .botaoVisualizar[data-modal="visualizarParceiro"]');
+
+        if (botaoVisualizar) {
+            abrirVisualizacaoParceiro(botaoVisualizar.dataset.id);
+
+            return;
+        }
+
         if (evento.target.closest('.botaoAddParceiro')) {
             resetarModalParceiro();
         }
     });
 
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarCrudParceiro);
+} else {
+    inicializarCrudParceiro();
+}

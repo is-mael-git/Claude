@@ -42,8 +42,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputEixoAtualizarQuestao =
         document.querySelector(
-            '#idEixoAtualizarQuestao'
+            '#idCategoriaAtualizarQuestao'
         );
+
+    const selectSubcategoriaAtualizarQuestao = document.querySelector('#idSubcategoriaAtualizarQuestao');
+
+    function filtrarSubcategoriasAtualizarQuestao(idSelecionado = '') {
+        const categoria = inputEixoAtualizarQuestao.value;
+        selectSubcategoriaAtualizarQuestao.value = '';
+        selectSubcategoriaAtualizarQuestao.disabled = !categoria;
+        selectSubcategoriaAtualizarQuestao.querySelectorAll('option[data-categoria]').forEach(opcao => {
+            const disponivel = opcao.dataset.categoria === categoria;
+            opcao.hidden = !disponivel;
+            opcao.disabled = !disponivel;
+        });
+        if (idSelecionado) selectSubcategoriaAtualizarQuestao.value = String(idSelecionado);
+    }
 
     const opcoesAtualizarQuestao =
         document.querySelectorAll(
@@ -117,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (textoSelectAtualizarQuestao) {
 
             textoSelectAtualizarQuestao.textContent =
-                nomeEixo || 'Selecione um eixo';
+                nomeEixo || 'Selecione uma categoria';
         }
 
         opcoesAtualizarQuestao.forEach(opcao => {
@@ -170,9 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             selecionarEixoQuestao(
-                questao.id_eixo,
-                questao.eixos
+                questao.id_categoria,
+                questao.categoria
             );
+            filtrarSubcategoriasAtualizarQuestao(questao.id_subcategoria);
 
             atualizarContadorQuestao();
             bloquearCamposAtualizarQuestao();
@@ -248,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     opcao.dataset.value,
                     opcao.dataset.nome
                 );
+                filtrarSubcategoriasAtualizarQuestao();
 
                 selectAtualizarQuestao?.classList.remove(
                     'aberto'
@@ -361,12 +377,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (idEixo === '') {
 
                     alert(
-                        'Selecione um eixo válido.'
+                        'Selecione uma categoria válida.'
                     );
 
                     return;
                 }
 
+                if (!selectSubcategoriaAtualizarQuestao.value) {
+                    alert('Selecione uma subcategoria.');
+                    return;
+                }
                 const dados =
                     new FormData(formAtualizarQuestao);
 

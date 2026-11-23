@@ -10,12 +10,12 @@ class controllerQuestao extends controller
 {
     public function index()
     {
-        $eixos = questao::listarEixos();
-        $competencias = questao::listarCompetencias();
+        $categorias = questao::listarCategorias();
+        $subcategorias = questao::listarSubcategorias();
 
         $this->mostrarTela("/questao", [
-            'eixos' => $eixos,
-            'competencias' => $competencias
+            'categorias' => $categorias,
+            'subcategorias' => $subcategorias
         ]);
     }
 
@@ -58,8 +58,8 @@ class controllerQuestao extends controller
             $_POST['pergunta'] ?? ''
         );
 
-        $idEixo = (int) (
-            $_POST['id_eixo'] ?? 0
+        $idSubcategoria = (int) (
+            $_POST['id_subcategoria'] ?? 0
         );
 
 
@@ -89,13 +89,13 @@ class controllerQuestao extends controller
         }
 
 
-        if ($idEixo <= 0) {
+        if ($idSubcategoria <= 0) {
 
             http_response_code(400);
 
             echo json_encode([
                 'sucesso' => false,
-                'mensagem' => 'Selecione um eixo válido.'
+                'mensagem' => 'Selecione uma subcategoria válida.'
             ], JSON_UNESCAPED_UNICODE);
 
             exit;
@@ -106,7 +106,7 @@ class controllerQuestao extends controller
 
             $idQuestao = questao::cadastrar(
                 $pergunta,
-                $idEixo
+                $idSubcategoria
             );
 
 
@@ -208,8 +208,8 @@ class controllerQuestao extends controller
             $_POST['pergunta'] ?? ''
         );
 
-        $idEixo = (int) (
-            $_POST['id_eixo'] ?? 0
+        $idSubcategoria = (int) (
+            $_POST['id_subcategoria'] ?? 0
         );
 
 
@@ -252,13 +252,13 @@ class controllerQuestao extends controller
         }
 
 
-        if ($idEixo <= 0) {
+        if ($idSubcategoria <= 0) {
 
             http_response_code(400);
 
             echo json_encode([
                 'sucesso' => false,
-                'mensagem' => 'Selecione um eixo válido.'
+                'mensagem' => 'Selecione uma subcategoria válida.'
             ], JSON_UNESCAPED_UNICODE);
 
             exit;
@@ -287,7 +287,7 @@ class controllerQuestao extends controller
             questao::atualizar(
                 $id,
                 $pergunta,
-                $idEixo
+                $idSubcategoria
             );
 
 

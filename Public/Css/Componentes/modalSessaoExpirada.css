@@ -1,0 +1,37 @@
+#modalSessaoExpirada::backdrop {
+    background: rgba(24, 33, 49, 0.68);
+    backdrop-filter: blur(3px);
+}
+
+#modalSessaoExpirada .modalSessaoExpiradaIcone {
+    display: grid;
+    width: 6rem;
+    height: 6rem;
+    align-self: center;
+    margin-inline: auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--cor-fundo-escuro);
+    font-size: 5rem;
+}
+
+#modalSessaoExpirada .modalSessaoExpiradaMensagem {
+    max-width: 30rem;
+    color: var(--cor-fundo-escuro);
+    font-size: clamp(1.4rem, 2.8vw, 1.6rem);
+    font-weight: 650;
+    line-height: 1.45;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    #modalSessaoExpirada .modalSessaoExpiradaIcone {
+        width: 5rem;
+        height: 5rem;
+        font-size: 2.7rem;
+    }
+
+    #modalSessaoExpirada .modalSessaoExpiradaMensagem {
+        font-size: 1.3rem;
+    }
+}

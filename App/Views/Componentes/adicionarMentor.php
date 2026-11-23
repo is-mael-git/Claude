@@ -26,7 +26,6 @@
 
     <input type="hidden" name="id" id="mentorId" value="">
 
-    <p class="subtituloSuperiorInfo">Preencha as informações do mentor.</p>
     <div class="areaCentralCadastro">
 
         <section class="cardDadosPessoais" data-card="1">
@@ -41,8 +40,7 @@
                         </label>
                         <img class="fotoPerfil" src="/ParkTec/Public/Assets/Icones/Vector.svg" alt="Foto de perfil do usuário">
                     </div>
-                    <p class="legendaMidia">Perfil</p>
-                    <span class="msgErro" data-erro-para="mentorFoto"></span>
+                    <p class="legendaMidia">Perfil<span class="asteristico">*</span><span class="msgErro" data-erro-para="mentorFoto"></span></p>
                 </div>
 
                 <div class="bannerContainer">
@@ -54,59 +52,63 @@
                         <img class="fotoBanner" src="<?= BASE_ASSETS ?>Icones/exBanner.svg" alt="Banner do mentor">
                     </div>
                     <p class="legendaMidia">Banner</p>
-                    <span class="msgErro" data-erro-para="banner"></span>
                 </div>
             </div>
 
                 <div class="socialInputs">
-                    <div class="dadoTelefoneMentor">
+                    <div class="cadastroMentorDados">
                         <label class="inputMentorTitulo" for="nome">Nome<span class="asteristico">*</span><span class="msgErro" data-erro-para="nome"></span></label>
                         <input class="inputMentorCadastro" type="text" name="nome" id="nome" placeholder="Nome do Mentor" required>
                     </div>
-                    <div class="dadoInstagramMentor">
+                    <div class="cadastroMentorDados">
                         <label class="inputMentorTitulo" for="email">Email<span class="asteristico">*</span><span class="msgErro" data-erro-para="email"></span></label>
                         <input class="inputMentorCadastro" type="email" name="email" id="email" placeholder="email@exemplo.com" required>
                     </div>
                 </div>
 
 
-            <!-- id parceiros são as empresas cadastradas no sistema, e o mentor pode estar vinculado a uma ou mais empresas. O select abaixo permite selecionar a empresa à qual o mentor está vinculado. (não que esquecer disso) -->
-            <div class="inputWrapperParceiros">
-                <label for="idAreaAtuacao" class="labelAddParceiros inputMentorTituloParceiro">Empresa Parceira<span class="asteristico">*</span><span class="msgErro" data-erro-para="id_parceiro"></span></label>
-                <!-- o selectCustomizado.js troca este select pela lista estilizada -->
-                <div class="wrapperAreaAtuacao">
-                    <!-- sem data-validar-campo: a validação deste campo é feita pelo crudMentores.js -->
-                    <select name="id_parceiro" id="idAreaAtuacao" class="selectCustomizavel" required>
-                        <option value="" selected disabled>Selecione</option>
-                        <?php foreach (($parceiros ?? []) as $parceiro): ?>
-                            <option value="<?= $parceiro['id'] ?>"><?= htmlspecialchars($parceiro['nome']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <input type="text" name="novaAreaAtuacao" id="novaAreaAtuacao" class="inputAddParceiros campoNovaArea" placeholder="Ex.: Tecnologia" data-validar-campo hidden>
-                    <button class="botaoAreaAtuacao" type="button" title="Cadastrar novo parceiro"><i class="fa-solid fa-plus"></i></button>
-                </div>
-            </div>
-
-
             <div class="socialInputs">
-                <div class="dadoTelefoneMentor">
+                
+                <div class="inputWrapperParceiros cadastroMentorDados">
+                    <label for="idAreaAtuacao" class="labelAddParceiros inputMentorTituloParceiro">Empresa Parceira<span class="asteristico">*</span><span class="msgErro" data-erro-para="id_parceiro"></span></label>
+                    <!-- o selectCustomizado.js troca este select pela lista estilizada -->
+                    <div class="wrapperAreaAtuacao">
+                        <!-- sem data-validar-campo: a validação deste campo é feita pelo crudMentores.js -->
+                        <select name="id_parceiro" id="idAreaAtuacao" class="selectCustomizavel" required>
+                            <option value="" selected disabled>Selecione</option>
+                            <?php foreach (($parceiros ?? []) as $parceiro): ?>
+                                <option value="<?= $parceiro['id'] ?>"><?= htmlspecialchars($parceiro['nome']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input type="text" name="novaAreaAtuacao" id="novaAreaAtuacao" class="inputAddParceiros campoNovaArea" placeholder="Ex.: Tecnologia" data-validar-campo hidden>
+                        <button class="botaoAreaAtuacao" type="button" title="Cadastrar novo parceiro"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="cadastroMentorDados">
+                    <label class="inputMentorTitulo" for="linkedin">Linkedin<span class="msgErro" data-erro-para="linkedin"></span></label>
+                    <div class="espacoBtnCurriculo">
+                        <input class="inputMentorCadastroSocial" type="text" name="linkedin" id="linkedin" placeholder="https://www.linkedin.com/in/seu-perfil" maxlength="255">
+                        <label for="">
+                            <input class="botaoAreaAtuacao" accept=".pdf" type="file" id="addCurriculo" title="Adicionar Curriculo"></input>
+                        </label>
+                    </div>
+                </div>
+
+
+                
+            </div>
+            
+            <div class="socialInputs">
+
+                <div class="cadastroMentorDados">
                     <label class="inputMentorTitulo" for="telefone">Telefone<span class="asteristico">*</span><span class="msgErro" data-erro-para="telefone"></span></label>
                     <input class="inputMentorCadastroSocial" type="text" inputmode="numeric" autocomplete="tel" data-mascara="telefone" name="telefone" id="telefone" placeholder="(67) 99999-9999" maxlength="15" required>
                 </div>
-
-                <div class="dadoInstagramMentor">
+                <div class="cadastroMentorDados">
                     <label class="inputMentorTitulo" for="instagram">Instagram<span class="msgErro" data-erro-para="instagram"></span></label>
                     <input class="inputMentorCadastroSocial" type="text" name="instagram" id="instagram" placeholder="https://www.instagram.com/seu-perfil" maxlength="255">
                 </div>
-            </div>
-
-            <div class="socialInputs">
-
-                <div class="dadoLinkedin">
-                    <label class="inputMentorTitulo" for="linkedin">Linkedin<span class="msgErro" data-erro-para="linkedin"></span></label>
-                    <input class="inputMentorCadastroSocial" type="text" name="linkedin" id="linkedin" placeholder="https://www.linkedin.com/in/seu-perfil" maxlength="255">
-                </div>
-
 
             </div>
 
@@ -124,63 +126,63 @@
         <section class="cardDisponibilidade" data-card="2">
             <h2 class="tituloCardMentor">Disponibilidade</h2>
 
-            <p class="inputMentorTitulo">Semana<span class="asteristico">*</span>
-                <span class="msgErro" data-erro-para="semana[]"></span>
-            </p>
-            <div class="selecaoDisponibilidade">
+            <div class="inputsDropdown">
+                <div class="dropDias">
+                    <p class="inputMentorTitulo">Semana<span class="asteristico">*</span><span class="msgErro" data-erro-para="semana[]"></span></p>
 
-                <div class="diasSemana1">
+                    <div class="areaDrop">
+                        <button class="dropDisponibilidade" type="button" aria-expanded="false">
+                            <span class="textoDropDisponibilidade">Selecione</span>
+                            <i class="fa-solid fa-chevron-down setaDropDisponibilidade"></i>
+                        </button>
+                        <div class="dropConteudo">
 
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="segunda" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Segunda-feira</span>
+                            </label>
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="terca" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Terça-feira</span>
+                            </label>
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="quarta" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Quarta-feira</span>
+                            </label>
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="quinta" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Quinta-feira</span>
+                            </label>
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="sexta" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Sexta-feira</span>
+                            </label>
+                            <label class="itemDadoDrop">
+                                <div class="container">
+                                    <input name="semana[]" value="sabado" type="checkbox">
+                                    <div class="checkmark"></div>
+                                </div>
+                                <span class="selecaoItemNome">Sábado</span>
+                            </label>
 
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="segunda" type="checkbox">
-                            <div class="checkmark"></div>
                         </div>
-                        <span class="selecaoItemNome">Segunda-feira</span>
-                    </label>
+                    </div>
 
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="terca" type="checkbox">
-                            <div class="checkmark"></div>
-                        </div>
-                        <span class="selecaoItemNome">Terça-feira</span>
-                    </label>
-
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="quarta" type="checkbox">
-                            <div class="checkmark"></div>
-                        </div>
-                        <span class="selecaoItemNome">Quarta-feira</span>
-                    </label>
-                </div>
-
-                <div class="diasSemana2">
-
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="quinta" type="checkbox">
-                            <div class="checkmark"></div>
-                        </div>
-                        <span class="selecaoItemNome">Quinta-feira</span>
-                    </label>
-
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="sexta" type="checkbox">
-                            <div class="checkmark"></div>
-                        </div>
-                        <span class="selecaoItemNome">Sexta-feira</span>
-                    </label>
-                    <label class="selecaoDia">
-                        <div class="container">
-                            <input name="semana[]" value="sabado" type="checkbox">
-                            <div class="checkmark"></div>
-                        </div>
-                        <span class="selecaoItemNome">Sábado</span>
-                    </label>
                 </div>
 
             </div>

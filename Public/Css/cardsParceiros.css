@@ -8,18 +8,15 @@
 }
 
 
-.areaCardsCards {
+.areaCardsCardParceiro {
     width: 280px;
     height: 380px;
-
     background-color: var(--cor-branco);
     border-radius: 22px;
     overflow: hidden;
     position: relative;
-
     display: flex;
     flex-direction: column;
-
     box-shadow: 0 10px 30px rgba(47, 60, 84, 0.18);
 }
 
@@ -27,15 +24,11 @@
 .areaCardsDadosParceiros {
     width: 100%;
     height: 300px;
-
     background-color: var(--cor-branco);
-
     position: relative;
-
     display: flex;
     flex-direction: column;
     align-items: center;
-
     padding-top: 28px;
     overflow: hidden;
 }
@@ -45,10 +38,8 @@
     position: absolute;
     top: 0;
     left: 0;
-
     width: 100%;
     height: 170px;
-
     background-color: var(--cor-fundo-escuro);
     background-image:
         radial-gradient(circle at 12% 30%, rgba(255, 255, 255, 0.10) 0 2px, transparent 3px),
@@ -57,7 +48,6 @@
         linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 55%);
 
     border-radius: 0 0 50% 50% / 0 0 38px 38px;
-
     z-index: 2;
 }
 
@@ -66,17 +56,13 @@
     position: absolute;
     top: 0;
     left: 0;
-
     width: 100%;
     height: 176px;
-
     background: linear-gradient(90deg,
             var(--cor-rosa),
             var(--cor-amarelo),
             var(--cor-verde));
-
     border-radius: 0 0 50% 50% / 0 0 38px 38px;
-
     z-index: 1;
 }
 
@@ -85,17 +71,13 @@
 .areaCardsParceiroImg {
     width: 124px;
     height: 124px;
-
     background-color: var(--cor-branco);
     border-radius: 28px;
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     position: relative;
     z-index: 5;
-
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.30);
 }
 
@@ -104,11 +86,9 @@
 .areaCardsFoto {
     width: 112px;
     height: 112px;
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     overflow: hidden;
     border-radius: 22px;
 }
@@ -118,7 +98,6 @@
 .areaCardsImgParceiro {
     width: 100%;
     height: 100%;
-
     object-fit: contain;
     padding: 8px;
 }
@@ -127,16 +106,12 @@
 
 .areaCardsNomeParceiro {
     width: 90%;
-
     margin: 34px 0 8px;
-
     color: var(--cor-fundo-escuro);
-
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
     text-align: center;
-
     position: relative;
     z-index: 6;
 }
@@ -153,21 +128,19 @@
     text-align: center;
     position: relative;
     z-index: 6;
+    margin-top: auto;     
+    margin-bottom: 8px;
 }
 
 
 .areaCardsAreaMedia {
     width: 100%;
     height: 80px;
-
     background-color: var(--cor-branco);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     gap: 18px;
-
     position: relative;
     z-index: 10;
 }
@@ -178,11 +151,9 @@
     position: absolute;
     top: 0;
     left: 10%;
-
     width: 80%;
     height: 3px;
     border-radius: 3px;
-
     background: linear-gradient(90deg,
             var(--cor-rosa),
             var(--cor-amarelo),
@@ -193,19 +164,14 @@
 .areaCardsAreaMedia a {
     width: 44px;
     height: 44px;
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     text-decoration: none;
-
     color: var(--cor-fundo-escuro);
     background-color: var(--cor-branco);
-
     border: 1.5px solid var(--cor-fundo-escuro);
     border-radius: 50%;
-
     transition: all 0.25s ease;
 }
 

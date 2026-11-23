@@ -7,13 +7,16 @@ require_once BASE_COMPONENTES . "modalSalvo.php";
 require_once BASE_COMPONENTES . "paginacao.php";
 modalInativar("inativar");
 
+// teto da data de fundação (não pode ser futura)
+$hoje = (new \DateTimeImmutable('today', new \DateTimeZone('America/Cuiaba')))->format('Y-m-d');
+
 ?>
 
 <?php // Modal único de cadastro/edição de Startup em três etapas. ?>
 <?php
 abrirModal(
     'modalCadastroStartup',
-    'Cadastrar Startups',
+    'Cadastrar Startup',
     '',
     '<svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
         <circle cx="12" cy="7" r="4" fill="white" />
@@ -62,14 +65,20 @@ abrirModal(
                                 <img id="previewFotoStartup" src="<?= BASE_ASSETS ?>Icones/Vector.svg" alt="Prévia da foto da startup">
                                 <span class="cs-avatarPlus">+</span>
                             </label>
-                            <span class="cs-photoLabel campoObrigatorio">Adicionar Foto</span>
+                            <span class="cs-photoLabel campoObrigatorio">Adicionar foto</span>
                             <span class="cs-photoError" role="alert" hidden></span>
                         </div>
                     </div>
 
                     <div class="cs-formGroup cs-campoLargo">
-                        <label for="startupName" class="campoObrigatorio">Nome Da Startup</label>
-                        <input type="text" id="startupName" name="startupName" maxlength="100" placeholder="Digite o nome da Startup" autocomplete="organization" required />
+                        <label for="startupName" class="campoObrigatorio">Nome da startup</label>
+                        <input type="text" id="startupName" name="startupName" maxlength="100" placeholder="Digite o nome da startup" autocomplete="organization" required />
+                    </div>
+
+                    <div class="cs-formGroup cs-campoLargo">
+                        <label for="biografia">Biografia</label>
+                        <textarea id="biografia" name="biografia" rows="4" maxlength="3000" placeholder="Conte a história da startup e o que ela faz"></textarea>
+                        <span class="cs-contador" id="biografiaContador" aria-live="polite">0/3000</span>
                     </div>
 
                     <div class="cs-formGroup">
@@ -95,52 +104,26 @@ abrirModal(
 
                     <div class="cs-formGroup"><label for="cep">CEP</label><input type="text" id="cep" name="cep" inputmode="numeric" data-mascara="cep" placeholder="00000-000" /></div>
                     <div class="cs-formGroup"><label for="logradouro" class="campoObrigatorio">Logradouro</label><input type="text" id="logradouro" name="logradouro" maxlength="255" autocomplete="address-line1" required /></div>
-                    <div class="cs-formGroup"><label for="numero" class="campoObrigatorio">Número</label><input type="number" id="numero" name="numero" min="0" value="0" required /></div>
+                    <div class="cs-formGroup"><label for="numero" class="campoObrigatorio">Número</label><input type="number" id="numero" name="numero" min="0" placeholder="Ex.: 123" required /></div>
                     <div class="cs-formGroup"><label for="complemento">Complemento</label><input type="text" id="complemento" name="complemento" autocomplete="address-line2" /></div>
                     <div class="cs-formGroup"><label for="bairro" class="campoObrigatorio">Bairro</label><input type="text" id="bairro" name="bairro" maxlength="255" required /></div>
                     <div class="cs-formGroup"><label for="cidade" class="campoObrigatorio">Cidade</label><input type="text" id="cidade" name="cidade" maxlength="255" autocomplete="address-level2" required /></div>
                     <div class="cs-formGroup"><label for="uf" class="campoObrigatorio">UF</label><input type="text" id="uf" name="uf" maxlength="2" minlength="2" autocomplete="address-level1" required /></div>
 
                     <div class="cs-formGroup">
-                        <label for="programs">Participação em Outros Programas</label>
-                        <input type="text" id="programs" name="programs" maxlength="50" placeholder="Ex.: SEBRAE, Inova MS…" />
+                        <label for="programs">Participação em outros programas</label>
+                        <input type="text" id="programs" name="programs" maxlength="50" placeholder="Ex.: SEBRAE, Inova MS..." />
                     </div>
 
                     <div class="cs-formGroup">
-                        <label for="sector" class="campoObrigatorio">Setor De Atuação</label>
-                        <div class="cs-selectWrapper cs-sectorWrapper">
-                            <select id="sector" name="sector" required>
-                                <option value="">Selecione o setor</option>
-                                <option value="tecnologia">Tecnologia</option>
-                                <option value="saúde">Saúde</option>
-                                <option value="educação">Educação</option>
-                                <option value="financeiro">Financeiro</option>
-                                <option value="agronegócio">Agronegócio</option>
-                                <option value="varejo">Varejo</option>
-                                <option value="logística">Logística</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                            <input type="text" id="sectorOther" name="sectorOther" maxlength="150" placeholder="Digite a área de atuação" aria-label="Outra área de atuação" hidden>
-                            <button type="button" id="sectorOtherBack" class="cs-sectorBack" aria-label="Escolher outro setor" title="Escolher outro setor" hidden>×</button>
-                        </div>
+                        <label for="sector" class="campoObrigatorio">Setor de atuação</label>
+                        <input type="text" id="sector" name="sector" maxlength="150" placeholder="Ex.: Tecnologia, Saúde, Agronegócio" required />
                     </div>
 
                     <div class="cs-formGroup">
-                        <label class="campoObrigatorio">Data De Fundação</label>
-                        <div class="cs-dateRow">
-                            <div class="cs-selectWrapper">
-                                <select id="foundDay" name="foundDay" aria-label="Dia de fundação" required></select>
-                            </div>
-                            <div class="cs-selectWrapper">
-                                <select id="foundMonth" name="foundMonth" aria-label="Mês de fundação" required></select>
-                            </div>
-                            <div class="cs-selectWrapper">
-                                <select id="foundYear" name="foundYear" aria-label="Ano de fundação" required></select>
-                            </div>
-                        </div>
+                        <label for="dataFundacao" class="campoObrigatorio">Data de fundação</label>
+                        <input type="date" id="dataFundacao" name="data_fundacao" max="<?= $hoje ?>" required />
                     </div>
-
-                    <div class="cs-formGroup"><label for="trl" class="campoObrigatorio">TRL</label><select id="trl" name="trl" required><?php for ($nivel = 1; $nivel <= 9; $nivel++): ?><option value="<?= $nivel ?>"><?= $nivel ?></option><?php endfor; ?></select></div>
                 </section>
 
                 <!-- COLUNA 3 - FUNDADORES -->
@@ -164,7 +147,7 @@ abrirModal(
                                 <circle cx="7" cy="7" r="6" stroke="#2F3C54" stroke-width="1.5" />
                                 <path d="M7 4v6M4 7h6" stroke="#2F3C54" stroke-width="1.5" stroke-linecap="round" />
                             </svg>
-                            Adicionar Fundador
+                            Adicionar fundador
                         </button>
                         <span class="cs-founderError erroCampoParceiro" id="founderRequiredError" role="alert" hidden>Adicione pelo menos um fundador.</span>
                     </fieldset>
@@ -204,7 +187,6 @@ abrirModal(
 ?>
 
     <div class="areaDetalheFundador">
-        <p class="cs-subtitle">Preencha os dados do fundador para vinculá-lo à startup.</p>
         <form id="founderForm" class="cs-founderForm">
             <div class="cs-cardTitle"><h2>Dados do Fundador</h2></div>
             <hr class="cs-cardDivider" />
@@ -218,11 +200,6 @@ abrirModal(
                 <input type="text" id="founderCargo" class="cs-founderCargoInput" maxlength="100" placeholder="Ex.: CEO, CTO, Head de Produto..." required>
             </div>
 
-            <div class="cs-formGroup">
-                <label for="founderInicio" class="campoObrigatorio">Data de entrada na startup</label>
-                <input type="date" id="founderInicio" class="cs-founderInicioInput" max="<?= (new \DateTimeImmutable('today', new \DateTimeZone('America/Cuiaba')))->format('Y-m-d') ?>" required>
-            </div>
-
             <div class="cs-founderFormRow">
                 <div class="cs-formGroup">
                     <label for="founderEmail" class="campoObrigatorio">E-mail</label>
@@ -231,7 +208,7 @@ abrirModal(
 
                 <div class="cs-formGroup">
                     <label for="founderTelefone">Telefone</label>
-                    <input type="text" inputmode="numeric" id="founderTelefone" class="cs-founderTelefoneInput" data-mascara="telefone" placeholder="(xx) xxxxx-xxxx">
+                    <input type="text" inputmode="numeric" id="founderTelefone" class="cs-founderTelefoneInput" data-mascara="telefone" placeholder="(00) 00000-0000">
                 </div>
             </div>
 
@@ -258,9 +235,8 @@ abrirModal(
                     <th class="itemTabelaCabecalho itemTabelaStartups2">Setor de Atuação</th>
                     <th class="itemTabelaCabecalho itemTabelaStartups3">CNPJ</th>
                     <th class="itemTabelaCabecalho itemTabelaStartups4">Localização</th>
-                    <th class="itemTabelaCabecalho itemTabelaStartups5">TRL</th>
-                    <th class="itemTabelaCabecalho itemTabelaStartups6">Status</th>
-                    <th class="itemTabelaCabecalho itemTabelaStartups7">Ações</th>
+                    <th class="itemTabelaCabecalho itemTabelaStartups5">Status</th>
+                    <th class="itemTabelaCabecalho itemTabelaStartups6">Ações</th>
                 </tr>
             </thead>
             <tbody class="tabelaCorpo tabelaCorpoStartups">

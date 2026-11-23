@@ -243,9 +243,6 @@
 
 /* AÇÃO */
 
-
-
-
 .admDecisaoBotao {
     display: inline-flex;
 
@@ -279,31 +276,52 @@
     transform: scale(1.05);
 }
 
+
+/* =========================================
+   ESTRUTURA PRINCIPAL DO CALENDÁRIO
+========================================= */
+
 .calendarioAdm {
     width: 50%;
     height: 94%;
+    min-width: 0;
     background-color: var(--cor-fundo-claro);
 }
 
 .agenda {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
 }
 
+/* =========================================
+   CABEÇALHO DO CALENDÁRIO
+========================================= */
+
 .calendario {
-    background: var(--cor-fundo-escuro);
-    width: 100%;
-    color: var(--cor-branco);
-    padding: 10px;
-    display: flex;
-    border-radius: 10px 10px 0px 0px;
-    gap: 30px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    position: relative;
+
+    width: 100%;
+    flex-shrink: 0;
+
+    padding: 10px;
+
+    background: var(--cor-fundo-escuro);
+    color: var(--cor-branco);
+
+    border-radius: 10px 10px 0 0;
 }
 
 .guia-text {
     display: flex;
+    align-items: center;
+
     color: var(--cor-branco);
     font-size: 18px;
     margin-left: 20px;
@@ -311,297 +329,559 @@
 
 .evento-text {
     display: flex;
-    justify-content: center;
     align-items: center;
+
     color: var(--cor-branco);
     gap: 10px;
 }
 
 .evento-text i {
-    color:#6838d8;
+    color: #6838d8;
 }
 
 .navegacao {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
+
+    gap: 8px;
+    white-space: nowrap;
 }
 
-#mesAno {
-    display: flex;
+h2#mesAno {
+    margin: 0;
     font-size: 18px;
     color: var(--cor-branco);
 }
 
-#anterior {
-    cursor: pointer;
+span#mesReunioesLabel {
+    font-size: 13px;
+    color: var(--cor-preto);
 }
 
+#anterior,
 #proximo {
     cursor: pointer;
 }
 
+/* =========================================
+   GRADE DO CALENDÁRIO
+========================================= */
 
 #calendario {
-    display: flex;
-    border: 1.5px solid var(--cor-preto);
-    border-radius: 0px 0px 5px 5px;
-    flex-wrap: wrap;
-    width: 100%;
-    height: 100%;
+    display: grid;
+
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(80px, 1fr);
+
+    flex: 1;
     min-width: 0;
+    min-height: 0;
+
+    width: 100%;
+
+    gap: 5px;
     padding: 5px;
-    column-gap: .4%;
-    row-gap: 5px;
+
     background: var(--cor-fundo-claro);
+
+    border: 1.5px solid var(--cor-preto);
+    border-radius: 0 0 5px 5px;
 }
 
+/* =========================================
+   DIAS
+========================================= */
 
 .dia {
-    background: var(--cor-branco);
-    width: 13.92%;
-    height: 18%;
-    justify-content: space-between;
-    border-radius: 5px;
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
 
     padding: 5px;
 
+    background: var(--cor-branco);
+    border-radius: 5px;
 }
 
 .semana {
     color: var(--cor-preto);
+    font-size: 13px;
 }
 
 .numero {
+    color: var(--cor-preto);
     font-weight: bold;
+    font-size: 14px;
 }
 
 .hoje {
     border: 2px solid var(--cor-fundo-escuro);
 }
+
 .dia.fora-mes {
     opacity: 0.4;
     pointer-events: none;
 }
 
+/* =========================================
+   MARCAÇÃO DE REUNIÕES
+========================================= */
+
 .dia.com-reuniao {
     position: relative;
+    cursor: pointer;
 }
 
 .reuniao-marca {
     position: absolute;
+
     bottom: 4px;
     left: 50%;
+
     transform: translateX(-50%);
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    border-radius: 9px;
-    background: #6838d8;
-    color: var(--cor-branco);
-    font-size: 11px;
-    font-weight: bold;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 5px;
+
+    border-radius: 9px;
+
+    background: #6838d8;
+    color: var(--cor-branco);
+
+    font-size: 11px;
+    font-weight: bold;
+
     cursor: pointer;
 }
 
-#calendario.seis-semanas .dia {
-    height: 15%;
+/* =========================================
+   MESES COM SEIS SEMANAS
+========================================= */
+
+#calendario.seis-semanas {
+    grid-auto-rows: minmax(65px, 1fr);
 }
-/* Responsividade notbook e tablet */
+/* =========================================
+   DESKTOP
+   ACIMA DE 1200PX
+========================================= */
 
+@media screen and (min-width: 1201px) {
 
-@media screen and (max-width: 768px) {
+    .calendarioAdm {
+        width: 50%;
+        height: 94%;
+    }
 
-    .areaTrabalhoAdm {
-        width: 100%;
+    .agenda {
         height: 100%;
     }
 
-    .caixa-maior {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .caixa1-startups-ativas {
-        width: 100%;
-        height: 70px;
-    }
-
-    .caixa-2 {
-        width: 100%;
-    }
-
-    .questionario-btns {
-        flex-direction: column;
-    }
-
-    .btn-q {
-        width: 100%;
-    }
-
-    .linha-adm {
-        min-width: 700px;
-    }
-
-    .linha-separada {
-        overflow-x: auto;
-    }
-
-    .calendario-adm {
-        overflow-x: auto;
+    #calendario {
+        grid-auto-rows: minmax(90px, 1fr);
+        gap: 5px;
     }
 
     .dia {
-        overflow-x: auto;
-        flex-direction: column;
+        padding: 8px;
     }
 
     .semana {
-        overflow-x: auto;
+        font-size: 13px;
     }
+
+    .numero {
+        font-size: 14px;
+    }
+
+    #calendario.seis-semanas {
+        grid-auto-rows: minmax(75px, 1fr);
+    }
+
 }
+/* =========================================
+   NOTEBOOK
+   769PX ATÉ 1200PX
+========================================= */
 
-@media (max-width:1024px) {
-    .areaTrabalhoAdm {
-        Width: 100%;
-        /* height: 100%; */
-        overflow: scroll;
+@media screen and (min-width: 769px) and (max-width: 1200px) {
+
+    .calendarioAdm {
+        width: 50%;
+        height: 94%;
+        min-width: 0;
     }
 
-    .menuLateralFundo {
-        width: 100%;
-        height: 100%;
+    .calendario {
+        padding: 8px;
     }
 
-    .caixa-maior {
-        width: 100%;
-        height: 100%;
-        flex-direction: column;
+    .evento-text {
+        font-size: 14px;
     }
 
-    .caixa1-startups-ativas {
-        width: 100%;
-        min-height: 40%;
+    .navegacao {
+        gap: 5px;
     }
 
-    .questionarios-adm {
-        width: 100%;
-        height: 100%;
-    }
-
-    .caixa-2 {
-        width: 100%;
-        height: 75%;
-        flex-direction: row;
-    }
-
-    .lista-pendencias-adm {
-        width: 100%;
-        height: 108%;
-    }
-
-    .calendario-adm {
-        height: 50%;
-        flex-wrap: wrap;
-
+    h2#mesAno {
+        font-size: 15px;
     }
 
     #calendario {
-        height: 82%;
-        flex-wrap: wrap;
+        gap: 4px;
+        padding: 4px;
+
+        grid-auto-rows: minmax(75px, 1fr);
     }
 
-    .cabecalho-tabela-adm {
-        gap: 5%;
+    .dia {
+        padding: 4px;
+    }
+
+    .semana {
+        font-size: 10px;
+    }
+
+    .numero {
+        font-size: 12px;
+    }
+
+    #calendario.seis-semanas {
+        grid-auto-rows: minmax(60px, 1fr);
+    }
+
+}
+/* =========================================
+   TABLET
+   481PX ATÉ 768PX
+========================================= */
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+
+    .calendarioAdm {
+        width: 100%;
+        height: auto;
+        min-height: 550px;
+    }
+
+    .agenda {
+        height: auto;
+        min-height: 550px;
+    }
+
+    .calendario {
+        grid-template-columns: 1fr auto;
+        padding: 10px;
+    }
+
+    .evento-text {
+        font-size: 14px;
+    }
+
+    .navegacao {
+        gap: 5px;
+    }
+
+    h2#mesAno {
+        font-size: 15px;
+    }
+
+    #calendario {
+        grid-auto-rows: minmax(65px, 1fr);
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .dia {
+        padding: 4px;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .semana {
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .numero {
+        font-size: 12px;
+    }
+
+    .reuniao-marca {
+        bottom: 3px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 10px;
+    }
+
+    #calendario.seis-semanas {
+        grid-auto-rows: minmax(55px, 1fr);
+    }
+
+}
+/* =========================================
+   MOBILE
+   ATÉ 480PX
+========================================= */
+
+@media screen and (max-width: 480px) {
+
+    .calendarioAdm {
+        width: 100%;
+        height: auto;
+        min-height: 0;
     }
 
     .agenda {
         width: 100%;
-        height: 100%;
+        height: auto;
+        min-height: 0;
     }
 
+    /* CABEÇALHO */
+
     .calendario {
-        flex-wrap: wrap;
+        grid-template-columns: 1fr;
+        justify-items: center;
+
+        gap: 8px;
+        padding: 10px 5px;
+    }
+
+    .evento-text {
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .navegacao {
+        gap: 8px;
+    }
+
+    h2#mesAno {
+        font-size: 15px;
+    }
+
+    /* GRADE */
+
+    #calendario {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+
+        grid-auto-rows: minmax(55px, 1fr);
+
+        gap: 3px;
+        padding: 3px;
+
+        flex: none;
+        height: auto;
+    }
+
+    /* DIAS */
+
+    .dia {
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 3px;
+
+        padding: 4px 2px;
+        min-height: 55px;
+    }
+
+    /* ESCONDE NOMES COMPLETOS */
+
+    .semana {
+        display: none;
+    }
+
+    .numero {
+        font-size: 12px;
+    }
+
+    /* MARCAÇÃO */
+
+    .reuniao-marca {
+        bottom: 3px;
+
+        min-width: 15px;
+        height: 15px;
+
+        padding: 0 4px;
+
+        font-size: 9px;
+    }
+
+    #calendario.seis-semanas {
+        grid-auto-rows: minmax(48px, 1fr);
     }
 
 }
 
-@media (max-width:480px) {
-    .areaTrabalhoAdm {
-        Width: 100%;
-        height: 100%;
-        overflow: scroll;
+/* =========================================
+   AJUSTES RESPONSIVOS DO DASHBOARD
+   Mantém o visual original e atua somente
+   nos componentes da área administrativa.
+========================================= */
+
+@media screen and (max-width: 900px) {
+
+    /* Cards: passam de uma linha para duas */
+    .visualizacoesMiniDest {
+        box-sizing: border-box;
+        flex-wrap: wrap;
+        gap: 12px;
     }
 
-    .menuLateralFundo {
-        width: 100%;
-        height: 100%;
+    .cardIndicador {
+        width: calc(50% - 6px);
+        box-sizing: border-box;
     }
 
-    .caixa-maior {
-        width: 100%;
-        height: 100%;
+    /* Tabela e calendário ficam um abaixo do outro */
+    .caixaMaiorAdm {
+        height: auto;
         flex-direction: column;
-    }
-
-    .caixa1-startups-ativas {
-        width: 100%;
-        min-height: 40%;
-    }
-
-    .questionarios-adm {
-        width: 100%;
-        height: 100%;
+        align-items: stretch;
     }
 
     .caixa-2 {
         width: 100%;
-        height: 75%;
-        flex-direction: column;
+        height: auto;
+        min-width: 0;
     }
 
-    .lista-pendencias-adm {
+    .calendarioAdm {
         width: 100%;
-        height: 108%;
+        height: auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+
+    /* Mantém dois cards por linha, sem alterar seu estilo */
+    .visualizacoesMiniDest {
+        padding: 8px;
+        gap: 8px;
     }
 
-    .linha-separada {
-        overflow-x: auto;
-
+    .cardIndicador {
+        width: calc(50% - 4px);
+        padding: 10px;
+        gap: 8px;
     }
 
-    .calendario-adm {
-        height: 50%;
-        flex-wrap: wrap;
-
+    .iconeCard {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        font-size: 18px;
     }
 
-    #calendario {
-        height: 82%;
-        flex-wrap: wrap;
+    .informacaoCardAdm {
+        min-width: 0;
     }
 
-    .cabecalho-tabela-adm {
-        gap: 5%;
+    .informacao-card strong {
+        font-size: 18px;
+        line-height: 20px;
     }
 
-    .agenda {
-        width: 100%;
-        height: 100%;
+    .informacao-card span {
+        font-size: 11px;
     }
 
-    .calendario {
-        flex-wrap: wrap;
+    .informacao-card small {
+        font-size: 10px;
     }
-
 }
 
 
+/* =========================================
+   ROLAGEM VERTICAL NO MOBILE
+   Mantém o dashboard inteiro em uma única
+   área de rolagem, sem scroll interno na tabela.
+========================================= */
+
+@media screen and (max-width: 480px) {
+
+    /* A própria área de trabalho recebe a rolagem vertical. */
+    .areaTrabalhoAdm {
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Evita que os containers internos prendam o conteúdo
+       em alturas fixas e impeçam a rolagem da página. */
+    .espaço-menu-adm {
+        height: auto;
+        min-height: 100%;
+    }
+
+    .caixaMaiorAdm {
+        height: auto;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .caixa-2 {
+        height: auto;
+        min-height: 0;
+    }
+
+    .tabelaCorpoAdm {
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
+    /* A tabela se ajusta à largura disponível e permite
+       quebra de texto, sem criar rolagem horizontal. */
+    .admDecisoesTabela {
+        display: table;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        table-layout: fixed;
+    }
+
+    .admDecisoesTabela th,
+    .admDecisoesTabela td {
+        box-sizing: border-box;
+        padding: 5px 3px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        vertical-align: middle;
+        font-size: 11px;
+    }
+
+    .Adm4 {
+        width: auto;
+    }
+
+    .calendarioAdm {
+        height: auto;
+        min-height: 0;
+    }
+
+    .agenda {
+        height: auto;
+        min-height: 0;
+    }
+}

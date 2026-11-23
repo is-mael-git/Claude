@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* SELETORES — Elementos do DOM */
     const sidebar = document.querySelector('.menuLateral');
-    const opcoesMenu = document.querySelectorAll('.menuLateralCaixaOpcaoMenu');
+    const opcoesMenu = document.querySelectorAll('.menuLateralCaixaOpcaoMenu:not(.menuLateralSubmenuToggle)');
+    const botoesSubmenu = document.querySelectorAll('.menuLateralSubmenuToggle');
     const toggleBtn = document.getElementById('openBtnMenuLateral');
 
     // O seu botão checkbox
@@ -18,24 +19,84 @@ document.addEventListener('DOMContentLoaded', function () {
     // Seleciona automaticamente a label associada ao ID 'burger'
     const labelHamburguer = document.querySelector(`label[for="burger"]`) || document.querySelector('.menuLateralBurger');
 
+    /* Mantém o nav centralizado fechado, sem deslocá-lo se o submenu couber abaixo. */
+    const nav = sidebar.querySelector('.menuLateralNav');
+    const itens = nav ? [...nav.children] : [];
+
+    function ajustarPosicaoNav() {
+        if (!nav) return;
+        const gap = parseFloat(getComputedStyle(nav).rowGap) || 0;
+        const alturaItens = itens.reduce((total, item) =>
+            total + item.getBoundingClientRect().height, gap * Math.max(0, itens.length - 1));
+        const alturaSubmenus = itens.reduce((total, item) => {
+            const submenu = item.querySelector(':scope > .menuLateralSubmenu');
+            return total + (submenu ? submenu.getBoundingClientRect().height : 0);
+        }, 0);
+        const centroFechado = Math.max(0, (nav.clientHeight - (alturaItens - alturaSubmenus)) / 2);
+        const espacoParaExpandir = Math.max(0, nav.clientHeight - alturaItens);
+        const deslocamento = `${Math.min(centroFechado, espacoParaExpandir)}px`;
+        if (nav.style.paddingTop !== deslocamento) nav.style.paddingTop = deslocamento;
+    }
+
+    if (nav) {
+        nav.classList.add('menuLateralNavDinamica');
+        ajustarPosicaoNav();
+        const observador = new ResizeObserver(ajustarPosicaoNav);
+        observador.observe(nav);
+        itens.forEach(item => observador.observe(item));
+        window.addEventListener('resize', ajustarPosicaoNav);
+    }
+
     /* NAVEGAÇÃO — Destaque do item ativo */
     function ativarOpcaoMenu(opcaoClicada) {
         opcoesMenu.forEach(function (opcao) {
             opcao.classList.remove('active');
         });
+        botoesSubmenu.forEach(botao => botao.classList.remove('active'));
         opcaoClicada.classList.add('active');
     }
 
-    opcoesMenu.forEach(function (opcao) {
+    document.querySelectorAll('.menuLateralSubmenuItem[type="button"]').forEach(function (opcao) {
         opcao.addEventListener('click', function () {
             ativarOpcaoMenu(this);
         });
     });
 
+    /* Um submenu por vez; a escolha permanece durante a navegação nesta aba. */
+    const chaveSubmenu = 'menuLateralSubmenuAberto';
+
+    botoesSubmenu.forEach(function (botao) {
+        const submenu = document.getElementById(botao.getAttribute('aria-controls'));
+        submenu.addEventListener('transitionend', ajustarPosicaoNav);
+        botao.addEventListener('click', function () {
+            const menuFechado = sidebar.classList.contains('fechado');
+            const vaiAbrir = menuFechado || this.getAttribute('aria-expanded') !== 'true';
+            if (menuFechado) toggleSidebar();
+            sessionStorage.setItem(chaveSubmenu, vaiAbrir ? submenu.id : '');
+            sincronizarSubmenu(sidebar.classList.contains('fechado'));
+            ajustarPosicaoNav();
+        });
+    });
+
     /* TOGGLE — Expandir / Recolher menu (desktop) */
+    function sincronizarSubmenu(estaFechado) {
+        const idAberto = sessionStorage.getItem(chaveSubmenu);
+        botoesSubmenu.forEach(function (botao) {
+            const submenu = document.getElementById(botao.getAttribute('aria-controls'));
+            const filhoAtivo = !!submenu.querySelector('.menuLateralSubmenuItem.active');
+            // Mantém no máximo um submenu aberto, mesmo quando a página atual está em outro grupo.
+            const aberto = !estaFechado && submenu.id === idAberto;
+            botao.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+            submenu.inert = !aberto;
+            botao.classList.toggle('active', estaFechado && filhoAtivo);
+        });
+    }
+
     function toggleSidebar() {
         sidebar.classList.toggle('fechado');
         var estaFechado = sidebar.classList.contains('fechado');
+        sincronizarSubmenu(estaFechado);
+        ajustarPosicaoNav();
         localStorage.setItem('menuFechado', estaFechado ? 'true' : 'false');
         document.documentElement.classList.toggle('menuLateralEstadoFechado', estaFechado);
     }
@@ -48,10 +109,21 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             document.documentElement.classList.remove('menuLateralEstadoFechado');
         }
+        const salvo = sessionStorage.getItem(chaveSubmenu);
+        if (salvo === null || (salvo !== '' && ![...botoesSubmenu].some(botao => botao.getAttribute('aria-controls') === salvo))) {
+            const ativo = [...botoesSubmenu].find(botao => botao.getAttribute('aria-expanded') === 'true');
+            sessionStorage.setItem(chaveSubmenu, ativo?.getAttribute('aria-controls') || '');
+        }
+        sincronizarSubmenu(sidebar.classList.contains('fechado'));
+        ajustarPosicaoNav();
     }
 
     toggleBtn.addEventListener('click', toggleSidebar);
     restaurarEstadoMenu();
+    const finalizarRestauracao = () => document.documentElement.classList.remove('menuLateralInicializando');
+    requestAnimationFrame(() => requestAnimationFrame(finalizarRestauracao));
+    // Abas em segundo plano podem suspender requestAnimationFrame.
+    setTimeout(finalizarRestauracao, 200);
 
     /* =====================================================
        MENU MOBILE — Hamburger 

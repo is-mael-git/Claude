@@ -20,8 +20,11 @@
 @import url('Componentes/modalSalvo.css');
 @import url('Componentes/validarRelato.css');
 @import url('crudMentores.css');
+@import url('Componentes/visualizarMentor.css');
 @import url('Componentes/Questionario/questionario.css');
 @import url('Componentes/modalMatch.css');
+@import url('Componentes/modalFiltro.css');
+@import url('cardsStaups.css');
 
 
 :root {

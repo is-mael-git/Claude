@@ -1,8 +1,9 @@
 const url = window.location.pathname.split('/')[2];
  
  
-async function buscar(endpoint) {
-    const resposta = await fetch(`/ParkTec/${endpoint}/tabela`);
+async function buscar(endpoint, queryString = '') {
+    const sufixo = queryString ? `?${queryString}` : '';
+    const resposta = await fetch(`/ParkTec/${endpoint}/tabela${sufixo}`);
     const dados = await resposta.json();
     return dados;
 }
@@ -36,9 +37,7 @@ const templateCorpo = {
                     <td class="itemTabelaCorpo itemTabelaParceiros2 conteudoTabelaParceiros2">
                         ${p.area_nome}
                     </td>
-                    <td class="itemTabelaCorpo itemTabelaParceiros3">${mascaraCnpj(p.cnpj)}</td>
-                    <td class="itemTabelaCorpo itemTabelaParceiros4">${p.email_representante}</td>
-                    <td class="itemTabelaCorpo itemTabelaParceiros5">${numeroWhatsapp ? `<a href="https://wa.me/${numeroWhatsapp}" target="_blank" rel="noopener noreferrer" aria-label="Conversar pelo WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>` : '<i class="fa-brands fa-whatsapp"></i>'}${mascaraTelefone(p.telefone)}</td>
+                    <td class="itemTabelaCorpo itemTabelaParceiros3">${mascaraTelefone(p.telefone)}</td>
                     <td class="itemTabelaCorpo itemTabelaParceiros6">
                         <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">${ativo ? 'Ativo' : 'Inativo'}</span>
                     </td>
@@ -56,6 +55,33 @@ const templateCorpo = {
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0 17.876C0 18.423 0.217299 18.9476 0.604092 19.3344C0.990886 19.7212 1.51549 19.9385 2.0625 19.9385H17.1875C17.7345 19.9385 18.2591 19.7212 18.6459 19.3344C19.0327 18.9476 19.25 18.423 19.25 17.876V9.62598C19.25 9.44364 19.1776 9.26877 19.0486 9.13984C18.9197 9.01091 18.7448 8.93848 18.5625 8.93848C18.3802 8.93848 18.2053 9.01091 18.0764 9.13984C17.9474 9.26877 17.875 9.44364 17.875 9.62598V17.876C17.875 18.0583 17.8026 18.2332 17.6736 18.3621C17.5447 18.491 17.3698 18.5635 17.1875 18.5635H2.0625C1.88016 18.5635 1.7053 18.491 1.57636 18.3621C1.44743 18.2332 1.375 18.0583 1.375 17.876V2.75098C1.375 2.56864 1.44743 2.39377 1.57636 2.26484C1.7053 2.13591 1.88016 2.06348 2.0625 2.06348H11C11.1823 2.06348 11.3572 1.99104 11.4861 1.86211C11.6151 1.73318 11.6875 1.55831 11.6875 1.37598C11.6875 1.19364 11.6151 1.01877 11.4861 0.889841C11.3572 0.760909 11.1823 0.688477 11 0.688477H2.0625C1.51549 0.688477 0.990886 0.905775 0.604092 1.29257C0.217299 1.67936 0 2.20397 0 2.75098V17.876Z" fill="#2F3C54"/>
             </svg></i>
                             </button>
+                            <button class="botaoVisualizarParceiro botaoVisualizar"
+                                type="button"
+                                data-id="${p.id}"
+                                data-modal="visualizarParceiro"
+                                aria-label="Visualizar Parceiro"
+                            >
+                                <i>
+                                    <svg
+                                        width="22"
+                                        height="16"
+                                        viewBox="0 0 22 16"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M11 0.5C5.5 0.5 1.25 5.5 0.5 8C1.25 10.5 5.5 15.5 11 15.5C16.5 15.5 20.75 10.5 21.5 8C20.75 5.5 16.5 0.5 11 0.5ZM11 13.5C7.1 13.5 3.9 10.4 2.65 8C3.9 5.6 7.1 2.5 11 2.5C14.9 2.5 18.1 5.6 19.35 8C18.1 10.4 14.9 13.5 11 13.5Z"
+                                            fill="#2F3C54"
+                                        />
+                                        <path
+                                            d="M11 4.5C9.07 4.5 7.5 6.07 7.5 8C7.5 9.93 9.07 11.5 11 11.5C12.93 11.5 14.5 9.93 14.5 8C14.5 6.07 12.93 4.5 11 4.5ZM11 9.5C10.17 9.5 9.5 8.83 9.5 8C9.5 7.17 10.17 6.5 11 6.5C11.83 6.5 12.5 7.17 12.5 8C12.5 8.83 11.83 9.5 11 9.5Z"
+                                            fill="#2F3C54"
+                                        />
+                                    </svg>
+                                </i>
+                            </button>
+                            <a class="botaoAcaoTabela botaoAcaoWhatsapp" href="https://wa.me/${numeroWhatsapp}" target="_blank" rel="noopener noreferrer" aria-label="Conversar pelo WhatsApp"><i><i class="fa-brands fa-whatsapp"></i></i></a>
+                            <a class="botaoAcaoTabela botaoAcaoEmail" href="mailto:${p.email_representante}" target="_blank" rel="noopener noreferrer" aria-label="Enviar pelo E-mail"><i><i class="fa-solid fa-envelope"></i></i></a>
                         </div>
                     </td>
                     </tr>`
@@ -80,12 +106,11 @@ const templateCorpo = {
             <td class="itemTabelaCorpo itemTabelaStartups2">${escaparHtml(setorLabel)}</td>
             <td class="itemTabelaCorpo itemTabelaStartups3">${escaparHtml(mascaraCnpj(s.cnpj))}</td>
             <td class="itemTabelaCorpo itemTabelaStartups4">${escaparHtml(localizacao)}</td>
-            <td class="itemTabelaCorpo itemTabelaStartups5">${escaparHtml(s.trl ?? '—')}</td>
-            <td class="itemTabelaCorpo itemTabelaStartups6">
+            <td class="itemTabelaCorpo itemTabelaStartups5">
                 <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">${ativo ? 'Ativo' : 'Inativo'}</span>
             </td>
-            <td class="itemTabelaCorpo itemTabelaStartups7">
-                <div class="wrapperTabelaStartups7">
+            <td class="itemTabelaCorpo itemTabelaStartups6">
+                <div class="wrapperTabelaStartups6">
                     <div class="btnSwitch">
                         <label class="switch">
                             <input type="checkbox" name="toggle" class="toggle" ${ativo ? 'checked' : ''}>
@@ -106,9 +131,9 @@ const templateCorpo = {
         const ativo = Number(m.ativo) === 1;
         return `                
                 <tr class="linhaTabelaCorpo linhaTabelaCorpoMentores" data-id="${m.id_usuario}">
-                    <td class="itemTabelaCorpo itemTabelaMentores1">${m.nome}</td>
-                    <td class="itemTabelaCorpo itemTabelaMentores2">${m.areas_atuacao}</td>
-                    <td class="itemTabelaCorpo itemTabelaMentores3">${m.email}</td>
+                    <td class="itemTabelaCorpo itemTabelaMentores1">${escaparHtml(m.nome)}</td>
+                    <td class="itemTabelaCorpo itemTabelaMentores2">${escaparHtml(m.areas_atuacao || '—')}</td>
+                    <td class="itemTabelaCorpo itemTabelaMentores3">${escaparHtml(m.email)}</td>
                     <td class="itemTabelaCorpo itemTabelaMentores4">${mascaraTelefone(m.telefone)}</td>
                     <td class="itemTabelaCorpo itemTabelaMentores6">
                         <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">${ativo ? 'Ativo' : 'Inativo'}</span>
@@ -126,6 +151,32 @@ const templateCorpo = {
                 <path d="M19.9402 1.98054C20.0687 2.10941 20.1408 2.28395 20.1408 2.46592C20.1408 2.64788 20.0687 2.82242 19.9402 2.95129L18.5061 4.38679L15.7561 1.63679L17.1902 0.201291C17.3192 0.0724044 17.494 0 17.6763 0C17.8586 0 18.0334 0.0724044 18.1624 0.201291L19.9402 1.97917V1.98054ZM17.534 5.35754L14.784 2.60754L5.4161 11.9768C5.34042 12.0525 5.28345 12.1447 5.24973 12.2463L4.14285 15.5655C4.12278 15.6261 4.11993 15.691 4.13462 15.753C4.14931 15.815 4.18097 15.8718 4.22605 15.9168C4.27113 15.9619 4.32786 15.9936 4.3899 16.0083C4.45194 16.023 4.51684 16.0201 4.57735 16L7.8966 14.8932C7.99803 14.8598 8.0903 14.8033 8.1661 14.7282L17.534 5.35754Z" fill="#2F3C54"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0 17.876C0 18.423 0.217299 18.9476 0.604092 19.3344C0.990886 19.7212 1.51549 19.9385 2.0625 19.9385H17.1875C17.7345 19.9385 18.2591 19.7212 18.6459 19.3344C19.0327 18.9476 19.25 18.423 19.25 17.876V9.62598C19.25 9.44364 19.1776 9.26877 19.0486 9.13984C18.9197 9.01091 18.7448 8.93848 18.5625 8.93848C18.3802 8.93848 18.2053 9.01091 18.0764 9.13984C17.9474 9.26877 17.875 9.44364 17.875 9.62598V17.876C17.875 18.0583 17.8026 18.2332 17.6736 18.3621C17.5447 18.491 17.3698 18.5635 17.1875 18.5635H2.0625C1.88016 18.5635 1.7053 18.491 1.57636 18.3621C1.44743 18.2332 1.375 18.0583 1.375 17.876V2.75098C1.375 2.56864 1.44743 2.39377 1.57636 2.26484C1.7053 2.13591 1.88016 2.06348 2.0625 2.06348H11C11.1823 2.06348 11.3572 1.99104 11.4861 1.86211C11.6151 1.73318 11.6875 1.55831 11.6875 1.37598C11.6875 1.19364 11.6151 1.01877 11.4861 0.889841C11.3572 0.760909 11.1823 0.688477 11 0.688477H2.0625C1.51549 0.688477 0.990886 0.905775 0.604092 1.29257C0.217299 1.67936 0 2.20397 0 2.75098V17.876Z" fill="#2F3C54"/>
             </svg></i>
+                            </button>
+                            <button
+                                class="botaoVisualizarMentor"
+                                type="button"
+                                data-id="${m.id_mentor}"
+                                data-modal="visualizarMentor"
+                                aria-label="Visualizar mentor"
+                            >
+                                <i>
+                                    <svg
+                                        width="22"
+                                        height="16"
+                                        viewBox="0 0 22 16"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M11 0.5C5.5 0.5 1.25 5.5 0.5 8C1.25 10.5 5.5 15.5 11 15.5C16.5 15.5 20.75 10.5 21.5 8C20.75 5.5 16.5 0.5 11 0.5ZM11 13.5C7.1 13.5 3.9 10.4 2.65 8C3.9 5.6 7.1 2.5 11 2.5C14.9 2.5 18.1 5.6 19.35 8C18.1 10.4 14.9 13.5 11 13.5Z"
+                                            fill="#2F3C54"
+                                        />
+                                        <path
+                                            d="M11 4.5C9.07 4.5 7.5 6.07 7.5 8C7.5 9.93 9.07 11.5 11 11.5C12.93 11.5 14.5 9.93 14.5 8C14.5 6.07 12.93 4.5 11 4.5ZM11 9.5C10.17 9.5 9.5 8.83 9.5 8C9.5 7.17 10.17 6.5 11 6.5C11.83 6.5 12.5 7.17 12.5 8C12.5 8.83 11.83 9.5 11 9.5Z"
+                                            fill="#2F3C54"
+                                        />
+                                    </svg>
+                                </i>
                             </button>
                         </div>
                     </td>
@@ -147,7 +198,7 @@ const templateCorpo = {
  
         <td class="itemTabelaCorpo itemTabelaQuestionario3">
             <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">
-                ${ativo ? 'Ativo' : 'Inativo'}
+                <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">${ativo ? 'Ativo' : 'Inativo'}</span>
             </span>
         </td>
  
@@ -234,7 +285,7 @@ const templateCorpo = {
         </td>
 
         <td class="itemTabelaCorpo itemTabelaQuestionario2">
-            ${q.eixos || q.competencia || 'Sem eixo'}
+            ${q.categoria || 'Sem categoria'}
         </td>
 
         <td class="itemTabelaCorpo itemTabelaQuestionario3">
@@ -323,6 +374,77 @@ const templateCorpo = {
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0 17.876C0 18.423 0.217299 18.9476 0.604092 19.3344C0.990886 19.7212 1.51549 19.9385 2.0625 19.9385H17.1875C17.7345 19.9385 18.2591 19.7212 18.6459 19.3344C19.0327 18.9476 19.25 18.423 19.25 17.876V9.62598C19.25 9.44364 19.1776 9.26877 19.0486 9.13984C18.9197 9.01091 18.7448 8.93848 18.5625 8.93848C18.3802 8.93848 18.2053 9.01091 18.0764 9.13984C17.9474 9.26877 17.875 9.44364 17.875 9.62598V17.876C17.875 18.0583 17.8026 18.2332 17.6736 18.3621C17.5447 18.491 17.3698 18.5635 17.1875 18.5635H2.0625C1.88016 18.5635 1.7053 18.491 1.57636 18.3621C1.44743 18.2332 1.375 18.0583 1.375 17.876V2.75098C1.375 2.56864 1.44743 2.39377 1.57636 2.26484C1.7053 2.13591 1.88016 2.06348 2.0625 2.06348H11C11.1823 2.06348 11.3572 1.99104 11.4861 1.86211C11.6151 1.73318 11.6875 1.55831 11.6875 1.37598C11.6875 1.19364 11.6151 1.01877 11.4861 0.889841C11.3572 0.760909 11.1823 0.688477 11 0.688477H2.0625C1.51549 0.688477 0.990886 0.905775 0.604092 1.29257C0.217299 1.67936 0 2.20397 0 2.75098V17.876Z" fill="#2F3C54"/>
             </svg></i></button></div></td>
     </tr>`
+    },
+    'metodologia': (m) => {
+        const ativo = Number(m.ativo) === 1;
+
+        return `
+    <tr class="linhaTabelaCorpo" data-id="${m.id}">
+        <td class="itemTabelaCorpo">
+            <p>${m.nome}</p>
+        </td>
+
+        <td class="itemTabelaCorpo">
+            ${m.minimo}
+            ${m.maximo}
+        </td>
+
+        <td class="itemTabelaCorpo">
+            ${m.categorias}
+        </td>
+
+        <td class="itemTabelaCorpo">
+            <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">
+                ${ativo ? 'Ativo' : 'Inativo'}
+            </span>
+        </td>
+
+        <td class="itemTabelaCorpo">
+            <div class="wrapperTabelaQuestionario">
+
+                <div class="btnSwitch">
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            name="toggle"
+                            class="toggle"
+                            ${ativo ? 'checked' : ''}
+                        >
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <button
+                    class="botaoEditarQuestao botaoEditar abrirModal"
+                    data-modal="modalAtualizarQuestao"
+                    data-id="${m.id}"
+                >
+                    <i>
+                        <svg
+                            width="21"
+                            height="20"
+                            viewBox="0 0 21 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M19.9402 1.98054C20.0687 2.10941 20.1408 2.28395 20.1408 2.46592C20.1408 2.64788 20.0687 2.82242 19.9402 2.95129L18.5061 4.38679L15.7561 1.63679L17.1902 0.201291C17.3192 0.0724044 17.494 0 17.6763 0C17.8586 0 18.0334 0.0724044 18.1624 0.201291L19.9402 1.97917V1.98054ZM17.534 5.35754L14.784 2.60754L5.4161 11.9768C5.34042 12.0525 5.28345 12.1447 5.24973 12.2463L4.14285 15.5655C4.12278 15.6261 4.11993 15.691 4.13462 15.753C4.14931 15.815 4.18097 15.8718 4.22605 15.9168C4.27113 15.9619 4.32786 15.9936 4.3899 16.0083C4.45194 16.023 4.51684 16.0201 4.57735 16L7.8966 14.8932C7.99803 14.8598 8.0903 14.8033 8.1661 14.7282L17.534 5.35754Z"
+                                fill="#2F3C54"
+                            />
+
+                            <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M0 17.876C0 18.423 0.217299 18.9476 0.604092 19.3344C0.990886 19.7212 1.51549 19.9385 2.0625 19.9385H17.1875C17.7345 19.9385 18.2591 19.7212 18.6459 19.3344C19.0327 18.9476 19.25 18.423 19.25 17.876V9.62598C19.25 9.44364 19.1776 9.26877 19.0486 9.13984C18.9197 9.01091 18.7448 8.93848 18.5625 8.93848C18.3802 8.93848 18.2053 9.01091 18.0764 9.13984C17.9474 9.26877 17.875 9.44364 17.875 9.62598V17.876C17.875 18.0583 17.8026 18.2332 17.6736 18.3621C17.5447 18.491 17.3698 18.5635 17.1875 18.5635H2.0625C1.88016 18.5635 1.7053 18.491 1.57636 18.3621C1.44743 18.2332 1.375 18.0583 1.375 17.876V2.75098C1.375 2.56864 1.44743 2.39377 1.57636 2.26484C1.7053 2.13591 1.88016 2.06348 2.0625 2.06348H11C11.1823 2.06348 11.3572 1.99104 11.4861 1.86211C11.6151 1.73318 11.6875 1.55831 11.6875 1.37598C11.6875 1.19364 11.6151 1.01877 11.4861 0.889841C11.3572 0.760909 11.1823 0.688477 11 0.688477H2.0625C1.51549 0.688477 0.990886 0.905775 0.604092 1.29257C0.217299 1.67936 0 2.20397 0 2.75098V17.876Z"
+                                fill="#2F3C54"
+                            />
+                        </svg>
+                    </i>
+                </button>
+
+            </div>
+        </td>
+    </tr>`;
     }
 }
  
@@ -333,11 +455,12 @@ const TEMPLATE_POR_TELA = {
     'questao': templateCorpo.questao,
     'mentores': templateCorpo.mentor,
     'startups': templateCorpo.startup,
-    'equipe': templateCorpo.equipe
+    'equipe': templateCorpo.equipe,
+    'metodologia': templateCorpo.metodologia
 }
  
 function recortarPagina(dados) {
-    if (!temPaginacao) return dados
+    if (!temPaginacao || state.paginacaoServidor) return dados
  
     const inicio = (state.page - 1) * state.perPage
  
@@ -366,11 +489,24 @@ const perPage = QUANTIDADES_POR_PAGINA.includes(quantidadeEscolhida)
     ? quantidadeEscolhida
     : PADRAO_POR_PAGINA
  
+const filtrosIniciais = {
+    orderBy: parametrosUrl.get('orderBy') || "id",
+    direction: parametrosUrl.get('direction') || "DESC"
+}
+parametrosUrl.forEach((valor, chave) => {
+    if (chave !== 'pagina' && chave !== 'quantidade' && chave !== 'orderBy' && chave !== 'direction') {
+        filtrosIniciais[chave] = valor
+    }
+})
+
 const state = {
     page: Number(parametrosUrl.get('pagina')) || 1,
     perPage,
     totalPage: 1,
-    maxVisibleButtons: 5
+    total: 0,
+    paginacaoServidor: false,
+    maxVisibleButtons: 5,
+    filtros: filtrosIniciais
 }
  
 const html = {
@@ -381,15 +517,43 @@ const html = {
  
 const temPaginacao = Boolean(html.get('.paginacao'))
  
- 
+function sincronizarUrl() {
+    const novaUrl = new URL(location.href)
+    novaUrl.search = ''
+
+    if (state.page > 1) {
+        novaUrl.searchParams.set('pagina', state.page)
+    }
+
+    if (state.perPage !== PADRAO_POR_PAGINA) {
+        novaUrl.searchParams.set('quantidade', state.perPage)
+    }
+
+    Object.entries(state.filtros).forEach(([chave, valor]) => {
+        if (chave === 'orderBy') {
+            if (valor && valor !== 'id') novaUrl.searchParams.set('orderBy', valor);
+        } else if (chave === 'direction') {
+            if (valor && valor !== 'DESC') novaUrl.searchParams.set('direction', valor);
+        } else if (valor) {
+            novaUrl.searchParams.set(chave, valor);
+        }
+    })
+
+    window.history.replaceState({}, '', novaUrl)
+}
+
 function irParaPagina(numero) {
     const destino = Math.min(Math.max(1, Number(numero) || 1), state.totalPage)
  
     if (destino === state.page) return
  
-    const url = new URL(location.href)
-    url.searchParams.set('pagina', destino)
-    location.assign(url)
+    state.page = destino
+    if (state.paginacaoServidor) {
+        recarregarTabela()
+        return
+    }
+    sincronizarUrl()
+    update()
 }
  
 const controls = {
@@ -424,14 +588,15 @@ const quantidade = {
         select.value = state.perPage
  
         select.addEventListener('change', () => {
-            const url = new URL(location.href)
- 
-            url.searchParams.set('quantidade', select.value)
- 
-            // a página atual pode nem existir com o novo tamanho
-            url.searchParams.set('pagina', 1)
- 
-            location.assign(url)
+            state.perPage = Number(select.value) || PADRAO_POR_PAGINA
+            state.page = 1
+            if (state.paginacaoServidor) {
+                recarregarTabela()
+                return
+            }
+            state.totalPage = Math.max(1, Math.ceil(state.dados.length / state.perPage))
+            sincronizarUrl()
+            update()
         })
     }
 }
@@ -474,15 +639,14 @@ const buttons = {
         for (let page = maxLeft; page <= maxRight; page++) {
             buttons.create(page, numeros)
         }
-        if (state.page == 1) {
-            html.get('.primeiro')?.classList.add("setasPaginacaoInativo");
-            html.get('.anterior')?.classList.add("setasPaginacaoInativo");
-        }
- 
-        if (state.page == state.totalPage) {
-            html.get('.proximo')?.classList.add("setasPaginacaoInativo");
-            html.get('.ultimo')?.classList.add("setasPaginacaoInativo");
-        }
+        const isPrimeiraPagina = state.page <= 1;
+        const isUltimaPagina = state.page >= state.totalPage;
+
+        html.get('.primeiro')?.classList.toggle("setasPaginacaoInativo", isPrimeiraPagina);
+        html.get('.anterior')?.classList.toggle("setasPaginacaoInativo", isPrimeiraPagina);
+
+        html.get('.proximo')?.classList.toggle("setasPaginacaoInativo", isUltimaPagina);
+        html.get('.ultimo')?.classList.toggle("setasPaginacaoInativo", isUltimaPagina);
     },
     calculateMaxVisible() {
         const { maxVisibleButtons } = state
@@ -513,22 +677,141 @@ function update() {
     buttons.update()
 }
  
+async function recarregarTabela() {
+    if (!TEMPLATE_POR_TELA[url] || !html.get('.tabelaCorpo')) return
+
+    const params = new URLSearchParams()
+    Object.entries(state.filtros).forEach(([chave, valor]) => {
+        if (valor) params.append(chave, valor)
+    })
+
+    if (temPaginacao) {
+        params.append('limit', state.perPage)
+        params.append('offset', (state.page - 1) * state.perPage)
+    }
+
+    const resposta = await buscar(url, params.toString())
+
+    if (Array.isArray(resposta)) {
+        state.paginacaoServidor = false
+        state.dados = resposta
+        state.total = resposta.length
+    } else {
+        state.paginacaoServidor = true
+        state.dados = Array.isArray(resposta?.dados) ? resposta.dados : []
+        state.total = Number(resposta?.total ?? state.dados.length)
+    }
+
+    if (temPaginacao) {
+        state.totalPage = Math.max(1, Math.ceil(state.total / state.perPage))
+        if (state.page > state.totalPage) {
+            state.page = state.totalPage
+            if (state.paginacaoServidor) {
+                return recarregarTabela()
+            }
+        }
+    }
+
+    sincronizarUrl()
+    update()
+}
+
+window.recarregarTabela = recarregarTabela;
+
 (async function init() {
     if (!TEMPLATE_POR_TELA[url] || !html.get('.tabelaCorpo')) return
- 
-    state.dados = await buscar(url)
- 
-    if (temPaginacao) {
-        state.totalPage = Math.max(1, Math.ceil(state.dados.length / state.perPage))
- 
-        state.page = Math.min(Math.max(1, state.page), state.totalPage)
-    }
- 
-    update()
+
+    sincronizarSetasOrdenacao()
+
+    await recarregarTabela()
     controls.createListeners()
     quantidade.montar()
 })()
- 
+
 function valorInput(indice, valor) {
     document.querySelector(indice).setAttribute('value', valor);
 }
+
+/**
+ * Sincroniza a classe .desc dos botões .btnOrdenarTabela apenas para a coluna atualmente ordenada em DESC.
+ *
+ * @return {void}
+ */
+function sincronizarSetasOrdenacao() {
+    document.querySelectorAll('.btnOrdenarTabela').forEach(botao => {
+        const colunaBotao = botao.dataset.coluna
+            || botao.getAttribute('onclick')?.match(/ordenarTabela\(\s*['"]([^'"]+)['"]/)?.[1]
+        const estaDesc = Boolean(
+            colunaBotao
+            && state.filtros.orderBy === colunaBotao
+            && state.filtros.direction === 'DESC'
+        )
+        botao.classList.toggle('desc', estaDesc)
+    })
+}
+
+/**
+ * Alterna a ordenação da tabela por uma determinada coluna (ASC/DESC), atualiza o ícone e recarrega a tabela.
+ * 
+ * @param {string} coluna - Nome da coluna permitida para ordenação no backend (ex: 'nome', 'area_nome').
+ * @param {HTMLElement|null} botao - Botão clicado (.btnOrdenarTabela) para alternar a classe .desc.
+ * @return {void}
+ */
+function ordenarTabela(coluna, botao){
+    if(state.filtros.orderBy === coluna){
+        state.filtros.direction = state.filtros.direction == "ASC" ? "DESC" : "ASC"
+    }
+    else{
+        state.filtros.orderBy = coluna
+        state.filtros.direction = "ASC"
+    }
+    sincronizarSetasOrdenacao()
+    state.page = 1
+    recarregarTabela()
+}
+
+/**
+ * Aplica um valor de filtro a um campo da tabela, reseta para a página 1 e recarrega os dados.
+ * 
+ * @param {string} campo - Nome do parâmetro de filtro (ex: 'area', 'setor', 'status').
+ * @param {string} valor - Valor(es) a filtrar (ex: '1', '1,2,3' ou '').
+ * @return {void}
+ */
+function filtrarTabela(campo, valor){
+    if (valor) {
+        state.filtros[campo] = valor
+    } else {
+        delete state.filtros[campo]
+    }
+    state.page = 1
+    recarregarTabela()
+}
+
+/**
+ * Reseta todos os filtros ativos, remove as setas de ordenação DESC, restaura os modais e recarrega a página 1.
+ * 
+ * @return {void}
+ */
+function limparFiltros(){
+    state.filtros = {
+        orderBy: "id",
+        direction: "DESC"
+    }
+    sincronizarSetasOrdenacao()
+    document.querySelectorAll('.modalFiltroContainer').forEach(modal => {
+        if (typeof window.resetarSelecaoModalFiltro === 'function') {
+            window.resetarSelecaoModalFiltro(modal.id)
+        }
+    })
+    if (typeof window.fecharTodosModaisFiltro === 'function') {
+        window.fecharTodosModaisFiltro()
+    }
+    state.page = 1
+    sincronizarUrl()
+    recarregarTabela()
+}
+
+window.recarregarTabela = recarregarTabela;
+window.ordenarTabela = ordenarTabela;
+window.filtrarTabela = filtrarTabela;
+window.limparFiltros = limparFiltros;

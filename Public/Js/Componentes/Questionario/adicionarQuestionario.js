@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     const contadoresEixoQuestionario = document.querySelectorAll(
-        '.quantidadeEixosQuestionario strong[data-eixo]'
+        '.quantidadeEixosQuestionario strong[data-categoria]'
     );
 
     const nomeQuestionario = document.querySelector(
@@ -203,8 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             questoes.forEach(questao => {
 
-                const idEixo = String(questao.id_eixo);
-                const nomeEixo = questao.eixos || '';
+                const idEixo = String(questao.id_categoria);
+                const nomeEixo = questao.categoria || '';
 
 
                 listaQuestoesQuestionario.insertAdjacentHTML(
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label
                             class="itemQuestaoQuestionario"
                             data-id="${questao.id}"
-                            data-eixo="${escaparHTML(idEixo)}"
+                            data-categoria="${escaparHTML(idEixo)}"
                             data-pesquisa="${escaparHTML(
                                 normalizarTexto(questao.pergunta)
                             )}"
@@ -241,8 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 type="checkbox"
                                 name="questoes[]"
                                 value="${questao.id}"
-                                data-eixo="${escaparHTML(idEixo)}"
-                                data-eixos="${escaparHTML(nomeEixo)}"
+                                data-categoria="${escaparHTML(idEixo)}"
+                                data-nome-categoria="${escaparHTML(nomeEixo)}"
                                 class="checkboxQuestaoQuestionario"
                                 ${questoesSelecionadas.has(String(questao.id)) ? 'checked' : ''}
                             >
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opcao.addEventListener('click', () => {
 
             eixoAtualQuestionario =
-                opcao.dataset.eixo;
+                opcao.dataset.categoria;
 
 
             nomeFiltroQuestionario.textContent =
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mostrar =
                 (
                     eixoAtualQuestionario === 'todos' ||
-                    questao.dataset.eixo === eixoAtualQuestionario
+                    questao.dataset.categoria === eixoAtualQuestionario
                 ) && (
                     buscaAtualQuestionario === '' ||
                     questao.dataset.id === buscaAtualQuestionario ||
@@ -486,12 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const contagem = {};
         selecionadas.forEach(checkbox => {
-            const idEixo = checkbox.dataset.eixo;
+            const idEixo = checkbox.dataset.categoria;
             contagem[idEixo] = (contagem[idEixo] || 0) + 1;
         });
 
         contadoresEixoQuestionario.forEach(contador => {
-            contador.textContent = contagem[contador.dataset.eixo] || 0;
+            contador.textContent = contagem[contador.dataset.categoria] || 0;
         });
 
 
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         nomeFiltroQuestionario.textContent =
-            'Todos os eixos';
+            'Todas as categorias';
 
         if (buscaQuestoesQuestionario) {
 

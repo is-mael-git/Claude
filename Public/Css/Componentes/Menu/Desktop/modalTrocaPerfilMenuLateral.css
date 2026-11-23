@@ -63,7 +63,7 @@
 }
 
 .menuLateralLinhaPerfil {
-    width: 100%;
+    width: 90%;
     border: solid 1px var(--cor-fundo-claro);
     margin-top: -1rem;
 }
@@ -81,18 +81,6 @@
 #menuLateralImgConfig {
     font-size: 18px;
     color: var(--cor-fundo-claro);
-}
-
-.menuLateralBotaoConfigPerfil {
-    border: none;
-    font-size: 1rem;
-    background-color: transparent;
-    color: var(--cor-fundo-claro);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
 }
 
 .menuLateralSair {

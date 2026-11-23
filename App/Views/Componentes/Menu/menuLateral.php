@@ -10,9 +10,11 @@ require_once BASE_MODAL;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ParkTechCG - Sistema de Gestão do Parque Tecnológico de Campo Grande">
-    <title>ParkTechCG — Área de Trabalho</title>
+    <title>ParkTec — Área de Trabalho</title>
     <script>
         (function () {
+            // Não anima a restauração do menu durante a troca de página.
+            document.documentElement.classList.add('menuLateralInicializando');
             try {
                 if (localStorage.getItem('menuFechado') === 'true') {
                     document.documentElement.classList.add('menuLateralEstadoFechado');
@@ -27,6 +29,13 @@ require_once BASE_MODAL;
     <link rel="icon" href="/ParkTec/Public/Assets/ImgSistema/logo1.jpg" type="image/png">
     <script src="/ParkTec/Public/Js/Componentes/menu.js" defer></script>
     <script src="/ParkTec/Public/Js/Componentes/modal.js" defer></script>
+    <script
+        src="<?= BASE_JS ?>atividade.js?v=4"
+        data-endpoint="<?= BASE_URL ?>sessao/renovar"
+        data-login-url="<?= BASE_URL ?>login"
+        data-ttl="<?= \Core\auth::ttlSessaoAtual() ?>"
+        data-session-id="<?= htmlspecialchars(\Core\auth::idSessaoAtual(), ENT_QUOTES, 'UTF-8') ?>"
+        defer></script>
 </head>
 
 <body class="menuLateralFundo">

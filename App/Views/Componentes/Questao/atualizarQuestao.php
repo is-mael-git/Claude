@@ -1,6 +1,6 @@
 <?php
-$eixosAtualizarQuestao =
-    $eixos ?? [];
+$categoriasAtualizarQuestao =
+    $categorias ?? [];
 
 abrirModal(
     'modalAtualizarQuestao',
@@ -76,7 +76,7 @@ abrirModal(
             <div class="campoQuestao">
 
                 <label>
-                    Eixo
+                    Categoria
                 </label>
 
 
@@ -90,7 +90,7 @@ abrirModal(
                         >
 
                             <span class="textoSelectAtualizarQuestao">
-                                Selecione um eixo
+                                Selecione uma categoria
                             </span>
 
                             <span class="setaSelectQuestao" aria-hidden="true"></span>
@@ -100,15 +100,15 @@ abrirModal(
 
                         <div class="opcoesSelectAtualizarQuestao">
 
-                            <?php foreach ($eixosAtualizarQuestao as $eixoAtualizarQuestao): ?>
+                            <?php foreach ($categoriasAtualizarQuestao as $categoriaAtualizarQuestao): ?>
 
                                 <div
                                     class="opcaoSelectAtualizarQuestao"
-                                    data-value="<?= htmlspecialchars((string) $eixoAtualizarQuestao['id_eixo'], ENT_QUOTES, 'UTF-8') ?>"
-                                    data-nome="<?= htmlspecialchars($eixoAtualizarQuestao['nome'], ENT_QUOTES, 'UTF-8') ?>"
+                                    data-value="<?= htmlspecialchars((string) $categoriaAtualizarQuestao['id_categoria'], ENT_QUOTES, 'UTF-8') ?>"
+                                    data-nome="<?= htmlspecialchars($categoriaAtualizarQuestao['nome'], ENT_QUOTES, 'UTF-8') ?>"
                                 >
-                                    <span><?= htmlspecialchars($eixoAtualizarQuestao['nome'], ENT_QUOTES, 'UTF-8') ?></span>
-                                    <span class="competenciasDoEixoQuestao"> — <?= htmlspecialchars($eixoAtualizarQuestao['competencias'] ?: 'Nenhuma competência cadastrada', ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span><?= htmlspecialchars($categoriaAtualizarQuestao['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span class="competenciasDoEixoQuestao"> — <?= htmlspecialchars($categoriaAtualizarQuestao['subcategorias'] ?: 'Nenhuma subcategoria cadastrada', ENT_QUOTES, 'UTF-8') ?></span>
                                 </div>
 
                             <?php endforeach; ?>
@@ -118,8 +118,8 @@ abrirModal(
 
                         <input
                             type="hidden"
-                            name="id_eixo"
-                            id="idEixoAtualizarQuestao"
+                            data-campo="id_categoria"
+                            id="idCategoriaAtualizarQuestao"
                         >
 
                     </div>
@@ -128,6 +128,19 @@ abrirModal(
 
             </div>
 
+
+            <div class="campoQuestao">
+                <label for="idSubcategoriaAtualizarQuestao">Subcategoria</label>
+                <select id="idSubcategoriaAtualizarQuestao" name="id_subcategoria" required disabled>
+                    <option value="">Selecione uma categoria primeiro</option>
+                    <?php foreach (($subcategorias ?? []) as $subcategoria): ?>
+                        <option value="<?= htmlspecialchars((string) $subcategoria['id_subcategoria'], ENT_QUOTES, 'UTF-8') ?>"
+                                data-categoria="<?= htmlspecialchars((string) $subcategoria['id_categoria'], ENT_QUOTES, 'UTF-8') ?>" hidden disabled>
+                            <?= htmlspecialchars($subcategoria['nome'], ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
             <div class="acoesFormQuestao">
 

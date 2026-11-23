@@ -1,0 +1,232 @@
+/* ==========================================================================
+   MODAL / DROPDOWN DE FILTRO DE COLUNA
+   ========================================================================== */
+
+.modalFiltroContainer {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    background-color: var(--cor-branco, #ffffff);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 14px;
+    z-index: 1000;
+    text-align: left;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.modalFiltroContainer.aberto {
+    display: block;
+    animation: modalFiltroFadeIn 150ms ease-out;
+}
+
+@keyframes modalFiltroFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -6px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* Campo de busca (mesmo padrão de arredondamento do pesquisar superior) */
+.modalFiltroBusca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 24px;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modalFiltroBusca:focus-within {
+    border-color: var(--cor-fundo-escuro, #2F3C54);
+    box-shadow: 0 0 0 2px rgba(47, 60, 84, 0.1);
+}
+
+.modalFiltroIconeBusca {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.modalFiltroInputBusca {
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #334155;
+    font-family: inherit;
+}
+
+.modalFiltroInputBusca::placeholder {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* Lista de opções */
+.modalFiltroLista {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 12px 0;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.modalFiltroLista::-webkit-scrollbar {
+    width: 5px;
+}
+
+.modalFiltroLista::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.modalFiltroLista::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 4px;
+}
+
+/* Item da lista */
+.modalFiltroItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.modalFiltroItem:hover {
+    background-color: #f1f5f9;
+}
+
+.modalFiltroItem.oculto {
+    display: none;
+}
+
+.modalFiltroCheckbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--cor-fundo-escuro, #2F3C54);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.modalFiltroRotulo {
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    line-height: 1.2;
+}
+
+/* Rodapé com botões seguindo o padrão btnCancelar e btnSalvar */
+.modalFiltroRodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 6px;
+}
+
+/* Botão Limpar seguindo o design do btnCancelar */
+.modalFiltroBtnLimpar,
+.modalFiltroBtnLimpar.btnCancelar {
+    width: auto;
+    flex: 1;
+    height: 38px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: 2px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-escuro);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: none;
+    transition: 0.2s ease-in;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.modalFiltroBtnLimpar:hover,
+.modalFiltroBtnLimpar.btnCancelar:hover {
+    background-color: var(--cor-vermelho);
+    border-color: var(--cor-vermelho);
+    color: var(--cor-fundo-claro);
+}
+
+/* Botão Aplicar seguindo o design do btnSalvar */
+.modalFiltroBtnAplicar,
+.modalFiltroBtnAplicar.btnSalvar {
+    width: auto;
+    flex: 1;
+    height: 38px;
+    border-radius: 10px;
+    background-color: var(--cor-fundo-escuro);
+    border: 2px solid var(--cor-fundo-escuro);
+    color: var(--cor-fundo-claro);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease-in;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.modalFiltroBtnAplicar:hover,
+.modalFiltroBtnAplicar.btnSalvar:hover {
+    background-color: var(--cor-verde);
+    border-color: var(--cor-verde);
+    color: var(--cor-fundo-claro);
+}
+
+/* Botão acionador no cabeçalho */
+.btnTriggerFiltro {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    padding: 2px;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.btnTriggerFiltro .iconeFiltro,
+.btnTriggerFiltro .setaFiltro {
+    font-size: 0.75rem;
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.btnTriggerFiltro:hover .iconeFiltro,
+.btnTriggerFiltro.aberto .iconeFiltro {
+    opacity: 0.75;
+}
+
+.btnTriggerFiltro.aberto .setaFiltro {
+    transform: rotate(180deg);
+}

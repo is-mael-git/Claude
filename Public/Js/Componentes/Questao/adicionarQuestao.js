@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const erroPerguntaQuestao =
         document.querySelector('#erroPerguntaQuestao');
 
-    const erroEixoQuestao =
-        document.querySelector('#erroEixoQuestao');
+    const erroCategoriaQuestao =
+        document.querySelector('#erroCategoriaQuestao');
 
     const contadorQuestao =
         document.querySelector(
@@ -36,13 +36,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputEixoQuestao =
         document.querySelector(
-            '#idEixoQuestao'
+            '#idCategoriaQuestao'
         );
 
     const opcoesQuestao =
         document.querySelectorAll(
             '.opcaoSelectQuestao'
         );
+
+    const selectSubcategoriaQuestao = document.querySelector('#idSubcategoriaQuestao');
+
+    function filtrarSubcategorias() {
+        const categoria = inputEixoQuestao.value;
+        selectSubcategoriaQuestao.value = '';
+        selectSubcategoriaQuestao.disabled = !categoria;
+        selectSubcategoriaQuestao.querySelectorAll('option[data-categoria]').forEach(opcao => {
+            const disponivel = opcao.dataset.categoria === categoria;
+            opcao.hidden = !disponivel;
+            opcao.disabled = !disponivel;
+        });
+    }
+    inputEixoQuestao.addEventListener('change', filtrarSubcategorias);
 
     const botaoSalvarQuestao =
         document.querySelector(
@@ -86,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formQuestao.reset();
 
         erroPerguntaQuestao.hidden = true;
-        erroEixoQuestao.hidden = true;
+        erroCategoriaQuestao.hidden = true;
 
         if (contadorQuestao) {
             contadorQuestao.textContent =
@@ -95,12 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (textoSelectQuestao) {
             textoSelectQuestao.textContent =
-                'Selecione um eixo';
+                'Selecione uma categoria';
         }
 
         if (inputEixoQuestao) {
-            inputEixoQuestao.value =
-                '';
+            inputEixoQuestao.value = '';
+            filtrarSubcategorias();
         }
 
         opcoesQuestao.forEach(opcao => {
@@ -176,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     opcoesQuestao.forEach(opcao => {
         opcao.addEventListener('click', () => {
-            erroEixoQuestao.hidden = true;
+            erroCategoriaQuestao.hidden = true;
         });
     });
 
@@ -200,9 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         : '';
 
                 erroPerguntaQuestao.hidden = pergunta !== '';
-                erroEixoQuestao.hidden = idEixo !== '';
+                erroCategoriaQuestao.hidden = idEixo !== '';
 
-                if (pergunta === '' || idEixo === '') {
+                if (pergunta === '' || idEixo === '' || !selectSubcategoriaQuestao.value) {
+                    if (idEixo !== '' && !selectSubcategoriaQuestao.value) {
+                        alert('Selecione uma subcategoria.');
+                    }
                     if (pergunta === '') {
                         perguntaQuestao.focus();
                     } else {
@@ -375,8 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 questao => {
 
                     const eixos =
-                        questao.eixos
-                            ? questao.eixos
+                        questao.categoria
+                            ? questao.categoria
                                 .split(',')
                                 .map(
                                     eixo =>
@@ -390,11 +407,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
                     const nomesEixos =
-                        questao.eixos
-                            ? questao.eixos
+                        questao.categoria
+                            ? questao.categoria
                                 .split(',')
                                 .join(' • ')
-                            : 'Sem eixo';
+                            : 'Sem categoria';
 
 
                     const checked =
@@ -410,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div
                                 class="itemGerenciarQuestao"
                                 data-id="${questao.id}"
-                                data-eixos="${eixosTexto}"
+                                data-categoria="${eixosTexto}"
                             >
 
                                 <div class="textoGerenciarQuestao">
@@ -490,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const eixos =
                 (
-                    item.dataset.eixos || ''
+                    item.dataset.categoria || ''
                 )
                     .split(',')
                     .filter(
@@ -537,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
             () => {
 
                 eixoAtual =
-                    opcao.dataset.eixo;
+                    opcao.dataset.categoria;
 
 
                 if (nomeFiltroGerenciarQuestao) {
@@ -611,6 +628,16 @@ document.addEventListener('DOMContentLoaded', () => {
             botaoSimFecharQuestao.textContent = textoBotaoSim;
         }
 
+        function pintarStatusQuestao(status, ativo) {
+            status.textContent = ativo ? 'Ativo' : 'Inativo';
+            status.classList.toggle('statusAtivo', ativo);
+        }
+
+        function desfazerAlteracaoQuestao(alteracao) {
+            alteracao.toggle.checked = !alteracao.ativo;
+            pintarStatusQuestao(alteracao.status, !alteracao.ativo);
+        }
+
         document.addEventListener('change', async event => {
             const toggle = event.target.closest('.tabelaQuestoes .toggle');
             if (!toggle) return;
@@ -650,8 +677,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const lista = nomesQuestionarios.join(', ');
                     modalConfirmacaoFecharQuestao.classList.add('modalQuestaoComVinculos');
                     paragrafoStatusQuestao.textContent = nomesQuestionarios.length === 1
-                        ? `Essa questão está no  ${lista}. Deseja inativar mesmo assim?`
-                        : `Essa questão está nos ${lista}. Deseja inativar mesmo assim?`;
+                        ? `Esta questão está vinculada ao questionário ${lista}. Ao inativar, ela será removida dele. Deseja continuar?`
+                        : `Esta questão está vinculada aos questionários ${lista}. Ao inativar, ela será removida deles. Deseja continuar?`;
                     botaoNaoFecharQuestao.textContent = 'Não';
                     botaoSimFecharQuestao.textContent = 'Sim';
                 } else {
@@ -660,11 +687,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 alteracaoPendente = { toggle, id, status, ativo };
+                pintarStatusQuestao(status, ativo);
                 abrirModal('modalInativar');
             } catch (erro) {
                 alteracaoPendente = null;
                 restaurarModalStatus();
-                toggle.checked = !ativo;
+                desfazerAlteracaoQuestao({ toggle, status, ativo });
                 toggle.disabled = false;
                 alert(erro.message || 'Não foi possível verificar os questionários da questão.');
             }
@@ -698,11 +726,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(dados.mensagem || 'Não foi possível alterar o status da questão.');
                 }
 
-                alteracao.status.textContent = alteracao.ativo ? 'Ativo' : 'Inativo';
-                alteracao.status.classList.toggle('statusAtivo', alteracao.ativo);
-                window.mostrarModalSalvo?.();
+                pintarStatusQuestao(alteracao.status, alteracao.ativo);
+
             } catch (erro) {
-                alteracao.toggle.checked = !alteracao.ativo;
+                desfazerAlteracaoQuestao(alteracao);
                 alert(erro.message || 'Não foi possível alterar o status da questão.');
             } finally {
                 alteracao.toggle.disabled = false;
@@ -711,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modalConfirmacaoFecharQuestao.addEventListener('close', () => {
             if (alteracaoPendente) {
-                alteracaoPendente.toggle.checked = !alteracaoPendente.ativo;
+                desfazerAlteracaoQuestao(alteracaoPendente);
                 alteracaoPendente.toggle.disabled = false;
                 alteracaoPendente = null;
             }

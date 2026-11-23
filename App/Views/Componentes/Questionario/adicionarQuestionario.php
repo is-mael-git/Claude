@@ -55,7 +55,7 @@
                     type="text"
                     id="nomeQuestionario"
                     name="nomeQuestionario"
-                    placeholder="Ex. Avaliação por Eixos"
+                    placeholder="Ex. Avaliação por Categorias"
                     maxlength="100"
                     required>
 
@@ -145,7 +145,7 @@
                         id="botaoFiltroQuestionario">
 
                         <span id="nomeFiltroQuestionario">
-                            Todos os eixos
+                            Todas as categorias
                         </span>
 
                         <svg
@@ -173,16 +173,16 @@
                         <button
                             type="button"
                             class="opcaoFiltroQuestionario"
-                            data-eixo="todos">
-                            Todos os eixos
+                            data-categoria="todos">
+                            Todas as categorias
                         </button>
 
-                        <?php foreach (($eixos ?? []) as $eixo): ?>
+                        <?php foreach (($categorias ?? []) as $categoria): ?>
                             <button
                                 type="button"
                                 class="opcaoFiltroQuestionario"
-                                data-eixo="<?= htmlspecialchars((string) $eixo['id_eixo'], ENT_QUOTES, 'UTF-8') ?>">
-                                <?= htmlspecialchars($eixo['nome'], ENT_QUOTES, 'UTF-8') ?>
+                                data-categoria="<?= htmlspecialchars((string) $categoria['id_categoria'], ENT_QUOTES, 'UTF-8') ?>">
+                                <?= htmlspecialchars($categoria['nome'], ENT_QUOTES, 'UTF-8') ?>
                             </button>
                         <?php endforeach; ?>
 
@@ -196,10 +196,10 @@
             <div class="resumoSelecaoQuestionario">
 
                 <div class="quantidadeEixosQuestionario">
-                    <?php foreach (($eixos ?? []) as $eixo): ?>
+                    <?php foreach (($categorias ?? []) as $categoria): ?>
                         <span>
-                            <?= htmlspecialchars($eixo['nome'], ENT_QUOTES, 'UTF-8') ?>
-                            <strong data-eixo="<?= htmlspecialchars((string) $eixo['id_eixo'], ENT_QUOTES, 'UTF-8') ?>">0</strong>
+                            <?= htmlspecialchars($categoria['nome'], ENT_QUOTES, 'UTF-8') ?>
+                            <strong data-categoria="<?= htmlspecialchars((string) $categoria['id_categoria'], ENT_QUOTES, 'UTF-8') ?>">0</strong>
                         </span>
                     <?php endforeach; ?>
                 </div>

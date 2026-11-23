@@ -34,11 +34,52 @@
         
 
         & .itemTabelaCabecalho {
-
+            position: relative;
             height: 50px;
             color: var(--cor-fundo-claro);
             background-color: var(--cor-fundo-escuro);
+        }
 
+        & .btnOrdenarTabela {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 6px;
+            padding: 2px;
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        & .setaOrdenarTabela {
+            font-size: 0.75rem;
+            transition: transform 200ms ease;
+        }
+
+        & .btnOrdenarTabela.desc .setaOrdenarTabela {
+            transform: rotate(180deg);
+        }
+
+        & .btnLimparFiltros {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 150ms ease, transform 150ms ease;
+        }
+
+        & .btnLimparFiltros:hover {
+            opacity: 0.75;
+            transform: translateY(-50%) scale(1.1);
         }
 
         & th:first-child {
@@ -47,6 +88,7 @@
         }
 
         & th:last-child {
+            position: relative;
             border-bottom-right-radius: 10px;
             border-top-right-radius: 10px;
         }

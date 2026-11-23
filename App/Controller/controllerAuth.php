@@ -9,14 +9,31 @@ use Core\hashSenha;
 use Models\usuario;
 
 class controllerAuth extends controller{
+    public function renovarSessao() : void {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!auth::renovarSessaoPorAtividade()) {
+            http_response_code(401);
+            echo json_encode(['sucesso' => false]);
+            return;
+        }
+
+        echo json_encode(['sucesso' => true]);
+    }
+
     public function loginForm() : void {
         if (auth::checar()) {
             $this->redirecionar('/areaTrabalho/adm');
         }
 
+        $marcadorSessaoAnterior = auth::consumirMarcadorAutenticacaoAnterior();
+        $sessaoExpirada = ($_GET['sessaoExpirada'] ?? '') === '1'
+            || $marcadorSessaoAnterior;
+
         $this->mostrarTela('/login', [
-            'erro'      => auth::pegarFlash('erro'),
-            'sucesso'   => auth::pegarFlash('sucesso')
+            'erro'            => auth::pegarFlash('erro'),
+            'sucesso'         => auth::pegarFlash('sucesso'),
+            'sessaoExpirada'  => $sessaoExpirada
         ]);
     }
 
@@ -41,7 +58,7 @@ class controllerAuth extends controller{
 
         $usuario = usuario::buscarEmail($email);
 
-        if(!$usuario || !$usuario['ativo'] || !hashSenha::verificar($senha, $usuario['senha'])) {
+        if(!$usuario || !hashSenha::verificar($senha, $usuario['senha'])) {
             auth::flash('erro', 'Email ou senha inválidos');
             $this->redirecionar('/login');
         }

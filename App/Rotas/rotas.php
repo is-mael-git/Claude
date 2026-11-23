@@ -50,6 +50,7 @@ $router->adicionar("POST", "/mentores/atualizar", "controllerCrudMentores@atuali
 $router->adicionar("GET", "/mentores/buscar", "controllerCrudMentores@buscar");
 $router->adicionar("GET", "/mentores/tabela", "controllerCrudMentores@listar");
 $router->adicionar("POST", "/mentores/status", "controllerCrudMentores@status");
+$router->adicionar("POST", "/mentores/visualizar", "controllerCrudMentores@visualizar");
 
 
 //rotas crud startups
@@ -61,6 +62,7 @@ $router->adicionar("GET", "/startups/buscar", "controllerStartups@buscar");
 $router->adicionar("POST", "/startups/validar-campo", "controllerStartups@validarCampo");
 $router->adicionar("POST", "/startups/atualizar", "controllerStartups@atualizar");
 $router->adicionar("POST", "/startups/status", "controllerStartups@status");
+$router->adicionar("GET", "/startups/cards", "controllerStartups@cardStartup");
 
 
 //rotas area trabalho adm
@@ -96,6 +98,7 @@ $router->adicionar("GET", "/componentes/botao", "controllerTesteComponentes@bota
 $router->adicionar('GET', '/', 'controllerAuth@loginForm');
 $router->adicionar('GET', '/login', 'controllerAuth@loginForm');
 $router->adicionar('POST', '/login', 'controllerAuth@login');
+$router->adicionar('POST', '/sessao/renovar', 'controllerAuth@renovarSessao');
 $router->adicionar('POST', '/logout', 'controllerAuth@logout');
 
 //rotas Questionario
@@ -120,3 +123,7 @@ $router->adicionar("POST", "/questao/status", "controllerQuestao@alterarStatus")
 
 $router->adicionar("GET", "/areaTrabalho/adm/mentoria", "controllerAreaTrabalhoAdm@buscarMentoria");
 $router->adicionar("POST", "/areaTrabalho/adm/mentoria/aprovar", "controllerAreaTrabalhoAdm@aprovarMentoria");
+
+//rota metodologia
+$router->adicionar("GET", "/metodologia/index", "controllerMetodologia@index");
+$router->adicionar("GET", "/metodologia/tabela", "controllerMetodologia@listar");

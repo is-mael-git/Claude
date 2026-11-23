@@ -94,19 +94,34 @@ class controllerMenuLateral extends model
                     </svg>
             SVG,
 
+            'listaMentores' => <<<SVG
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 1H1V3H3V1Z" fill="currentColor"/>
+                <path d="M3 5H1V7H3V5Z" fill="currentColor"/>
+                <path d="M1 9H3V11H1V9Z" fill="currentColor"/>
+                <path d="M3 13H1V15H3V13Z" fill="currentColor"/>
+                <path d="M15 1H5V3H15V1Z" fill="currentColor"/>
+                <path d="M15 5H5V7H15V5Z" fill="currentColor"/>
+                <path d="M5 9H15V11H5V9Z" fill="currentColor"/>
+                <path d="M15 13H5V15H15V13Z" fill="currentColor"/>
+            </svg>
+            SVG,
+
+            'mentorias' => <<<SVG
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-8zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-11z" fill="#E6EFFF"/>
+            </svg>
+            SVG,
+
             'btnMenu' => <<<SVG
             <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M8.07136 8.07136C8.46189 7.68084 8.46189 7.04768 8.07136 6.65715L1.7074 0.29319C1.31688 -0.0973344 0.683714 -0.0973344 0.29319 0.29319C-0.0973344 0.683714 -0.0973344 1.31688 0.29319 1.7074L5.95004 7.36426L0.29319 13.0211C-0.0973344 13.4116 -0.0973344 14.0448 0.29319 14.4353C0.683714 14.8259 1.31688 14.8259 1.7074 14.4353L8.07136 8.07136ZM6.36426 7.36426V8.36426L7.36426 8.36426V7.36426V6.36426L6.36426 6.36426V7.36426Z"
-                        fill="#2F3C54" />
+                        fill="currentColor" />
                     <path
                         d="M16.0714 8.07136C16.4619 7.68084 16.4619 7.04768 16.0714 6.65715L9.7074 0.29319C9.31688 -0.0973344 8.68371 -0.0973344 8.29319 0.29319C7.90267 0.683714 7.90267 1.31688 8.29319 1.7074L13.95 7.36426L8.29319 13.0211C7.90267 13.4116 7.90267 14.0448 8.29319 14.4353C8.68371 14.8259 9.31688 14.8259 9.7074 14.4353L16.0714 8.07136ZM14.3643 7.36426V8.36426L15.3643 8.36426V7.36426V6.36426L14.3643 6.36426V7.36426Z"
-                        fill="#2F3C54" />
+                        fill="currentColor" />
                 </svg>
-                        <path
-                            d="M13.2855 5.655V10.3433C13.2855 10.7315 13.2089 11.1159 13.0599 11.4744C12.911 11.8329 12.6928 12.1585 12.4177 12.4324C12.1426 12.7063 11.8162 12.9233 11.4571 13.0707C11.098 13.2182 10.7133 13.2933 10.3251 13.2917H5.66092C5.27377 13.294 4.89014 13.2182 4.53301 13.0687C4.17588 12.9192 3.85261 12.6991 3.58259 12.4217C3.30844 12.1498 3.09133 11.8259 2.94401 11.469C2.79669 11.1121 2.72212 10.7294 2.72467 10.3433V5.66708C2.72467 4.88723 3.03363 4.13913 3.58394 3.58656C4.13425 3.03398 4.88107 2.72195 5.66092 2.71875H10.3372C10.7239 2.71912 11.1067 2.79621 11.4635 2.94554C11.8202 3.09488 12.1438 3.3135 12.4155 3.58875C12.6904 3.85819 12.9089 4.17965 13.0583 4.5344C13.2076 4.88915 13.2849 5.27009 13.2855 5.655ZM26.2751 5.66708V10.3433C26.2688 11.1213 25.9578 11.8657 25.4089 12.4169C24.8599 12.9682 24.1167 13.2822 23.3388 13.2917H18.6505C17.869 13.2869 17.1197 12.9794 16.5601 12.4338C16.2867 12.1588 16.0701 11.8327 15.9229 11.474C15.7757 11.1153 15.7007 10.7311 15.7022 10.3433V5.66708C15.7012 5.28014 15.7777 4.89691 15.9271 4.53997C16.0765 4.18304 16.2958 3.85961 16.5722 3.58875C16.8439 3.3135 17.1674 3.09488 17.5242 2.94554C17.8809 2.79621 18.2638 2.71912 18.6505 2.71875H23.3268C24.1068 2.72507 24.853 3.03772 25.4046 3.58928C25.9561 4.14083 26.2688 4.88709 26.2751 5.66708ZM26.2751 18.6567V23.3329C26.2688 24.1108 25.9578 24.8553 25.4089 25.4065C24.8599 25.9577 24.1167 26.2718 23.3388 26.2813H18.6505C17.864 26.2892 17.1054 25.9901 16.5359 25.4475C16.2614 25.1734 16.0442 24.8474 15.8969 24.4885C15.7496 24.1296 15.6752 23.745 15.678 23.3571V18.6808C15.677 18.2939 15.7535 17.9107 15.9029 17.5537C16.0523 17.1968 16.2717 16.8734 16.548 16.6025C16.8197 16.3273 17.1433 16.1086 17.5 15.9593C17.8568 15.81 18.2396 15.7329 18.6263 15.7325H23.3026C24.0826 15.7388 24.8288 16.0515 25.3804 16.603C25.932 17.1546 26.2446 17.9008 26.2509 18.6808L26.2751 18.6567ZM13.2855 18.6688V23.345C13.276 24.125 12.9603 24.87 12.4065 25.4192C11.8527 25.9685 11.1051 26.2781 10.3251 26.2813H5.66092C5.27488 26.2829 4.89234 26.208 4.53538 26.061C4.17842 25.914 3.85409 25.6978 3.58112 25.4248C3.30814 25.1518 3.09192 24.8275 2.94493 24.4705C2.79793 24.1136 2.72307 23.731 2.72467 23.345V18.6688C2.72779 17.8887 3.03738 17.1412 3.58668 16.5874C4.13598 16.0336 4.88095 15.7178 5.66092 15.7083H10.3372C11.1204 15.7163 11.8699 16.0283 12.4276 16.5783C12.9787 17.1343 13.2872 17.8859 13.2855 18.6688Z"
-                            fill="white" />
-                    </svg>
             SVG,
 
             'sair' => <<<SVG
@@ -162,7 +177,7 @@ class controllerMenuLateral extends model
             'svg' => self::icone('areaTrabalho')
         ];
 
-        if (str_contains($paginaAtual, 'parceiros/index')) {
+        if (str_contains($paginaAtual, 'parceiros/')) {
 
             $menuInfo['titulo'] = 'Parceiros';
             $menuInfo['svg'] = self::icone('parceiros');
@@ -178,7 +193,20 @@ class controllerMenuLateral extends model
 
             $menuInfo['titulo'] = 'Startups';
             $menuInfo['svg'] = self::icone('startups');
+        } elseif (str_contains($paginaAtual, 'questao/index')) {
+
+            $menuInfo['titulo'] = 'Questão';
+            $menuInfo['svg'] = self::icone('questao');
+        } elseif (str_contains($paginaAtual, 'questionario/index')) {
+
+            $menuInfo['titulo'] = 'Questionario';
+            $menuInfo['svg'] = self::icone('questionario');
+        } elseif (str_contains($paginaAtual, 'metodologia/index')) {
+
+            $menuInfo['titulo'] = 'Metodologia';
+            $menuInfo['svg'] = self::icone('mentorias');
         }
+
 
         return $menuInfo;
     }
@@ -202,7 +230,29 @@ class controllerMenuLateral extends model
             return null;
         }
 
-        $stmt = parent::pegarBanco()->prepare('SELECT nome, email FROM usuario WHERE id = :id LIMIT 1');
+        $stmt = parent::pegarBanco()->prepare(
+            'SELECT u.nome, u.email,
+                    CASE WHEN e.id IS NOT NULL OR perfil_master.id_usuario IS NOT NULL THEN u.foto
+                         WHEN m.id IS NOT NULL THEN u.foto
+                         WHEN f.id IS NOT NULL THEN s.logo END AS foto,
+                    CASE WHEN e.id IS NOT NULL OR perfil_master.id_usuario IS NOT NULL THEN \'Equipe\'
+                         WHEN m.id IS NOT NULL THEN \'Mentor\'
+                         WHEN f.id IS NOT NULL THEN \'Startup\' END AS pasta_foto
+             FROM usuario u
+             LEFT JOIN equipe e ON e.id_usuario = u.id
+             LEFT JOIN (
+                 SELECT up.id_usuario
+                 FROM usuario_perfil up
+                 JOIN perfil p ON p.id = up.id_perfil
+                 WHERE p.nome = \'master\'
+             ) perfil_master ON perfil_master.id_usuario = u.id
+             LEFT JOIN mentor m ON m.id_usuario = u.id
+             LEFT JOIN fundador f ON f.id_usuario = u.id
+             LEFT JOIN startup s ON s.id = f.id_startup
+             WHERE u.id = :id
+             ORDER BY s.id
+             LIMIT 1'
+        );
         $stmt->execute(['id' => $usuarioId]);
 
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;

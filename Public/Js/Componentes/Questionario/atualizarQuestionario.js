@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     const contadoresEixoAtualizarQuestionario = document.querySelectorAll(
-        '.quantidadeEixosAtualizarQuestionario strong[data-eixo]'
+        '.quantidadeEixosAtualizarQuestionario strong[data-categoria]'
     );
 
 
@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             questoes.forEach(questao => {
 
-                const idEixo = String(questao.id_eixo);
-                const nomeEixo = questao.eixos || '';
+                const idEixo = String(questao.id_categoria);
+                const nomeEixo = questao.categoria || '';
 
 
                 const selecionada =
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <label
                             class="itemQuestaoAtualizarQuestionario"
                             data-id="${questao.id}"
-                            data-eixo="${escaparHTMLAtualizarQuestionario(idEixo)}"
+                            data-categoria="${escaparHTMLAtualizarQuestionario(idEixo)}"
                             data-pesquisa="${escaparHTMLAtualizarQuestionario(
                                 normalizarTextoAtualizarQuestionario(
                                     questao.pergunta
@@ -295,8 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input
                                 type="checkbox"
                                 value="${questao.id}"
-                                data-eixo="${escaparHTMLAtualizarQuestionario(idEixo)}"
-                                data-eixos="${escaparHTMLAtualizarQuestionario(nomeEixo)}"
+                                data-categoria="${escaparHTMLAtualizarQuestionario(idEixo)}"
+                                data-nome-categoria="${escaparHTMLAtualizarQuestionario(nomeEixo)}"
                                 class="checkboxQuestaoAtualizarQuestionario"
                                 ${selecionada ? 'checked' : ''}
                             >
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         selecionadas.forEach(checkbox => {
 
-            const eixo = checkbox.dataset.eixo;
+            const eixo = checkbox.dataset.categoria;
             contagem[eixo] = (contagem[eixo] || 0) + 1;
 
         });
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         contadoresEixoAtualizarQuestionario.forEach(contador => {
-            contador.textContent = contagem[contador.dataset.eixo] || 0;
+            contador.textContent = contagem[contador.dataset.categoria] || 0;
         });
 
     }
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mostrar =
                 (
                     eixoAtualAtualizarQuestionario === 'todos' ||
-                    item.dataset.eixo === eixoAtualAtualizarQuestionario
+                    item.dataset.categoria === eixoAtualAtualizarQuestionario
                 ) && (
                     buscaAtualAtualizarQuestionario === '' ||
                     item.dataset.id === buscaAtualAtualizarQuestionario ||
@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         nomeFiltroAtualizarQuestionario.textContent =
-            'Todos os eixos';
+            'Todas as categorias';
 
         if (buscaQuestoesAtualizarQuestionario) {
 
@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opcao.addEventListener('click', () => {
 
             eixoAtualAtualizarQuestionario =
-                opcao.dataset.eixo;
+                opcao.dataset.categoria;
 
 
             nomeFiltroAtualizarQuestionario.textContent =

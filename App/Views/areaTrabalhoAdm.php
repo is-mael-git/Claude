@@ -45,14 +45,16 @@ use Core\auth;
 
         <!-- REUNIÕES -->
         <div class="cardIndicador">
+
             <div class="iconeCard Reunioes">
                 <i class="fa-solid fa-calendar-check"></i>
             </div>
 
             <div class="informacaoCardAdm">
-                <strong id="quantidadeReuniao">3</strong>
-                <span>Reuniões Este Mês</span>
+                <strong id="quantidadeReuniao">0</strong>
+                <span id="mesReunioesLabel">Reuniões Este Mês</span>
             </div>
+
         </div>
 
 

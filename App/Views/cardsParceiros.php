@@ -15,12 +15,11 @@ error_reporting(E_ALL);
             <div class="areaCardsContainerCards">
                 <?php foreach ($cards as $parceiro): ?>
                     <?php if ($parceiro['ativo']): ?>                   
-                        <div class="areaCardsCards">
+                        <div class="areaCardsCardParceiro">
                             <div class="areaCardsDadosParceiros">
                                 <div class="areaCardsParceiroImg">
                                     <div class="areaCardsFoto"><img src="<?php echo BASE_UPLOAD.'Parceiros/'.$parceiro['foto'];?>" alt="logo-parceiro" class="areaCardsImgParceiro">
                                     </div>
-
                                 </div>
                                 <h3 class="areaCardsNomeParceiro">
                                     <?= $parceiro['nome']; ?>
@@ -30,13 +29,13 @@ error_reporting(E_ALL);
                                 </span>
                             </div>
                             <div class="areaCardsAreaMedia">
-                                <a href="<?= $parceiro['linkedin']; ?>">
+                                <a href="<?= $parceiro['linkedin']; ?>" target="_blank">
                                     <i class="fa-brands fa-linkedin-in"></i>
                                 </a>
                                 <a href="mailto:<?= $parceiro['email_representante']; ?>">
                                     <i class="fa-solid fa-envelope"></i>
                                 </a>
-                                <a href="<?= $parceiro['instagram']; ?>">
+                                <a href="https://www.instagram.com/<?= $parceiro['instagram']; ?>" target="_blank">
                                     <i class="fa-brands fa-instagram"></i>
                                 </a>
                             </div>

@@ -8,19 +8,20 @@ use Throwable;
 class questao
 {
 
-    public static function listarEixos(): array
+    public static function listarCategorias(): array
     {
         $db = bancoDados::conectar();
 
         $stmt = $db->query("
             SELECT
-                e.id AS id_eixo,
-                e.nome,
-                (SELECT GROUP_CONCAT(c.nome ORDER BY c.nome SEPARATOR ', ')
-                 FROM competencia c
-                 WHERE c.id_eixo = e.id) AS competencias
-            FROM eixo e
-            ORDER BY e.nome ASC
+                c.id AS id_categoria,
+                                c.nome,
+                                (SELECT GROUP_CONCAT(s.nome ORDER BY s.nome SEPARATOR ', ')
+                                 FROM categoria_subcategoria cs
+                                 INNER JOIN subcategoria s ON s.id = cs.id_subcategoria
+                                 WHERE cs.id_categoria = c.id) AS subcategorias
+                            FROM categoria c
+                            ORDER BY c.nome ASC
         ");
 
         return $stmt->fetchAll(
@@ -28,18 +29,20 @@ class questao
         );
     }
 
-    public static function listarCompetencias(): array
+    public static function listarSubcategorias(): array
     {
         $db = bancoDados::conectar();
 
         $stmt = $db->query("
             SELECT
-                c.id AS id_competencia,
-                c.nome,
-                e.nome AS eixo
-            FROM competencia c
-            INNER JOIN eixo e ON e.id = c.id_eixo
-            ORDER BY e.nome, c.nome
+                s.id AS id_subcategoria,
+                                s.nome,
+                                c.id AS id_categoria,
+                                c.nome AS categoria
+                            FROM subcategoria s
+                            INNER JOIN categoria_subcategoria cs ON cs.id_subcategoria = s.id
+                            INNER JOIN categoria c ON c.id = cs.id_categoria
+                            ORDER BY c.nome, s.nome
         ");
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -54,15 +57,17 @@ class questao
         SELECT
             q.id,
             q.pergunta,
-            q.id_eixo,
-            NULL AS competencia,
-            q.ativo,
-            e.nome AS eixos
+            q.id_subcategoria,
+                        c.id AS id_categoria,
+                        s.nome AS subcategoria,
 
-        FROM questao q
+                        q.ativo,
+                        c.nome AS categoria
 
-        INNER JOIN eixo e
-            ON e.id = q.id_eixo
+                    FROM questao q
+                    INNER JOIN subcategoria s ON s.id = q.id_subcategoria
+                    INNER JOIN categoria_subcategoria cs ON cs.id_subcategoria = s.id
+                    INNER JOIN categoria c ON c.id = cs.id_categoria
 
         " . ($somenteAtivas ? "WHERE q.ativo = 1" : "") . "
 
@@ -80,25 +85,25 @@ class questao
 
     public static function cadastrar(
         string $pergunta,
-        int $idEixo
+        int $idSubcategoria
     ): int {
         $db = bancoDados::conectar();
 
         $stmt = $db->prepare("
             INSERT INTO questao (
                 pergunta,
-                id_eixo,
-                ativo
-            ) VALUES (
-                :pergunta,
-                :id_eixo,
+                id_subcategoria,
+                                ativo
+                            ) VALUES (
+                                :pergunta,
+                                :id_subcategoria,
                 1
             )
         ");
 
         $stmt->execute([
             'pergunta' => $pergunta,
-            'id_eixo' => $idEixo
+            'id_subcategoria' => $idSubcategoria
         ]);
 
         return (int) $db->lastInsertId();
@@ -223,9 +228,11 @@ class questao
             SELECT
                 q.id,
                 q.pergunta,
-                q.id_eixo,
-                q.ativo,
-                e.nome AS eixos,
+                q.id_subcategoria,
+                                c.id AS id_categoria,
+                                q.ativo,
+                                c.nome AS categoria,
+                                s.nome AS subcategoria,
                 EXISTS (
                     SELECT 1
                     FROM questionario_questao qq
@@ -236,8 +243,9 @@ class questao
                 ) AS vinculada_questionario_ativo
             FROM questao q
 
-            INNER JOIN eixo e
-                ON e.id = q.id_eixo
+            INNER JOIN subcategoria s ON s.id = q.id_subcategoria
+                        INNER JOIN categoria_subcategoria cs ON cs.id_subcategoria = s.id
+                        INNER JOIN categoria c ON c.id = cs.id_categoria
 
             WHERE q.id = :id
 
@@ -274,7 +282,7 @@ class questao
     public static function atualizar(
         int $id,
         string $pergunta,
-        int $idEixo
+        int $idSubcategoria
     ): bool {
         $db = bancoDados::conectar();
 
@@ -283,14 +291,14 @@ class questao
 
             SET
                 pergunta = :pergunta,
-                id_eixo = :id_eixo
+                id_subcategoria = :id_subcategoria
 
             WHERE id = :id
         ");
 
         return $stmt->execute([
             'pergunta' => $pergunta,
-            'id_eixo' => $idEixo,
+            'id_subcategoria' => $idSubcategoria,
             'id' => $id
         ]);
     }

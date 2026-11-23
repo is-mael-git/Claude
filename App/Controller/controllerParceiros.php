@@ -104,10 +104,22 @@ class controllerParceiros extends controller
 
     public function tabela()
     {
-        $parceiro = usuarioParceiros::listar();
+        $colunasPermitidas = ['id', 'nome', 'area_nome', 'telefone', 'ativo'];
+        $orderBy = $this->ordenacaoTabela($colunasPermitidas, 'id', 'ASC');
+        $area = $_GET['area'] ?? null;
+
+        $limit = isset($_GET['limit']) ? max(1, min(100, (int) $_GET['limit'])) : null;
+        $offset = $limit !== null && isset($_GET['offset']) ? max(0, (int) $_GET['offset']) : null;
+
+        $parceiros = usuarioParceiros::listar($orderBy, $area, $limit, $offset);
+        $total = usuarioParceiros::contar($area);
+
         header('Content-Type: application/json');
         http_response_code(200);
-        echo json_encode($parceiro);
+        echo json_encode([
+            'dados' => $parceiros,
+            'total' => $total,
+        ]);
         exit;
     }
 

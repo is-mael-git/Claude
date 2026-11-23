@@ -56,14 +56,14 @@ class questionario
         $sql = "SELECT
             q.id,
             q.pergunta,
-            q.id_eixo,
+            q.id_subcategoria,
+            c.id AS id_categoria,
             q.ativo,
-            e.nome AS eixos
+            c.nome AS categoria
 
         FROM questao q
-
-        INNER JOIN eixo e
-            ON e.id = q.id_eixo
+        INNER JOIN categoria_subcategoria cs ON cs.id_subcategoria = q.id_subcategoria
+        INNER JOIN categoria c ON c.id = cs.id_categoria
 
         WHERE q.ativo = 1
 
@@ -88,11 +88,14 @@ class questionario
             $stmt = $db->prepare("
                 INSERT INTO questionario (
                     nome,
-                    descricao
-                ) VALUES (
-                    :nome,
-                    :descricao
+                    descricao,
+                    id_avaliacao
                 )
+                SELECT :nome, :descricao, a.id
+                FROM avaliacao a
+                WHERE a.minimo = 0 AND a.maximo = 4
+                ORDER BY a.id
+                LIMIT 1
             ");
 
             $stmt->execute([
@@ -100,6 +103,9 @@ class questionario
                 'descricao' => $descricao
             ]);
 
+            if ($stmt->rowCount() !== 1) {
+                throw new \InvalidArgumentException('Não há avaliação cadastrada para a escala de 0 a 4.');
+            }
             $questionarioId = (int) $db->lastInsertId();
 
             $stmtRelacao = $db->prepare("
@@ -220,15 +226,16 @@ class questionario
             SELECT
                 q.id,
                 q.pergunta,
-                q.id_eixo,
-                e.nome AS eixos
+                q.id_subcategoria,
+                c.id AS id_categoria,
+                c.nome AS categoria
             FROM questionario_questao qq
 
             INNER JOIN questao q
                 ON q.id = qq.id_questao
 
-            INNER JOIN eixo e
-                ON e.id = q.id_eixo
+            INNER JOIN categoria_subcategoria cs ON cs.id_subcategoria = q.id_subcategoria
+            INNER JOIN categoria c ON c.id = cs.id_categoria
 
             WHERE qq.id_questionario = :id
                 AND q.ativo = 1
@@ -236,8 +243,9 @@ class questionario
             GROUP BY
                 q.id,
                 q.pergunta,
-                q.id_eixo,
-                e.nome
+                q.id_subcategoria,
+                c.id,
+                c.nome
         ");
 
         $stmtQuestoes->execute([

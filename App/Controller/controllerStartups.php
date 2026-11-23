@@ -12,6 +12,11 @@ use RuntimeException;
 
 class controllerStartups extends controller
 {
+    // Limites que o JS (crudStartups.js) repete para avisar logo na seleção; mantenha os dois iguais.
+    private const BIOGRAFIA_MAX = 3000;
+    private const FOTO_MAX_BYTES = 2 * 1024 * 1024;
+    private const MENSAGEM_FOTO_GRANDE = 'A imagem deve ter no máximo 2 MB. Escolha uma imagem menor.';
+
     public function index()
     {
         $this->mostrarTela("crudStartups");
@@ -19,135 +24,98 @@ class controllerStartups extends controller
 
     public function adicionar()
     {
-        $dados = $this->prepararDados($_POST);
-        if (!validador::validarCnpj($dados['cnpj'])) {
-            http_response_code(422);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['sucesso' => false, 'erro' => 'CNPJ inválido.']);
-            return;
-        }
-
-        $cepInformado = trim($_POST['cep'] ?? '');
-        if ($cepInformado !== ''
-            && (!preg_match('/^\d{5}-?\d{3}$/', $cepInformado) || $dados['cep'] === '00000000')) {
-            http_response_code(422);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['sucesso' => false, 'erro' => 'CEP inválido.']);
-            return;
-        }
-
-        if (!$this->dadosValidos($dados)) {
-            http_response_code(422);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['sucesso' => false, 'erro' => 'Confira os campos obrigatórios, a data de fundação e o endereço.']);
-            return;
-        }
-
-        try {
-            $fundadores = $this->prepararFundadores($_POST['fundadores'] ?? '[]', $dados['data_fundacao']);
-        } catch (RuntimeException $e) {
-            http_response_code(422);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
-            return;
-        }
-
-        $errosCampos = $this->errosCamposDuplicados($dados, $fundadores);
-        if ($errosCampos) {
-            http_response_code(409);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['sucesso' => false, 'errosCampos' => $errosCampos]);
-            return;
-        }
-
-        header('Content-Type: application/json; charset=utf-8');
+        $dados = [];
+        $fundadores = [];
         $logoSalvo = null;
         try {
-            $dados['logo'] = $this->processarUploadFoto();
-            $logoSalvo = $dados['logo'];
-            if ($dados['logo'] === null) {
-                throw new RuntimeException('Adicione a foto da startup.');
+            if ($this->corpoExcedeuLimite()) {
+                return;
             }
+
+            $dados = $this->prepararDados($_POST);
+            $erros = $this->errosDados($dados, true);
+            if ($erros) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => $erros], 422);
+                return;
+            }
+
+            $fundadores = $this->prepararFundadores($_POST['fundadores'] ?? '[]');
+
+            $errosCampos = $this->errosCamposDuplicados($dados, $fundadores);
+            if ($errosCampos) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => $errosCampos], 409);
+                return;
+            }
+
+            try {
+                $logoSalvo = $this->processarUploadFoto();
+            } catch (RuntimeException $e) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => ['startup-photo' => $e->getMessage()]], 422);
+                return;
+            }
+            $dados['logo'] = $logoSalvo;
+
             $id = startups::cadastrar($dados, $fundadores);
-            echo json_encode(['sucesso' => true, 'id_startup' => $id]);
-        } catch (PDOException $e) {
+            $this->responderJson(['sucesso' => true, 'id_startup' => $id]);
+        } catch (\Throwable $e) {
             $this->removerFotoSeFalhou($logoSalvo);
-            $errosCampos = $e->getCode() === '23000'
-                ? $this->errosCamposDuplicados($dados, $fundadores) : [];
-            http_response_code($errosCampos ? 409 : 500);
-            echo json_encode($errosCampos
-                ? ['sucesso' => false, 'errosCampos' => $errosCampos]
-                : ['sucesso' => false, 'erro' => 'Não foi possível cadastrar a startup.']);
-        } catch (RuntimeException $e) {
-            $this->removerFotoSeFalhou($logoSalvo);
-            http_response_code(422);
-            echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+            $this->responderFalha($e, 'adicionar', $dados, $fundadores);
         }
     }
 
     public function atualizar()
     {
         $id = (int) ($_POST['id_startup'] ?? 0);
-        header('Content-Type: application/json; charset=utf-8');
-        if ($id <= 0) {
-            http_response_code(422);
-            echo json_encode(['sucesso' => false, 'erro' => 'ID inválido.']);
-            return;
-        }
-
-        $atual = startups::buscarPorId($id);
-        if (!$atual) {
-            http_response_code(404);
-            echo json_encode(['sucesso' => false, 'erro' => 'Startup não encontrada.']);
-            return;
-        }
-
-        $dados = $this->prepararDados($_POST);
-        $cepInformado = trim($_POST['cep'] ?? '');
-        if (!validador::validarCnpj($dados['cnpj'])
-            || ($cepInformado !== '' && (!preg_match('/^\d{5}-?\d{3}$/', $cepInformado) || $dados['cep'] === '00000000'))
-            || !$this->dadosValidos($dados)) {
-            http_response_code(422);
-            echo json_encode(['sucesso' => false, 'erro' => 'Confira os campos obrigatórios, o CNPJ, o CEP e a data de fundação.']);
-            return;
-        }
-
-        try {
-            $fundadores = $this->prepararFundadores($_POST['fundadores'] ?? '[]', $dados['data_fundacao'], true);
-        } catch (RuntimeException $e) {
-            http_response_code(422);
-            echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
-            return;
-        }
-
-        $errosCampos = $this->errosCamposDuplicados($dados, $fundadores, $id);
-        if ($errosCampos) {
-            http_response_code(409);
-            echo json_encode(['sucesso' => false, 'errosCampos' => $errosCampos]);
-            return;
-        }
-
+        $dados = [];
+        $fundadores = [];
         $novaFoto = null;
         try {
-            $novaFoto = $this->processarUploadFoto();
+            if ($this->corpoExcedeuLimite()) {
+                return;
+            }
+
+            if ($id <= 0) {
+                $this->responderJson(['sucesso' => false, 'erro' => 'ID inválido.'], 422);
+                return;
+            }
+
+            $atual = startups::buscarPorId($id);
+            if (!$atual) {
+                $this->responderJson(['sucesso' => false, 'erro' => 'Startup não encontrada.'], 404);
+                return;
+            }
+
+            $dados = $this->prepararDados($_POST);
+            $erros = $this->errosDados($dados, false);
+            if ($erros) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => $erros], 422);
+                return;
+            }
+
+            $fundadores = $this->prepararFundadores($_POST['fundadores'] ?? '[]', true);
+
+            $errosCampos = $this->errosCamposDuplicados($dados, $fundadores, $id);
+            if ($errosCampos) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => $errosCampos], 409);
+                return;
+            }
+
+            try {
+                $novaFoto = $this->processarUploadFoto();
+            } catch (RuntimeException $e) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => ['startup-photo' => $e->getMessage()]], 422);
+                return;
+            }
             $dados['logo'] = $novaFoto ?? $atual['logo'];
+
             $ok = startups::atualizar($id, $dados, $fundadores);
             if ($novaFoto && $atual['logo'] && preg_match('/^[a-f0-9]{32}\.(?:jpg|jpeg|png|webp)$/', $atual['logo'])) {
                 $this->removerFotoSeFalhou($atual['logo']);
             }
-            echo json_encode(['sucesso' => $ok]);
-        } catch (PDOException $e) {
+            $this->responderJson(['sucesso' => $ok]);
+        } catch (\Throwable $e) {
             $this->removerFotoSeFalhou($novaFoto);
-            $errosCampos = $e->getCode() === '23000'
-                ? $this->errosCamposDuplicados($dados, $fundadores, $id) : [];
-            http_response_code($errosCampos ? 409 : 500);
-            echo json_encode($errosCampos
-                ? ['sucesso' => false, 'errosCampos' => $errosCampos]
-                : ['sucesso' => false, 'erro' => 'Não foi possível atualizar a startup.']);
-        } catch (RuntimeException $e) {
-            $this->removerFotoSeFalhou($novaFoto);
-            http_response_code(422);
-            echo json_encode(['sucesso' => false, 'erro' => $e->getMessage()]);
+            $this->responderFalha($e, 'atualizar', $dados, $fundadores, $id);
         }
     }
 
@@ -244,20 +212,18 @@ class controllerStartups extends controller
 
     private function prepararDados(array $post): array
     {
-        $data = (!empty($post['foundDay']) && !empty($post['foundMonth']) && !empty($post['foundYear']))
-            ? sprintf('%04d-%02d-%02d', $post['foundYear'], $post['foundMonth'], $post['foundDay'])
-            : null;
+        $data = trim($post['data_fundacao'] ?? '');
+        $dataFundacao = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
+        $data = $dataFundacao && $dataFundacao->format('Y-m-d') === $data ? $data : null;
         $setor = trim($post['sector'] ?? '');
-        if ($setor === 'outros') {
-            $setor = trim($post['sectorOther'] ?? '');
-        }
-        $numero = filter_var($post['numero'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
+        $numero = filter_var($post['numero'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 2147483647]]);
+        $biografia = trim($post['biografia'] ?? '');
 
         return [
             'nome'                   => trim($post['startupName'] ?? ''),
+            'biografia'              => $biografia === '' ? null : $biografia,
             'cnpj'                   => strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $post['cnpj'] ?? '')),
             'data_fundacao'          => $data,
-            'trl'                    => (int) ($post['trl'] ?? 0),
             'setor_atuacao'          => $setor,
             'site'                   => trim($post['site'] ?? '') ?: null,
             'instagram'              => trim($post['instagram'] ?? '') ?: null,
@@ -273,69 +239,158 @@ class controllerStartups extends controller
         ];
     }
 
-    private function dadosValidos(array $dados): bool
+    // Confere os dados da startup e devolve [id do campo no formulário => mensagem].
+    // Array vazio = tudo certo. Os ids são os de crudStartups.php, pro JS achar o campo.
+    private function errosDados(array $dados, bool $exigeFoto): array
     {
-        $data = $dados['data_fundacao'];
-        $partes = $data ? explode('-', $data) : [];
+        $erros = [];
         $hoje = (new DateTimeImmutable('today', new DateTimeZone('America/Cuiaba')))->format('Y-m-d');
 
-        return $dados['nome'] !== ''
-            && count($partes) === 3
-            && checkdate((int) $partes[1], (int) $partes[2], (int) $partes[0])
-            && $data <= $hoje
-            && $dados['trl'] >= 1 && $dados['trl'] <= 9
-            && $dados['setor_atuacao'] !== ''
-            && $dados['logradouro'] !== ''
-            && $dados['numero'] >= 0
-            && $dados['bairro'] !== ''
-            && preg_match('/^[A-Z]{2}$/', $dados['uf'])
-            && $dados['cidade'] !== ''
-            && ($dados['outras_participacoes'] === null || mb_strlen($dados['outras_participacoes'], 'UTF-8') <= 50)
-            && ($dados['cep'] === null || strlen($dados['cep']) === 8);
+        if ($dados['nome'] === '') {
+            $erros['startupName'] = 'Informe o nome da startup.';
+        } elseif (mb_strlen($dados['nome'], 'UTF-8') > 100) {
+            $erros['startupName'] = 'O nome da startup deve ter até 100 caracteres.';
+        }
+
+        if ($dados['biografia'] !== null && mb_strlen($dados['biografia'], 'UTF-8') > self::BIOGRAFIA_MAX) {
+            $erros['biografia'] = 'A biografia deve ter até ' . self::BIOGRAFIA_MAX . ' caracteres.';
+        }
+
+        if ($dados['cnpj'] === '') {
+            $erros['cnpj'] = 'Informe o CNPJ.';
+        } elseif (!validador::validarCnpj($dados['cnpj'])) {
+            $erros['cnpj'] = 'CNPJ inválido.';
+        }
+
+        // links: só http/https, senão um "javascript:..." salvo aqui viraria link perigoso numa tela futura
+        foreach (['site', 'instagram', 'linkedin'] as $rede) {
+            if ($dados[$rede] !== null && !$this->urlValida($dados[$rede])) {
+                $erros[$rede] = 'Informe um link válido, começando com http:// ou https:// (até 255 caracteres).';
+            }
+        }
+
+        if ($dados['cep'] !== null && (strlen($dados['cep']) !== 8 || $dados['cep'] === '00000000')) {
+            $erros['cep'] = 'CEP inválido.';
+        }
+
+        if ($dados['logradouro'] === '') {
+            $erros['logradouro'] = 'Informe o logradouro.';
+        } elseif (mb_strlen($dados['logradouro'], 'UTF-8') > 255) {
+            $erros['logradouro'] = 'O logradouro deve ter até 255 caracteres.';
+        }
+
+        if ($dados['numero'] < 0) {
+            $erros['numero'] = 'Informe o número do endereço (use 0 se não houver).';
+        }
+
+        if ($dados['complemento'] !== null && mb_strlen($dados['complemento'], 'UTF-8') > 255) {
+            $erros['complemento'] = 'O complemento deve ter até 255 caracteres.';
+        }
+
+        if ($dados['bairro'] === '') {
+            $erros['bairro'] = 'Informe o bairro.';
+        } elseif (mb_strlen($dados['bairro'], 'UTF-8') > 255) {
+            $erros['bairro'] = 'O bairro deve ter até 255 caracteres.';
+        }
+
+        if ($dados['cidade'] === '') {
+            $erros['cidade'] = 'Informe a cidade.';
+        } elseif (mb_strlen($dados['cidade'], 'UTF-8') > 255) {
+            $erros['cidade'] = 'A cidade deve ter até 255 caracteres.';
+        }
+
+        if (!preg_match('/^[A-Z]{2}$/', $dados['uf'])) {
+            $erros['uf'] = 'Informe a UF com 2 letras (ex.: MS).';
+        }
+
+        if ($dados['setor_atuacao'] === '') {
+            $erros['sector'] = 'Informe o setor de atuação.';
+        } elseif (mb_strlen($dados['setor_atuacao'], 'UTF-8') > 150) {
+            $erros['sector'] = 'O setor de atuação deve ter até 150 caracteres.';
+        }
+
+        if ($dados['data_fundacao'] === null) {
+            $erros['dataFundacao'] = 'Informe uma data de fundação válida.';
+        } elseif ($dados['data_fundacao'] > $hoje) {
+            $erros['dataFundacao'] = 'A data de fundação não pode ser futura.';
+        }
+
+        if ($dados['outras_participacoes'] !== null && mb_strlen($dados['outras_participacoes'], 'UTF-8') > 50) {
+            $erros['programs'] = 'Participação em outros programas deve ter até 50 caracteres.';
+        }
+
+        $semFoto = ($_FILES['foto_startup']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE;
+        if ($exigeFoto && $semFoto) {
+            $erros['startup-photo'] = 'Adicione a foto da startup.';
+        }
+
+        return $erros;
     }
 
-    private function prepararFundadores(string $json, string $dataFundacao, bool $permitirIds = false): array
+    private function urlValida(string $url): bool
+    {
+        return mb_strlen($url, 'UTF-8') <= 255
+            && filter_var($url, FILTER_VALIDATE_URL) !== false
+            && in_array(strtolower((string) parse_url($url, PHP_URL_SCHEME)), ['http', 'https'], true);
+    }
+
+    private function prepararFundadores(string $json, bool $permitirIds = false): array
     {
         $fundadores = json_decode($json, true);
         if (!is_array($fundadores) || !array_is_list($fundadores)) {
-            throw new RuntimeException('Confira os dados dos fundadores.');
+            throw new RuntimeException('Os dados dos fundadores chegaram em formato inválido. Recarregue a página e tente de novo.');
         }
         if (count($fundadores) === 0) {
             throw new RuntimeException('Adicione pelo menos um fundador.');
         }
 
         $preparados = [];
-        $emails = [];
         $ids = [];
-        $hoje = (new DateTimeImmutable('today', new DateTimeZone('America/Cuiaba')))->format('Y-m-d');
-        foreach ($fundadores as $fundador) {
-            if (!is_array($fundador)) throw new RuntimeException('Confira os dados dos fundadores.');
+        foreach ($fundadores as $indice => $fundador) {
+            $numero = $indice + 1;
+            if (!is_array($fundador)) {
+                throw $this->erroFundador($numero, 'dados inválidos. Recarregue a página e tente de novo.');
+            }
             $id = filter_var($fundador['id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
             $dados = [
                 'id' => $id,
                 'nome' => trim($fundador['nome'] ?? ''),
                 'funcao' => trim($fundador['funcao'] ?? ''),
-                'temp_empresa' => trim($fundador['temp_empresa'] ?? ''),
                 'email' => strtolower(trim($fundador['email'] ?? '')),
                 'telefone' => preg_replace('/\D/', '', $fundador['telefone'] ?? ''),
             ];
-            $dataEntrada = DateTimeImmutable::createFromFormat('!Y-m-d', $dados['temp_empresa']);
-            if ($id === false || (!$permitirIds && $id !== 0)
-                || ($id > 0 && in_array($id, $ids, true))
-                || $dados['nome'] === '' || strlen($dados['nome']) > 100
-                || $dados['funcao'] === '' || mb_strlen($dados['funcao'], 'UTF-8') > 100
-                || !filter_var($dados['email'], FILTER_VALIDATE_EMAIL)
-                || !$dataEntrada || $dataEntrada->format('Y-m-d') !== $dados['temp_empresa']
-                || $dados['temp_empresa'] < $dataFundacao || $dados['temp_empresa'] > $hoje
-                || ($dados['telefone'] !== '' && strlen($dados['telefone']) > 15)
-                || in_array($dados['email'], $emails, true)) {
-                throw new RuntimeException('Confira nome, função, e-mail e data de entrada dos fundadores.');
+
+            if ($id === false || (!$permitirIds && $id !== 0) || ($id > 0 && in_array($id, $ids, true))) {
+                throw $this->erroFundador($numero, 'dados inválidos. Recarregue a página e tente de novo.');
             }
+            if ($dados['nome'] === '') {
+                throw $this->erroFundador($numero, 'informe o nome.');
+            }
+            if (mb_strlen($dados['nome'], 'UTF-8') > 100) {
+                throw $this->erroFundador($numero, 'o nome deve ter até 100 caracteres.');
+            }
+            if ($dados['funcao'] === '') {
+                throw $this->erroFundador($numero, 'informe a função.');
+            }
+            if (mb_strlen($dados['funcao'], 'UTF-8') > 100) {
+                throw $this->erroFundador($numero, 'a função deve ter até 100 caracteres.');
+            }
+            if (!filter_var($dados['email'], FILTER_VALIDATE_EMAIL)) {
+                throw $this->erroFundador($numero, 'informe um e-mail válido.');
+            }
+            if ($dados['telefone'] !== '' && strlen($dados['telefone']) > 15) {
+                throw $this->erroFundador($numero, 'telefone inválido (até 15 dígitos).');
+            }
+
             $ids[] = $id;
-            $emails[] = $dados['email'];
             $preparados[] = $dados;
         }
         return $preparados;
+    }
+
+    private function erroFundador(int $numero, string $mensagem): RuntimeException
+    {
+        return new RuntimeException("Fundador {$numero}: {$mensagem}");
     }
 
     private function errosCamposDuplicados(array $dados, array $fundadores, int $idStartup = 0): array
@@ -347,10 +402,14 @@ class controllerStartups extends controller
         if (startups::campoEmUso('cnpj', $dados['cnpj'], $idStartup)) {
             $erros['cnpj'] = 'CNPJ já cadastrado.';
         }
+        $emailsVistos = [];
         foreach ($fundadores as $indice => $fundador) {
-            if (startups::campoEmUso('founderEmail', $fundador['email'], $fundador['id'], $idStartup)) {
+            if (in_array($fundador['email'], $emailsVistos, true)) {
+                $erros['founderEmail'][$indice] = 'E-mail de fundador repetido.';
+            } elseif (startups::campoEmUso('founderEmail', $fundador['email'], $fundador['id'], $idStartup)) {
                 $erros['founderEmail'][$indice] = 'E-mail já cadastrado.';
             }
+            $emailsVistos[] = $fundador['email'];
         }
         return $erros;
     }
@@ -363,8 +422,15 @@ class controllerStartups extends controller
         }
 
         $caminhoTemporario = $arquivo['tmp_name'] ?? '';
-        if (($arquivo['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($caminhoTemporario)) {
+        $codigoErro = $arquivo['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($codigoErro === UPLOAD_ERR_INI_SIZE || $codigoErro === UPLOAD_ERR_FORM_SIZE) {
+            throw new RuntimeException(self::MENSAGEM_FOTO_GRANDE);
+        }
+        if ($codigoErro !== UPLOAD_ERR_OK || !is_uploaded_file($caminhoTemporario)) {
             throw new RuntimeException('Não foi possível receber a imagem. Tente novamente.');
+        }
+        if (($arquivo['size'] ?? 0) > self::FOTO_MAX_BYTES) {
+            throw new RuntimeException(self::MENSAGEM_FOTO_GRANDE);
         }
 
         $tiposPermitidos = [
@@ -406,5 +472,52 @@ class controllerStartups extends controller
         if ($nomeArquivo === null) return;
         $caminho = $_SERVER['DOCUMENT_ROOT'] . BASE_UPLOAD . 'Startup/' . $nomeArquivo;
         if (is_file($caminho)) unlink($caminho);
+    }
+
+    private function responderJson(array $corpo, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($corpo);
+    }
+
+    // Resposta única para qualquer falha que escape das validações (banco, upload, bug).
+    // O texto técnico só vai pro log do PHP; a tela recebe uma mensagem que não expõe nada interno.
+    private function responderFalha(\Throwable $e, string $acao, array $dados = [], array $fundadores = [], int $idStartup = 0): void
+    {
+        if ($e instanceof PDOException && $e->getCode() === '23000') {
+            // UNIQUE violado (dois cadastros ao mesmo tempo): confere de novo pra apontar o campo
+            $errosCampos = $this->errosCamposDuplicados($dados, $fundadores, $idStartup);
+            if ($errosCampos) {
+                $this->responderJson(['sucesso' => false, 'errosCampos' => $errosCampos], 409);
+                return;
+            }
+        }
+
+        // PDOException também é RuntimeException, por isso o teste explícito
+        if ($e instanceof RuntimeException && !($e instanceof PDOException)) {
+            $this->responderJson(['sucesso' => false, 'erro' => $e->getMessage()], 422);
+            return;
+        }
+
+        error_log('[crudStartups::' . $acao . '] ' . get_class($e) . ': ' . $e->getMessage());
+        $mensagem = $e instanceof PDOException
+            ? 'Não foi possível salvar no banco de dados. Tente novamente; se continuar, avise o responsável.'
+            : 'Erro inesperado no servidor. Tente novamente; se continuar, avise o responsável.';
+        $this->responderJson(['sucesso' => false, 'erro' => $mensagem], 500);
+    }
+
+    // Se o corpo da requisição passar do post_max_size, o PHP descarta $_POST e $_FILES inteiros;
+    // sem este aviso a tela mostraria "informe o nome..." para todos os campos.
+    private function corpoExcedeuLimite(): bool
+    {
+        if (!empty($_POST) || !empty($_FILES) || (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) <= 0) {
+            return false;
+        }
+        $this->responderJson([
+            'sucesso' => false,
+            'errosCampos' => ['startup-photo' => 'Os dados enviados passam do limite do servidor (' . ini_get('post_max_size') . '). Escolha uma imagem menor.'],
+        ], 413);
+        return true;
     }
 }

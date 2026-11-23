@@ -5,6 +5,15 @@ use Controller\controllerMenuLateral;
 $paginaAtual = trim($_SERVER['REQUEST_URI'], '/');
 $dadosMenu = controllerMenuLateral::getDadosMenu($paginaAtual);
 $usuarioLogado = controllerMenuLateral::buscarUsuarioLogado();
+$pastaFoto = $usuarioLogado['pasta_foto'] ?? null;
+$nomeFoto = basename((string) ($usuarioLogado['foto'] ?? ''));
+$urlFoto = null;
+if (in_array($pastaFoto, ['Startup', 'Mentor', 'Equipe'], true) && $nomeFoto !== '') {
+    $caminhoFoto = dirname(__DIR__, 5) . '/Public/Upload/' . $pastaFoto . '/' . $nomeFoto;
+    if (is_file($caminhoFoto)) {
+        $urlFoto = BASE_UPLOAD . $pastaFoto . '/' . rawurlencode($nomeFoto);
+    }
+}
 
 $notificacoesHeader = controllerMenuLateral::buscarNotificacoes();
 
@@ -109,7 +118,11 @@ foreach ($notificacoesHeader as $notificacao) {
 
         <button class="menuLateralBotaoNotificacao abrirModal" aria-label="Perfil do usuário" data-modal="modalPerfil" type="button">
             <div class="menuLateralContainerFoto">
-                <i class="fa-solid fa-circle-user"></i>
+                <?php if ($urlFoto !== null): ?>
+                    <img src="<?= htmlspecialchars($urlFoto, ENT_QUOTES, 'UTF-8') ?>" alt="Foto de perfil de <?= htmlspecialchars($usuarioLogado['nome'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <?php else: ?>
+                    <i class="fa-solid fa-circle-user" aria-hidden="true"></i>
+                <?php endif; ?>
             </div>
         </button>
         <div class="menuLateralTextoPerfil">

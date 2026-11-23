@@ -4,9 +4,8 @@
 const form          = document.getElementById('startupForm');
 const foundersList  = document.getElementById('foundersList');
 const addFounderBtn = document.getElementById('addFounderBtn');
-const setorStartup = document.getElementById('sector');
-const outroSetorStartup = document.getElementById('sectorOther');
-const voltarSetorStartup = document.getElementById('sectorOtherBack');
+const biografiaStartup = document.getElementById('biografia');
+const contadorBiografia = document.getElementById('biografiaContador');
 const fotoStartupInput = document.getElementById('startup-photo');
 const previewFotoStartup = window.PreviewImagem?.criar(fotoStartupInput, document.getElementById('previewFotoStartup'));
 
@@ -34,18 +33,10 @@ function abrirDetalhesFundador(item = null) {
   if (tituloEl) tituloEl.lastChild.textContent = item ? 'Editar Fundador' : 'Cadastrar Fundador';
   const salvarEl = founderDialog.querySelector('.btnSalvar');
   if (salvarEl) salvarEl.textContent = 'SALVAR';
-  const inicioEl = founderDialog.querySelector('.cs-founderInicioInput');
-  const fundacaoAno = document.getElementById('foundYear')?.value;
-  const fundacaoMes = document.getElementById('foundMonth')?.value;
-  const fundacaoDia = document.getElementById('foundDay')?.value;
-  if (inicioEl) inicioEl.min = fundacaoAno && fundacaoMes && fundacaoDia
-    ? `${fundacaoAno}-${fundacaoMes.padStart(2, '0')}-${fundacaoDia.padStart(2, '0')}`
-    : '';
 
   const campos = {
     '.cs-founderNomeInput':         item?.dataset.nome || '',
     '.cs-founderCargoInput':        item?.dataset.cargo || '',
-    '.cs-founderInicioInput':       item?.dataset.inicio || '',
     '.cs-founderEmailInput':        item?.dataset.email || '',
     '.cs-founderTelefoneInput':     item?.dataset.telefone || '',
   };
@@ -54,6 +45,8 @@ function abrirDetalhesFundador(item = null) {
     const campo = founderDialog.querySelector(seletor);
     if (campo) campo.value = valor;
   });
+  // o telefone vindo do banco chega só com dígitos; a máscara só age ao digitar
+  window.Mascara?.formatar(founderForm);
 
   abrirModal('modalDetalheFundador');
 }
@@ -104,7 +97,6 @@ if (founderForm) {
     item.querySelector('.cs-founderNome').textContent = nome;
 
     item.dataset.cargo        = founderDialog.querySelector('.cs-founderCargoInput')?.value.trim() || '';
-    item.dataset.inicio       = founderDialog.querySelector('.cs-founderInicioInput')?.value || '';
     item.dataset.email        = founderDialog.querySelector('.cs-founderEmailInput')?.value.trim() || '';
     item.dataset.telefone     = founderDialog.querySelector('.cs-founderTelefoneInput')?.value.trim() || '';
 
@@ -134,8 +126,31 @@ const MENSAGEM_INCOMPLETO_STARTUP  = 'Preencha o campo por completo.';
 const MENSAGEM_EMAIL_STARTUP       = 'Informe um e-mail válido.';
 const MENSAGEM_CNPJ_STARTUP        = 'CNPJ inválido.';
 const MENSAGEM_CEP_STARTUP         = 'CEP inválido.';
+const MENSAGEM_DATA_STARTUP        = 'Informe uma data de fundação válida.';
+const MENSAGEM_DATA_FUTURA_STARTUP = 'A data de fundação não pode ser futura.';
+const TAMANHO_MAX_FOTO_STARTUP     = 2 * 1024 * 1024; // igual a FOTO_MAX_BYTES do controllerStartups.php
+const MENSAGEM_FOTO_GRANDE_STARTUP = 'A imagem deve ter no máximo 2 MB. Escolha uma imagem menor.';
 const ENDPOINT_VALIDAR_CAMPO_STARTUP = '/ParkTec/startups/validar-campo';
 const timersValidacaoStartup = new WeakMap();
+
+// Faz a requisição e separa os jeitos de ela falhar, pra mensagem dizer a verdade:
+//  - sem rede (fetch rejeita);
+//  - resposta que não é JSON (erro fatal do PHP, página de erro do Apache);
+//  - resposta JSON, inclusive os 4xx/5xx que o controller devolve de propósito.
+// Devolve { falha } (texto pronto pra tela) ou { dados, status }.
+async function requisitarJson(url, opcoes) {
+  let resposta;
+  try {
+    resposta = await fetch(url, opcoes);
+  } catch (erro) {
+    return { falha: 'Sem conexão com o servidor. Verifique a internet e tente novamente.' };
+  }
+  try {
+    return { dados: await resposta.json(), status: resposta.status };
+  } catch (erro) {
+    return { falha: `O servidor respondeu com um erro inesperado (código ${resposta.status}). Avise o responsável.` };
+  }
+}
 
 function mostrarErroCampoStartup(wrapper, mensagem) {
   if (!wrapper) return;
@@ -193,16 +208,21 @@ function erroDoCampoStartup(campo) {
     };
     const extensao = arquivo.name.split('.').pop()?.toLowerCase();
     if (!tipos[arquivo.type]?.includes(extensao)) return 'Selecione uma imagem JPG, PNG ou WEBP.';
+    if (arquivo.size > TAMANHO_MAX_FOTO_STARTUP) return MENSAGEM_FOTO_GRANDE_STARTUP;
     return '';
   }
   if (campo.required && campo.type === 'text' && campo.value.trim() === '') return MENSAGEM_OBRIGATORIO_STARTUP;
+  if (campo.type === 'date' && campo.validity.badInput) return MENSAGEM_DATA_STARTUP;
   if (campo.validity.valueMissing) return MENSAGEM_OBRIGATORIO_STARTUP;
   if (campo.value === '') return '';
+  if (campo.type === 'date') {
+    if (campo.validity.rangeOverflow) return MENSAGEM_DATA_FUTURA_STARTUP;
+  }
   if (campo.dataset.mascara === 'cep') {
     const cep = window.Mascara?.remover(campo) ?? campo.value.replace(/\D/g, '');
     if (!/^\d{8}$/.test(cep) || cep === '00000000') return MENSAGEM_CEP_STARTUP;
   }
-  if (campo.type === 'url' && !/^https?:\/\//i.test(campo.value.trim())) return 'O site deve começar com http:// ou https://.';
+  if (campo.type === 'url' && !/^https?:\/\//i.test(campo.value.trim())) return 'Informe um link válido, começando com http:// ou https://.';
   if (campo.validity.typeMismatch && campo.type === 'email') return MENSAGEM_EMAIL_STARTUP;
   if (!campo.validity.valid || !mascaraCompletaStartup(campo)) return MENSAGEM_INCOMPLETO_STARTUP;
   if (campo.dataset.mascara === 'cnpj' && window.Validador?.cnpj(campo.value) === false) return MENSAGEM_CNPJ_STARTUP;
@@ -271,12 +291,79 @@ for (const campo of [document.getElementById('startupName'), document.getElement
   });
 }
 
+// ──────────────────────────────────────────────
+// CEP — preenche o endereço pela ViaCEP assim que o CEP fica completo.
+// "Não encontrado" e falha de rede só avisam (o CEP é opcional e o endereço
+// continua editável à mão); só preenche o que a API devolveu.
+// ──────────────────────────────────────────────
+const ENDPOINT_VIACEP = 'https://viacep.com.br/ws/';
+const cepStartup = document.getElementById('cep');
+let avisoCep = '';
+let consultaCep = 0;
+
+// Campos que a ViaCEP preenche ficam azul claro (igual ao autopreenchimento do navegador)
+// até a pessoa editar o campo ou o CEP mudar.
+const CAMPOS_ENDERECO_CEP = ['logradouro', 'bairro', 'cidade', 'uf'].map(id => document.getElementById(id));
+function limparDestaqueCep() {
+  CAMPOS_ENDERECO_CEP.forEach(campo => campo.classList.remove('cs-autopreenchido'));
+}
+CAMPOS_ENDERECO_CEP.forEach(campo => campo.addEventListener('input', () => campo.classList.remove('cs-autopreenchido')));
+
+function avisarCep(mensagem) {
+  avisoCep = mensagem;
+  if (mensagem) mostrarErroCampoStartup(cepStartup.closest('.cs-formGroup'), mensagem);
+  else limparErroCampoStartup(cepStartup);
+}
+
+async function consultarCep() {
+  // cada digitação invalida a consulta anterior, que pode responder atrasada
+  const consulta = ++consultaCep;
+  avisarCep('');
+  limparDestaqueCep();
+
+  const digitos = cepStartup.value.replace(/\D/g, '');
+  const cep = digitos.slice(0, 8);
+  if (cep.length < 8 || cep === '00000000') return;
+
+  try {
+    const resposta = await fetch(`${ENDPOINT_VIACEP}${cep}/json/`);
+    if (!resposta.ok) throw new Error('Falha na consulta do CEP.');
+    const dados = await resposta.json();
+    if (consulta !== consultaCep) return;
+
+    if (dados.erro) {
+      avisarCep('CEP não encontrado. Preencha o endereço manualmente.');
+      return;
+    }
+
+    const endereco = {
+      logradouro: dados.logradouro,
+      bairro: dados.bairro,
+      cidade: dados.localidade,
+      uf: dados.uf,
+    };
+    for (const [id, valor] of Object.entries(endereco)) {
+      if (!valor) continue;
+      const campo = document.getElementById(id);
+      campo.value = valor;
+      campo.classList.add('cs-autopreenchido');
+      limparErroCampoStartup(campo);
+    }
+  } catch (erro) {
+    if (consulta === consultaCep) {
+      avisarCep('Não foi possível consultar o CEP. Preencha o endereço manualmente.');
+    }
+  }
+}
+
+cepStartup?.addEventListener('input', consultarCep);
+
 for (const formulario of [form, founderForm]) {
   formulario?.addEventListener('focusout', evento => {
     const campo = evento.target;
     if (!(campo instanceof HTMLInputElement || campo instanceof HTMLSelectElement)) return;
     if (['startupName', 'cnpj', 'founderEmail'].includes(campo.id) || campo.type === 'file' || campo.hidden) return;
-    const erro = erroDoCampoStartup(campo);
+    const erro = erroDoCampoStartup(campo) || (campo === cepStartup ? avisoCep : '');
     if (erro) mostrarErroCampoStartup(campo.closest('.cs-formGroup'), erro);
     else limparErroCampoStartup(campo);
   });
@@ -286,6 +373,7 @@ fotoStartupInput?.addEventListener('change', () => {
   const mensagem = erroDoCampoStartup(fotoStartupInput);
   const erroFoto = fotoStartupInput.closest('.cs-photoUpload')?.querySelector('.cs-photoError');
   if (mensagem) {
+    fotoStartupInput.value = ''; // não guarda o arquivo recusado; assim ele nem chega ao envio
     previewFotoStartup?.mostrar('');
     mostrarErroCampoStartup(fotoStartupInput.closest('.cs-photoUpload'), mensagem);
   } else if (erroFoto) {
@@ -395,17 +483,22 @@ function mostrarErrosStartupForm(erros) {
   form.querySelector('.cs-modalFooter').before(msg);
 }
 
+// As chaves de errosCampos são os ids dos campos em crudStartups.php; a exceção é
+// founderEmail, que vem como { posição do fundador: mensagem }.
 function mostrarErrosCamposServidor(errosCampos) {
-  let primeiroCampo = null;
-  for (const id of ['startupName', 'cnpj']) {
-    if (!errosCampos[id]) continue;
+  const campos = [];
+  for (const [id, mensagem] of Object.entries(errosCampos)) {
+    if (id === 'founderEmail') continue;
     const campo = document.getElementById(id);
-    mostrarErroCampoStartup(campo.closest('.cs-formGroup'), errosCampos[id]);
-    primeiroCampo = primeiroCampo ?? campo;
+    if (!campo) continue;
+    mostrarErroCampoStartup(campo.closest('.cs-formGroup, .cs-photoUpload'), mensagem);
+    campos.push(campo);
   }
-  if (primeiroCampo) {
-    mostrarEtapaStartup(1);
-    primeiroCampo.focus();
+  if (campos.length) {
+    // o primeiro campo na ordem da tela decide a etapa que abre e onde fica o foco
+    campos.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    mostrarEtapaStartup(Number(campos[0].closest('.cs-card')?.dataset.etapa || 1));
+    campos[0].focus();
     return;
   }
 
@@ -421,26 +514,11 @@ function mostrarErrosCamposServidor(errosCampos) {
   }
 }
 
-function atualizarSetorStartup() {
-  const outro = setorStartup?.value === 'outros';
-  if (setorStartup) setorStartup.hidden = outro;
-  setorStartup?.closest('.cs-sectorWrapper')?.classList.toggle('cs-sectorOutroAtivo', outro);
-  if (voltarSetorStartup) voltarSetorStartup.hidden = !outro;
-  if (outroSetorStartup) {
-    outroSetorStartup.hidden = !outro;
-    outroSetorStartup.required = outro;
-    if (!outro) outroSetorStartup.value = '';
-    if (outro) outroSetorStartup.focus();
-  }
+// Contador da biografia (X/3000)
+function atualizarContadorBiografia() {
+  if (contadorBiografia && biografiaStartup) contadorBiografia.textContent = `${biografiaStartup.value.length}/${biografiaStartup.maxLength}`;
 }
-
-setorStartup?.addEventListener('change', atualizarSetorStartup);
-voltarSetorStartup?.addEventListener('click', () => {
-  setorStartup.value = '';
-  atualizarSetorStartup();
-  setorStartup.focus();
-});
-atualizarSetorStartup();
+biografiaStartup?.addEventListener('input', atualizarContadorBiografia);
 
 // Zera o formulário pra um cadastro novo. O botão "STARTUP" já abre o modal
 // sozinho (class="abrirModal" no HTML, ver Componentes/modal.js) — falta só
@@ -454,14 +532,16 @@ function resetarFormularioStartup() {
   form.querySelector('.cs-photoLabel')?.classList.add('campoObrigatorio');
   foundersList?.replaceChildren();
   document.getElementById('founderRequiredError').hidden = true;
-  atualizarSetorStartup();
-  atualizarMesesFundacao();
+  atualizarContadorBiografia();
+  consultaCep++;
+  avisoCep = '';
+  limparDestaqueCep();
   limparErrosStartupForm();
   secoesStartup.forEach(secao => limparErrosEtapaStartup(secao));
   mostrarEtapaStartup(1);
 
   const tituloEl = mainModal?.querySelector('.modalTitulo');
-  if (tituloEl) tituloEl.lastChild.textContent = 'Cadastrar Startups';
+  if (tituloEl) tituloEl.lastChild.textContent = 'Cadastrar Startup';
 }
 
 document.addEventListener('click', evento => {
@@ -474,15 +554,13 @@ document.addEventListener('click', evento => {
 // de edição — o submit passa a chamar /atualizar em vez de /adicionar, e a
 // fundadores carregados também podem ser editados no modal secundário.
 async function abrirEdicaoStartup(id) {
+  const { dados, falha } = await requisitarJson(`${ENDPOINT_BUSCAR_STARTUP}?id=${encodeURIComponent(id)}`);
+  if (falha || !dados.sucesso || !dados.startup) {
+    alert(falha || dados.erro || 'Não foi possível carregar essa startup.');
+    return;
+  }
+
   try {
-    const resposta = await fetch(`${ENDPOINT_BUSCAR_STARTUP}?id=${encodeURIComponent(id)}`);
-    const dados = await resposta.json();
-
-    if (!dados.sucesso || !dados.startup) {
-      alert('Não foi possível carregar essa startup.');
-      return;
-    }
-
     const s = dados.startup;
     resetarFormularioStartup();
     startupEmEdicaoId = Number(s.id);
@@ -491,6 +569,8 @@ async function abrirEdicaoStartup(id) {
     form.querySelector('.cs-photoLabel')?.classList.toggle('campoObrigatorio', fotoObrigatoria);
 
     form.querySelector('#startupName').value = s.nome || '';
+    form.querySelector('#biografia').value = s.biografia || '';
+    atualizarContadorBiografia();
     form.querySelector('#cnpj').value = window.Mascara ? Mascara.aplicarEm(s.cnpj, 'cnpj') : (s.cnpj || '');
     form.querySelector('#site').value = s.site || '';
     form.querySelector('#instagram').value = s.instagram || '';
@@ -503,21 +583,9 @@ async function abrirEdicaoStartup(id) {
     form.querySelector('#cidade').value = s.cidade || '';
     form.querySelector('#uf').value = s.uf || '';
     form.querySelector('#programs').value = s.outras_participacoes || '';
-    form.querySelector('#trl').value = String(s.trl || 1);
+    form.querySelector('#sector').value = s.setor_atuacao || '';
 
-    setorStartup.value = s.setor_atuacao || '';
-    if (s.setor_atuacao && !setorStartup.value) setorStartup.value = 'outros';
-    atualizarSetorStartup();
-    if (setorStartup.value === 'outros') outroSetorStartup.value = s.setor_atuacao || '';
-
-    if (s.data_fundacao) {
-      const [ano, mes, dia] = s.data_fundacao.split('-');
-      form.querySelector('#foundYear').value  = String(parseInt(ano, 10));
-      atualizarMesesFundacao();
-      form.querySelector('#foundMonth').value = String(parseInt(mes, 10));
-      atualizarDiasFundacao();
-      form.querySelector('#foundDay').value   = String(parseInt(dia, 10));
-    }
+    form.querySelector('#dataFundacao').value = s.data_fundacao || '';
 
     if (s.logo && s.logo !== 'nothing') {
       const caminhoFoto = s.logo.startsWith('Assets/')
@@ -531,7 +599,6 @@ async function abrirEdicaoStartup(id) {
       item.dataset.id = fundador.id;
       item.dataset.nome = fundador.nome || '';
       item.dataset.cargo = fundador.funcao || '';
-      item.dataset.inicio = fundador.temp_empresa || '';
       item.dataset.email = fundador.email || '';
       item.dataset.telefone = fundador.telefone || '';
       item.querySelector('.cs-founderNome').textContent = fundador.nome || '';
@@ -546,7 +613,8 @@ async function abrirEdicaoStartup(id) {
     mostrarEtapaStartup(1);
     abrirModal('modalCadastroStartup');
   } catch (erro) {
-    alert('Erro de conexão ao carregar a startup.');
+    console.error(erro);
+    alert('Erro inesperado ao montar o formulário de edição. Recarregue a página e tente de novo.');
   }
 }
 
@@ -569,6 +637,7 @@ form.addEventListener('submit', async e => {
   const saveBtn = document.getElementById('btnSalvarStartup');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Salvando...';
+  limparErrosStartupForm();
 
   const editando = startupEmEdicaoId !== null;
   const formData = new FormData(form);
@@ -577,20 +646,20 @@ form.addEventListener('submit', async e => {
     id: Number(item.dataset.id || 0),
     nome: item.dataset.nome,
     funcao: item.dataset.cargo,
-    temp_empresa: item.dataset.inicio,
     email: item.dataset.email,
     telefone: item.dataset.telefone,
   }));
   formData.set('fundadores', JSON.stringify(fundadores));
 
   try {
-    const resposta = await fetch(editando ? ENDPOINT_ATUALIZAR_STARTUP : ENDPOINT_ADICIONAR_STARTUP, {
+    const { dados, falha } = await requisitarJson(editando ? ENDPOINT_ATUALIZAR_STARTUP : ENDPOINT_ADICIONAR_STARTUP, {
       method: 'POST',
       body: formData,
     });
-    const dados = await resposta.json();
 
-    if (dados.sucesso) {
+    if (falha) {
+      mostrarErrosStartupForm([falha]);
+    } else if (dados.sucesso) {
       sessionStorage.setItem('mostrarModalSalvo', '1');
       window.location.reload();
     } else if (dados.errosCampos) {
@@ -599,10 +668,11 @@ form.addEventListener('submit', async e => {
       document.getElementById('founderRequiredError').hidden = false;
       addFounderBtn.focus();
     } else {
-      mostrarErrosStartupForm(dados.erros || [dados.erro || 'Não foi possível salvar a startup.']);
+      mostrarErrosStartupForm([dados.erro || 'Não foi possível salvar a startup.']);
     }
   } catch (erro) {
-    mostrarErrosStartupForm(['Erro de conexão. Tente novamente.']);
+    console.error(erro);
+    mostrarErrosStartupForm(['Erro inesperado na tela. Recarregue a página e tente de novo.']);
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = 'SALVAR';
@@ -681,63 +751,3 @@ if (addFounderBtn) {
     abrirDetalhesFundador();
   });
 }
-
-// ──────────────────────────────────────────────
-// DATA DE FUNDAÇÃO — dias acompanham o mês e o ano selecionados
-// ──────────────────────────────────────────────
-const MESES_FUNDACAO_STARTUP = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-
-function atualizarDiasFundacao() {
-  const dayEl = document.getElementById('foundDay');
-  const mes = Number(document.getElementById('foundMonth').value);
-  const ano = Number(document.getElementById('foundYear').value);
-  const diaAnterior = Number(dayEl.value);
-  const hoje = new Date();
-  let totalDias = mes ? new Date(ano || 2000, mes, 0).getDate() : 31;
-  if (ano === hoje.getFullYear() && mes === hoje.getMonth() + 1) {
-    totalDias = Math.min(totalDias, hoje.getDate());
-  }
-
-  dayEl.replaceChildren(new Option('Dia', ''));
-  for (let dia = 1; dia <= totalDias; dia++) {
-    dayEl.add(new Option(String(dia), String(dia)));
-  }
-
-  dayEl.value = diaAnterior <= totalDias && diaAnterior > 0 ? String(diaAnterior) : '';
-}
-
-function atualizarMesesFundacao() {
-  const monthEl = document.getElementById('foundMonth');
-  const yearEl = document.getElementById('foundYear');
-  const dayEl = document.getElementById('foundDay');
-  const mesAnterior = monthEl.value;
-  const hoje = new Date();
-  const ultimoMes = Number(yearEl.value) === hoje.getFullYear() ? hoje.getMonth() + 1 : 12;
-
-  monthEl.replaceChildren(new Option('Mês', ''));
-  for (let mes = 1; mes <= ultimoMes; mes++) {
-    monthEl.add(new Option(MESES_FUNDACAO_STARTUP[mes - 1], String(mes)));
-  }
-
-  monthEl.value = mesAnterior && Number(mesAnterior) <= ultimoMes ? mesAnterior : '';
-  if (mesAnterior && !monthEl.value) dayEl.value = '';
-  atualizarDiasFundacao();
-}
-
-function buildDateSelects() {
-  const monthEl = document.getElementById('foundMonth');
-  const yearEl  = document.getElementById('foundYear');
-
-  const curYear    = new Date().getFullYear();
-
-  yearEl.innerHTML = '<option value="">Ano</option>';
-  for (let y = curYear; y >= 1990; y--) {
-    yearEl.innerHTML += `<option value="${y}">${y}</option>`;
-  }
-
-  monthEl.addEventListener('change', atualizarDiasFundacao);
-  yearEl.addEventListener('change', atualizarMesesFundacao);
-  atualizarMesesFundacao();
-}
-
-buildDateSelects();

@@ -43,7 +43,7 @@ class startups
     {
         $pdo  = bancoDados::conectar();
         $stmt = $pdo->query('
-            SELECT id, nome, cnpj, setor_atuacao, cidade, uf, trl,
+            SELECT id, nome, cnpj, setor_atuacao, cidade, uf, 
                    ativo + 0 AS ativo
             FROM startup
             ORDER BY nome ASC
@@ -63,7 +63,7 @@ class startups
         if (!$startup) return null;
 
         $fundadores = $pdo->prepare('
-            SELECT f.id, f.id_usuario, f.funcao, f.temp_empresa,
+            SELECT f.id, f.id_usuario, f.funcao,
                    u.nome, u.email, u.telefone
             FROM fundador f
             JOIN usuario u ON u.id = f.id_usuario
@@ -82,21 +82,21 @@ class startups
         try {
             $stmt = $pdo->prepare('
                 INSERT INTO startup (
-                    nome, cnpj, data_fundacao, trl, setor_atuacao,
+                    nome, biografia, cnpj, data_fundacao, setor_atuacao,
                     site, instagram, linkedin, cep, logradouro, numero,
-                    complemento, bairro, uf, cidade, logo, outras_participacoes
+                    complemento, bairro, uf, cidade, logo, outras_participacoes, ativo
                 ) VALUES (
-                    :nome, :cnpj, :data_fundacao, :trl, :setor_atuacao,
+                    :nome, :biografia, :cnpj, :data_fundacao, :setor_atuacao,
                     :site, :instagram, :linkedin, :cep, :logradouro, :numero,
-                    :complemento, :bairro, :uf, :cidade, :logo, :outras_participacoes
+                    :complemento, :bairro, :uf, :cidade, :logo, :outras_participacoes, 1
                 )
             ');
 
             $stmt->execute([
                 'nome'                 => $dados['nome'],
+                'biografia'            => $dados['biografia'],
                 'cnpj'                 => $dados['cnpj'],
                 'data_fundacao'        => $dados['data_fundacao'],
-                'trl'                  => $dados['trl'],
                 'setor_atuacao'        => $dados['setor_atuacao'],
                 'site'                 => $dados['site'],
                 'instagram'            => $dados['instagram'],
@@ -118,8 +118,10 @@ class startups
                 if (!$perfil) {
                     throw new \RuntimeException('O perfil de fundador não está cadastrado.');
                 }
-                $usuarioStmt = $pdo->prepare('INSERT INTO usuario (nome, email, id_perfil, telefone) VALUES (:nome, :email, :perfil, :telefone)');
-                $fundadorStmt = $pdo->prepare('INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa) VALUES (:startup, :usuario, :funcao, :entrada)');
+                // o perfil fica na tabela usuario_perfil (um usuário pode ter vários perfis)
+                $usuarioStmt = $pdo->prepare('INSERT INTO usuario (nome, email, telefone, ativo) VALUES (:nome, :email, :telefone, 1)');
+                $perfilStmt = $pdo->prepare('INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (:usuario, :perfil)');
+                $fundadorStmt = $pdo->prepare('INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa, ativo) VALUES (:startup, :usuario, :funcao, 0, 1)');
                 $emailStmt = $pdo->prepare('SELECT id FROM usuario WHERE email = :email LIMIT 1');
 
                 foreach ($fundadores as $fundador) {
@@ -132,14 +134,14 @@ class startups
                     $usuarioStmt->execute([
                         'nome' => $fundador['nome'],
                         'email' => $fundador['email'],
-                        'perfil' => $perfil,
                         'telefone' => $fundador['telefone'] === '' ? null : $fundador['telefone'],
                     ]);
+                    $idUsuario = (int) $pdo->lastInsertId();
+                    $perfilStmt->execute(['usuario' => $idUsuario, 'perfil' => $perfil]);
                     $fundadorStmt->execute([
                         'startup' => $idStartup,
-                        'usuario' => (int) $pdo->lastInsertId(),
+                        'usuario' => $idUsuario,
                         'funcao' => $fundador['funcao'],
-                        'entrada' => $fundador['temp_empresa'],
                     ]);
                 }
             }
@@ -159,8 +161,9 @@ class startups
         try {
             $stmt = $pdo->prepare('
                 UPDATE startup SET
-                    nome = :nome, cnpj = :cnpj, data_fundacao = :data_fundacao,
-                    trl = :trl, setor_atuacao = :setor_atuacao, site = :site,
+                    nome = :nome, biografia = :biografia, cnpj = :cnpj,
+                    data_fundacao = :data_fundacao,
+                    setor_atuacao = :setor_atuacao, site = :site,
                     instagram = :instagram, linkedin = :linkedin, cep = :cep,
                     logradouro = :logradouro, numero = :numero,
                     complemento = :complemento, bairro = :bairro, uf = :uf,
@@ -170,9 +173,9 @@ class startups
             ');
             $stmt->execute([
                 'nome' => $dados['nome'],
+                'biografia' => $dados['biografia'],
                 'cnpj' => $dados['cnpj'],
                 'data_fundacao' => $dados['data_fundacao'],
-                'trl' => $dados['trl'],
                 'setor_atuacao' => $dados['setor_atuacao'],
                 'site' => $dados['site'],
                 'instagram' => $dados['instagram'],
@@ -197,10 +200,11 @@ class startups
             }
 
             $perfilFundador = null;
-            $novoUsuario = $pdo->prepare('INSERT INTO usuario (nome, email, id_perfil, telefone) VALUES (:nome, :email, :perfil, :telefone)');
-            $novoFundador = $pdo->prepare('INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa) VALUES (:startup, :usuario, :funcao, :entrada)');
+            $novoUsuario = $pdo->prepare('INSERT INTO usuario (nome, email, telefone, ativo) VALUES (:nome, :email, :telefone, 1)');
+            $novoPerfil = $pdo->prepare('INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (:usuario, :perfil)');
+            $novoFundador = $pdo->prepare('INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa, ativo) VALUES (:startup, :usuario, :funcao, 0, 1)');
             $editarUsuario = $pdo->prepare('UPDATE usuario SET nome = :nome, email = :email, telefone = :telefone WHERE id = :id');
-            $editarFundador = $pdo->prepare('UPDATE fundador SET funcao = :funcao, temp_empresa = :entrada WHERE id = :id');
+            $editarFundador = $pdo->prepare('UPDATE fundador SET funcao = :funcao WHERE id = :id');
 
             foreach ($fundadores as $fundador) {
                 $idFundador = $fundador['id'];
@@ -214,8 +218,7 @@ class startups
                         'telefone' => $telefone, 'id' => $vinculos[$idFundador],
                     ]);
                     $editarFundador->execute([
-                        'funcao' => $fundador['funcao'], 'entrada' => $fundador['temp_empresa'],
-                        'id' => $idFundador,
+                        'funcao' => $fundador['funcao'], 'id' => $idFundador,
                     ]);
                     unset($vinculos[$idFundador]);
                     continue;
@@ -226,12 +229,13 @@ class startups
                     if (!$perfilFundador) throw new \RuntimeException('O perfil de fundador não está cadastrado.');
                 }
                 $novoUsuario->execute([
-                    'nome' => $fundador['nome'], 'email' => $fundador['email'],
-                    'perfil' => $perfilFundador, 'telefone' => $telefone,
+                    'nome' => $fundador['nome'], 'email' => $fundador['email'], 'telefone' => $telefone,
                 ]);
+                $idUsuario = (int) $pdo->lastInsertId();
+                $novoPerfil->execute(['usuario' => $idUsuario, 'perfil' => $perfilFundador]);
                 $novoFundador->execute([
-                    'startup' => $id, 'usuario' => (int) $pdo->lastInsertId(),
-                    'funcao' => $fundador['funcao'], 'entrada' => $fundador['temp_empresa'],
+                    'startup' => $id, 'usuario' => $idUsuario,
+                    'funcao' => $fundador['funcao'],
                 ]);
             }
 

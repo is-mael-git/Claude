@@ -52,7 +52,7 @@ class usuario extends model
     }
 
     public static function buscarEmail(string $email) : ?array{
-        $stmt = parent::pegarBanco()->prepare('SELECT id, email, senha, ativo FROM usuario WHERE email = :e LIMIT 1');
+        $stmt = parent::pegarBanco()->prepare('SELECT id, email, senha FROM usuario WHERE email = :e LIMIT 1');
         $stmt->execute(['e' => $email]);
         $usuario = $stmt->fetch();
 
@@ -67,14 +67,14 @@ class usuario extends model
     }
 
     public static function buscarPerfil(int $id) : array{
-        $stmt = parent::pegarBanco()->prepare('SELECT p.nome FROM perfil p INNER JOIN usuario u ON u.id_perfil = p.id WHERE u.id = :i');
+        $stmt = parent::pegarBanco()->prepare('SELECT p.nome AS nome_perfil FROM perfil p JOIN usuario_perfil up ON p.id = up.id_perfil WHERE up.id_usuario = :i');
         $stmt->execute(['i' => $id]);
 
         return $stmt->fetch();
     }
 
     public static function buscarpermissao(int $id) : array {
-        $stmt = parent::pegarBanco()->prepare('SELECT p.nome FROM usuario u INNER JOIN perfil_permissao pp ON u.id_perfil = pp.id_perfil INNER JOIN permissao p ON pp.id_permissao = p.id WHERE u.id = :i');
+        $stmt = parent::pegarBanco()->prepare('SELECT p.nome FROM usuario u INNER JOIN usuario_perfil up ON u.id = up.id_usuario INNER JOIN perfil_permissao pp ON up.id_perfil = pp.id_perfil INNER JOIN permissao p ON pp.id_permissao = p.id WHERE u.id = :i;');
         $stmt->execute(['i' => $id]);
 
         return $stmt->fetchAll(PDO::FETCH_COLUMN);

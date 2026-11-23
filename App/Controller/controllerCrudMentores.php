@@ -19,18 +19,17 @@ class controllerCrudMentores extends controller
     private const DIAS    = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
     private const TURNOS  = ['matutino', 'vespertino', 'noturno'];
 
-    
     private const COMPETENCIAS = [
+        'gestao'                => 1,
+        'estrategia'            => 2,
         'produto&tecnologia'    => 3,
-        'operacoes'             => 3,
-        'capital&investimentos' => 5,
+        'operacoes'             => 4,
         'financas'              => 5,
-        'estrategia'            => 1,
-        'gestao'                => 4,
-        'networking&conexoes'   => 2,
-        'marketing&vendas'      => 2,
-        'mercados&clientes'     => 2,
-        'juridico&pi'           => 4,
+        'capital&investimentos' => 6,
+        'mercados&clientes'     => 7,
+        'marketing&vendas'      => 8,
+        'networking&conexoes'   => 9,
+        'juridico&pi'           => 10,
     ];
 
     private const TIPOS_IMAGEM = [
@@ -49,8 +48,8 @@ class controllerCrudMentores extends controller
 
         $this->mostrarTela("crudMentores", [
             'parceiros' => usuarioParceiros::listar(),
-            'salvo' => $salvo,
-            'erro' => $erro,
+            'salvo'     => $salvo,
+            'erro'      => $erro,
         ]);
     }
 
@@ -141,6 +140,28 @@ class controllerCrudMentores extends controller
         exit;
     }
 
+    public function visualizar()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = filter_var($_POST['id'] ?? $_GET['id'] ?? null, FILTER_VALIDATE_INT);
+        if (!$id || $id <= 0) {
+            http_response_code(422);
+            echo json_encode(['sucesso' => false, 'erro' => 'ID inválido.']);
+            exit;
+        }
+
+        $mentor = usuarioMentor::buscarPorId((int) $id);
+        if (!$mentor) {
+            http_response_code(404);
+            echo json_encode(['sucesso' => false, 'erro' => 'Mentor não encontrado.']);
+            exit;
+        }
+
+        echo json_encode(['sucesso' => true, 'mentor' => $mentor]);
+        exit;
+    }
+
     private function prepararDados(): array
     {
         $nome      = trim($_POST['nome'] ?? '');
@@ -171,7 +192,6 @@ class controllerCrudMentores extends controller
         if (!$semana)  throw new Exception('Selecione pelo menos um dia da semana.');
         if (!$horario) throw new Exception('Selecione pelo menos um horário.');
 
-
         $modalidade = self::MODALIDADES[$_POST['modalidade'] ?? ''] ?? null;
         if (!$modalidade) {
             throw new Exception('Selecione uma modalidade.');
@@ -179,8 +199,9 @@ class controllerCrudMentores extends controller
 
         $competencias = [];
         foreach ((array) ($_POST['competencia'] ?? []) as $valor) {
-            if (isset(self::COMPETENCIAS[$valor])) {
-                $competencias[] = self::COMPETENCIAS[$valor];
+            $chave = html_entity_decode((string) $valor);
+            if (isset(self::COMPETENCIAS[$chave])) {
+                $competencias[] = self::COMPETENCIAS[$chave];
             }
         }
         $competencias = array_values(array_unique($competencias));
@@ -259,7 +280,8 @@ class controllerCrudMentores extends controller
         return $nomeFinal;
     }
 
-    public function listar() {
+    public function listar()
+    {
         $mentores = usuarioMentor::listarMentores();
         header('Content-Type: application/json');
         http_response_code(200);
@@ -267,7 +289,7 @@ class controllerCrudMentores extends controller
         exit;
     }
 
-        public function status()
+    public function status()
     {
         header('Content-Type: application/json; charset=utf-8');
 
@@ -286,5 +308,4 @@ class controllerCrudMentores extends controller
         echo json_encode(['sucesso' => $sucesso, 'ativo' => $ativo]);
         exit;
     }
-
 }

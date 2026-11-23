@@ -189,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function montarQuestaoFazerQuestionario(questao, indice) {
 
         const eixo =
-            questao.eixos ||
-            'Sem eixo';
+            questao.categoria ||
+            'Sem categoria';
 
 
         return `
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return {
                     id: checkbox.value,
                     pergunta,
-                    eixos: checkbox.dataset.eixos || ''
+                    categoria: checkbox.dataset.nomeCategoria || ''
                 };
             });
     }
