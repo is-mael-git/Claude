@@ -1,5 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.());
-
 (function () {
   const modal = document.querySelector('.areaModalCentral');
   if (!modal) return;
@@ -7,29 +5,64 @@ document.addEventListener('DOMContentLoaded', () => window.mostrarModalSalvo?.()
   const TOTAL_PASSOS = 3;
   const ICONE_SETA = '<i class="fa-solid fa-plus"></i>';
 
-  /* ---------- Preview de imagens (reaproveita o mesmo <img>) ---------- */
-  function configurarPreview(idInput, seletorImg, classeNova) {
-    const input = modal.querySelector(idInput);
-    const img = modal.querySelector(seletorImg);
-    if (!input || !img) return;
+  const entradaFoto = modal.querySelector('#mentorFoto');
+  const entradaBanner = modal.querySelector('#bannerMentor');
+  const fotoPerfil = modal.querySelector('.fotoPerfil');
+  const fotoBanner = modal.querySelector('.fotoBanner');
+  const FOTO_PERFIL_PADRAO = fotoPerfil?.src ?? '';
+  const BANNER_PADRAO = fotoBanner?.src ?? '';
+  const arquivosSelecionados = new WeakMap();
+  const urlsPrevia = new Map();
 
-    let urlAtual = null;
+  function restaurarArquivoSelecionado(entrada) {
+    const arquivo = arquivosSelecionados.get(entrada);
+    if (!arquivo) {
+      entrada.value = '';
+      return;
+    }
 
-    input.addEventListener('change', () => {
-      const arquivo = input.files?.[0];
+    const arquivos = new DataTransfer();
+    arquivos.items.add(arquivo);
+    entrada.files = arquivos.files;
+  }
+
+  function configurarPrevia(entrada, imagem) {
+    entrada?.addEventListener('change', () => {
+      const arquivo = entrada.files?.[0];
       if (!arquivo) return;
 
-      if (urlAtual) URL.revokeObjectURL(urlAtual);
-      urlAtual = URL.createObjectURL(arquivo);
+      const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+      if (arquivo.type && !tiposPermitidos.includes(arquivo.type)) {
+        window.alert('Formato de imagem inválido. Use JPG, PNG ou WEBP.');
+        restaurarArquivoSelecionado(entrada);
+        return;
+      }
+      if (arquivo.size > 2 * 1024 * 1024) {
+        window.alert('A imagem deve ter no máximo 2 MB.');
+        restaurarArquivoSelecionado(entrada);
+        return;
+      }
 
-      img.src = urlAtual;
-      img.alt = 'Prévia da imagem selecionada';
-      img.classList.add(classeNova);
+      arquivosSelecionados.set(entrada, arquivo);
+      if (urlsPrevia.has(imagem)) URL.revokeObjectURL(urlsPrevia.get(imagem));
+      const urlPrevia = URL.createObjectURL(arquivo);
+      urlsPrevia.set(imagem, urlPrevia);
+      imagem.src = urlPrevia;
     });
   }
 
-  configurarPreview('#mentorFoto', '.fotoPerfil', 'novaFotoPerfil');
-  configurarPreview('#bannerMentor', '.fotoBanner', 'novaFotoBanner');
+  configurarPrevia(entradaFoto, fotoPerfil);
+  configurarPrevia(entradaBanner, fotoBanner);
+
+  function limparImagensMentor() {
+    [entradaFoto, entradaBanner].forEach((entrada) => {
+      if (entrada) arquivosSelecionados.delete(entrada);
+    });
+    urlsPrevia.forEach((url) => URL.revokeObjectURL(url));
+    urlsPrevia.clear();
+    if (fotoPerfil) fotoPerfil.src = FOTO_PERFIL_PADRAO;
+    if (fotoBanner) fotoBanner.src = BANNER_PADRAO;
+  }
 
   /* ---------- Máscaras e tratamento de campos ---------- */
   const inputTelefone = modal.querySelector('input[name="telefone"]');
@@ -58,7 +91,7 @@ const textarea = modal.querySelector('.biografiaInput textarea');
 const contador = modal.querySelector('.qtdCaracter');
 
 if (textarea && contador) {
-  const limite = textarea.maxLength > 0 ? textarea.maxLength : 500;
+  const limite = textarea.maxLength > 0 ? textarea.maxLength : 3000;
 
   const atualizarContador = () => {
     const qtd = textarea.value.length;
@@ -116,28 +149,67 @@ if (textarea && contador) {
   if (form) form.noValidate = true; // a validação é feita por este arquivo
   const inputInstagram = modal.querySelector('input[name="instagram"]');
   const inputIdMentor = modal.querySelector('#mentorId');
-  const inputFoto = modal.querySelector('#mentorFoto');
-  const inputBanner = modal.querySelector('#bannerMentor');
-  const fotoPerfil = modal.querySelector('.fotoPerfil');
-  const fotoBanner = modal.querySelector('.fotoBanner');
-  const FOTO_PERFIL_PADRAO = fotoPerfil?.src ?? '';
-  const BANNER_PADRAO = fotoBanner?.src ?? '';
+  const inputCurriculo = modal.querySelector('#arquivoPdf');
+  const mensagemCurriculo = modal.querySelector('#mensagem');
+  const inputFoto = entradaFoto;
+  const inputBanner = entradaBanner;
   let possuiFotoExistente = false;
   const ACAO_ADICIONAR = '/ParkTec/mentores/adicionar';
   const ACAO_ATUALIZAR = '/ParkTec/mentores/atualizar';
   const URL_UPLOAD = '/ParkTec/Public/Upload/';
 
+  const validarCurriculo = () => {
+    const arquivo = inputCurriculo.files?.[0];
+    if (!arquivo) {
+      if (mensagemCurriculo) mensagemCurriculo.textContent = '';
+      return true;
+    }
+
+    if (!/\.pdf$/i.test(arquivo.name) || (arquivo.type && arquivo.type !== 'application/pdf')) {
+      if (mensagemCurriculo) mensagemCurriculo.textContent = 'Selecione um arquivo PDF válido.';
+      return false;
+    }
+
+    if (arquivo.size > 5 * 1024 * 1024) {
+      if (mensagemCurriculo) mensagemCurriculo.textContent = 'O currículo deve ter no máximo 5 MB.';
+      return false;
+    }
+
+    if (mensagemCurriculo) mensagemCurriculo.textContent = `${arquivo.name}`;
+    return true;
+  };
+
+  form?.addEventListener('reset', limparImagensMentor);
+  inputCurriculo?.addEventListener('change', validarCurriculo);
+
+  form?.addEventListener('submit', (evento) => {
+    if (!validarCurriculo()) evento.preventDefault();
+  });
+
+  form?.addEventListener('reset', () => {
+    if (mensagemCurriculo) mensagemCurriculo.textContent = '';
+  });
+
+  form?.addEventListener('envioErro', (evento) => {
+    const erro = evento.detail?.error;
+    let mensagem = erro?.message || 'Não foi possível salvar o perfil do mentor.';
+    try {
+      mensagem = JSON.parse(mensagem).erro || mensagem;
+    } catch {
+      // A resposta pode não ser JSON, por exemplo quando a sessão expira.
+    }
+    window.alert(mensagem);
+  });
+
   fotoPerfil?.addEventListener('error', () => {
     if (fotoPerfil.src === FOTO_PERFIL_PADRAO) return;
     possuiFotoExistente = false;
     fotoPerfil.src = FOTO_PERFIL_PADRAO;
-    fotoPerfil.classList.remove('novaFotoPerfil');
   });
 
   fotoBanner?.addEventListener('error', () => {
     if (fotoBanner.src === BANNER_PADRAO) return;
     fotoBanner.src = BANNER_PADRAO;
-    fotoBanner.classList.remove('novaFotoBanner');
   });
 
   const IDS_COMPETENCIAS = {
@@ -188,6 +260,11 @@ if (textarea && contador) {
       span.classList.add('ativo');
     }
     campo.classList.add('campoInvalido');
+    if (campo.matches('select')) {
+      campo.closest('.selectCustomizadoParceiros')
+        ?.querySelector('.selecionadoSelectParceiros')
+        ?.classList.add('campoInvalido');
+    }
   }
 
   function limparErro(campo) {
@@ -197,6 +274,11 @@ if (textarea && contador) {
       span.classList.remove('ativo');
     }
     campo.classList.remove('campoInvalido');
+    if (campo.matches('select')) {
+      campo.closest('.selectCustomizadoParceiros')
+        ?.querySelector('.selecionadoSelectParceiros')
+        ?.classList.remove('campoInvalido');
+    }
   }
 
   let jaMudouPasso = false;
@@ -235,7 +317,7 @@ if (textarea && contador) {
   const GRUPOS = {
     1: [['input[name="mentorFoto"]', 'Campo obrigatório.'],
         ['input[name="nome"]', 'Campo obrigatório.'],
-        ['select[name="email"]', 'Campo obrigatório.']
+        ['input[name="email"]', 'Campo obrigatório.']
       ],
     2: [
       ['input[name="semana[]"]', 'Campo obrigatório.'],
@@ -357,20 +439,6 @@ if (passo === 1) {
   });
 }
 
-function hostPermitido(valor, dominio) {
-  try {
-    const { protocol, hostname } = new URL(valor);
-    return (
-      (protocol === 'http:' || protocol === 'https:') &&
-      (hostname === dominio || hostname.endsWith('.' + dominio))
-    );
-  } catch {
-    return false;
-  }
-}
-
-// uso: hostPermitido(valor, 'instagram.com')
-
     // Grupos: percorre TODOS
     for (const [seletor, msg] of GRUPOS[passo] || []) {
       if (!validarGrupo(secao, seletor, msg)) valido = false;
@@ -472,13 +540,27 @@ function hostPermitido(valor, dominio) {
       s.classList.remove('ativo');
     });
     modal.querySelectorAll('.campoInvalido').forEach((c) => c.classList.remove('campoInvalido'));
+    form?.querySelectorAll('input, select, textarea').forEach((campo) => {
+      campo.setCustomValidity?.('');
+    });
   }
 
   function atualizarTextoDropdown(dropdown) {
     const botao = dropdown?.querySelector('button');
     if (!botao) return;
+    const abreviacoesDias = {
+      segunda: 'Seg.',
+      terca: 'Ter.',
+      quarta: 'Qua.',
+      quinta: 'Qui.',
+      sexta: 'Sex.',
+      sabado: 'Sáb.',
+    };
     const selecionados = Array.from(dropdown.querySelectorAll('input:checked'))
-      .map((input) => input.closest('.itemDadoDrop')?.querySelector('.selecaoItemNome')?.textContent.trim())
+      .map((input) => {
+        const nome = input.closest('.itemDadoDrop')?.querySelector('.selecaoItemNome')?.textContent.trim();
+        return dropdown.closest('.dropDias') ? abreviacoesDias[input.value] || nome : nome;
+      })
       .filter(Boolean);
 
     const textoSelecionado = botao.querySelector('.textoDropDisponibilidade');
@@ -506,14 +588,6 @@ function hostPermitido(valor, dominio) {
     if (inputIdMentor) inputIdMentor.value = '';
     possuiFotoExistente = false;
     form.action = ACAO_ADICIONAR;
-    if (fotoPerfil) {
-      fotoPerfil.src = FOTO_PERFIL_PADRAO;
-      fotoPerfil.classList.remove('novaFotoPerfil');
-    }
-    if (fotoBanner) {
-      fotoBanner.src = BANNER_PADRAO;
-      fotoBanner.classList.remove('novaFotoBanner');
-    }
     modal.querySelectorAll('.areaDrop.aberto').forEach((areaDrop) => {
       areaDrop.classList.remove('aberto');
       areaDrop.querySelector('.dropDisponibilidade')?.setAttribute('aria-expanded', 'false');
@@ -569,13 +643,11 @@ function hostPermitido(valor, dominio) {
       fotoPerfil.src = mentor.foto
         ? `${URL_UPLOAD}Mentor/${encodeURIComponent(mentor.foto)}`
         : FOTO_PERFIL_PADRAO;
-      fotoPerfil.classList.remove('novaFotoPerfil');
     }
     if (fotoBanner) {
       fotoBanner.src = mentor.banner
         ? `${URL_UPLOAD}Mentores/Banners/${encodeURIComponent(mentor.banner)}`
         : BANNER_PADRAO;
-      fotoBanner.classList.remove('novaFotoBanner');
     }
 
     form.action = ACAO_ATUALIZAR;

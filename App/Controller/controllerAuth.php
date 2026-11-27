@@ -47,7 +47,7 @@ class controllerAuth extends controller{
         $senha = $_POST['senha'] ?? '';
 
         if(!validador::required($email) || !validador::required($senha)) {
-            auth::flash('erro', 'Manda email e senha');
+            auth::flash('erro', 'Email ou senha errada.');
             $this->redirecionar('/login');
         }
 
@@ -59,7 +59,7 @@ class controllerAuth extends controller{
         $usuario = usuario::buscarEmail($email);
 
         if(!$usuario || !hashSenha::verificar($senha, $usuario['senha'])) {
-            auth::flash('erro', 'Email ou senha inválidos');
+            auth::flash('erro', 'Email ou senha errada.');
             $this->redirecionar('/login');
         }
 

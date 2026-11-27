@@ -2,136 +2,86 @@
 
 namespace Models;
 
-use Core\bancoDados;
 use Core\model;
 use Core\select;
-use PDO;
+use Throwable;
 
 class usuarioParceiros extends model
 {
 
-    public static function cadastrarParceiro($dados)
+    public static function cadastrarParceiro(array $dados): int
     {
-        $db = bancoDados::conectar();
+        self::iniciarTransacao();
 
         try {
-            $db->beginTransaction();
+            $idParceiro = self::inserir('parceiro', [
+                'foto'            => $dados['foto'],
+                'nome'            => $dados['nome'],
+                'cnpj'            => $dados['cnpj'],
+                'telefone'        => $dados['telefone'],
+                'site'            => $dados['site'],
+                'id_area_atuacao' => $dados['id_area_atuacao'],
+                'instagram'       => $dados['instagram'],
+                'linkedin'        => $dados['linkedin'],
+                'ativo'           => 1,
+            ]);
 
-            $stmtParceiro = $db->prepare('INSERT INTO parceiro (foto, nome, cnpj, telefone, site, id_area_atuacao, instagram, linkedin, ativo)
-            VALUES (:f, :n, :cnpj, :t, :s, :aa, :i, :l, 1)');
-
-            $parametrosParceiro = [
-                'f'     => $dados['foto'],
-                'n'     => $dados['nome'],
-                'cnpj'  => $dados['cnpj'],
-                't'     => $dados['telefone'],
-                's'     => $dados['site'],
-                'aa'    => $dados['id_area_atuacao'],
-                'i'     => $dados['instagram'],
-                'l'     => $dados['linkedin']
-            ];
-            $stmtParceiro->execute($parametrosParceiro);
-
-            $idParceiro = (int) $db->lastInsertId();
-
-            $stmtRep = $db->prepare('INSERT INTO representante_parceiro (id_parceiro, nome, email, telefone, cargo)
-            VALUES (:id_parceiro, :nome, :email, :telefone, :cargo)');
-
-            $parametrosRepresentante = [
+            self::inserir('representante_parceiro', [
                 'id_parceiro' => $idParceiro,
                 'nome'        => $dados['nome_representante'],
                 'email'       => $dados['email_representante'],
                 'telefone'    => $dados['telefone_representante'],
-                'cargo'       => $dados['cargo_representante']
-            ];
-            $stmtRep->execute($parametrosRepresentante);
+                'cargo'       => $dados['cargo_representante'],
+            ]);
 
-            $db->commit();
+            self::confirmarTransacao();
             return $idParceiro;
-        } catch (\Throwable $e) {
-            if ($db->inTransaction()) {
-                $db->rollBack();
-            }
+        } catch (Throwable $e) {
+            self::cancelarTransacao();
             throw $e;
         }
     }
 
-    public static function atualizarParceiro($dados, $id)
+    public static function atualizarParceiro(array $dados, int $id): bool
     {
-        $db = bancoDados::conectar();
+        self::iniciarTransacao();
 
         try {
-            $db->beginTransaction();
+            self::atualizarPorId('parceiro', $id, [
+                'foto'            => $dados['foto'],
+                'nome'            => $dados['nome'],
+                'cnpj'            => $dados['cnpj'],
+                'telefone'        => $dados['telefone'],
+                'site'            => $dados['site'],
+                'id_area_atuacao' => $dados['id_area_atuacao'],
+                'instagram'       => $dados['instagram'],
+                'linkedin'        => $dados['linkedin'],
+            ]);
 
-            $sql = "UPDATE parceiro SET
-            foto = :f,
-            nome = :n,
-            cnpj = :cnpj,
-            telefone = :t,
-            site = :s,
-            id_area_atuacao = :aa,
-            instagram = :i,
-            linkedin = :l
-            WHERE id = :id";
-
-            $stmt = $db->prepare($sql);
-            $parametrosParceiro = [
-                'id'    => $id,
-                'f'     => $dados['foto'],
-                'n'     => $dados['nome'],
-                'cnpj'  => $dados['cnpj'],
-                't'     => $dados['telefone'],
-                's'     => $dados['site'],
-                'aa'    => $dados['id_area_atuacao'],
-                'i'     => $dados['instagram'],
-                'l'     => $dados['linkedin']
+            $dadosRepresentante = [
+                'nome'     => $dados['nome_representante'],
+                'email'    => $dados['email_representante'],
+                'telefone' => $dados['telefone_representante'],
+                'cargo'    => $dados['cargo_representante'],
             ];
-            $stmt->execute($parametrosParceiro);
 
-            $checkRep = $db->prepare('SELECT id FROM representante_parceiro WHERE id_parceiro = :id');
-            $checkRep->execute(['id' => $id]);
-            $repExiste = $checkRep->fetch();
-
-            if ($repExiste) {
-                $stmtRep = $db->prepare('UPDATE representante_parceiro SET
-                nome = :nome,
-                email = :email,
-                telefone = :telefone,
-                cargo = :cargo
-                WHERE id_parceiro = :id_parceiro');
+            if (self::existe('representante_parceiro', ['id_parceiro' => $id])) {
+                self::atualizarPorId('representante_parceiro', $id, $dadosRepresentante, 'id_parceiro');
             } else {
-                $stmtRep = $db->prepare('INSERT INTO representante_parceiro (id_parceiro, nome, email, telefone, cargo)
-                VALUES (:id_parceiro, :nome, :email, :telefone, :cargo)');
+                self::inserir('representante_parceiro', ['id_parceiro' => $id] + $dadosRepresentante);
             }
 
-            $parametrosRepresentante = [
-                'id_parceiro' => $id,
-                'nome'        => $dados['nome_representante'],
-                'email'       => $dados['email_representante'],
-                'telefone'    => $dados['telefone_representante'],
-                'cargo'       => $dados['cargo_representante']
-            ];
-            $stmtRep->execute($parametrosRepresentante);
-
-            $db->commit();
+            self::confirmarTransacao();
             return true;
-        } catch (\Throwable $e) {
-            if ($db->inTransaction()) {
-                $db->rollBack();
-            }
+        } catch (Throwable $e) {
+            self::cancelarTransacao();
             throw $e;
         }
     }
 
     public static function alterarStatus(int $id, bool $ativo): bool
     {
-        $db = bancoDados::conectar();
-
-        $stmt = $db->prepare("UPDATE parceiro SET ativo = :ativo WHERE id = :id");
-        $stmt->bindValue(':ativo', $ativo ? 1 : 0, PDO::PARAM_INT);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-
-        return $stmt->execute();
+        return self::atualizarPorId('parceiro', $id, ['ativo' => $ativo]);
     }
 
     public static function buscarPorId($id): ?array
@@ -208,20 +158,16 @@ class usuarioParceiros extends model
 
     public static function cadastrarArea(string $nome): int
     {
-        $db = bancoDados::conectar();
+        $idExistente = self::selecionarValor(
+            'SELECT id FROM area_atuacao WHERE nome = :nome LIMIT 1',
+            ['nome' => $nome]
+        );
 
-        $stmt = $db->prepare("SELECT id FROM area_atuacao WHERE nome = :nome");
-        $stmt->execute(['nome' => $nome]);
-        $area = $stmt->fetch();
-
-        if ($area) {
-            return (int) $area['id'];
+        if ($idExistente !== false) {
+            return (int) $idExistente;
         }
 
-        $stmt = $db->prepare("INSERT INTO area_atuacao (nome) VALUES (:nome)");
-        $stmt->execute(['nome' => $nome]);
-
-        return (int) $db->lastInsertId();
+        return self::inserir('area_atuacao', ['nome' => $nome]);
     }
 
     public static function listarAreas(): array

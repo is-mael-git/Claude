@@ -40,7 +40,7 @@ require_once BASE_MODAL;
         <div class="logoLogin2">
             <img src="<?=  BASE_IMGSIS ?>/logo-footer-sem-texto.png" alt="Logo ParkTecCG">
         </div>
-        <form action="<?=  BASE_URL ?>login" method="POST" class="formLogin">
+        <form action="<?=  BASE_URL ?>login" method="POST" class="formLogin" novalidate>
             <!-- Gerador de token -->
             <input type="hidden" name="csrfToken" value="<?= htmlspecialchars(auth::csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
             <div class="logoLogin3">
@@ -48,14 +48,13 @@ require_once BASE_MODAL;
             </div>
             <div class="inputsLogin">
                 <div class="inputLogin">
-                    <!-- Esses dois labels em cima dos dois inputs são para recursos de maior acessibilidade. Eles estão configurados para não aparecer, mas ao usar o recurso de escuta ficará mais acessível para mais usuários. -->
-                    <label class="srOnly" for="emailLogin">Email</label>
-                    <input type="email" name="email" id="emailLogin" placeholder="Email">
+                    <label for="emailLogin">Email<?php if (!empty($erro)): ?> <span class="erroCampoParceiro" role="alert"><?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?></label>
+                    <input type="email" name="email" id="emailLogin" placeholder="Digite seu email">
                     <i class="fa-solid fa-user userIconLogin"></i>
                 </div>
                 <div class="inputLogin">
-                    <label class="srOnly" for="senhaLogin">Senha</label>
-                    <input class="inputLogin" type="password" name="senha" id="senhaLogin" placeholder="Senha">
+                    <label for="senhaLogin">Senha</label>
+                    <input class="inputLogin" type="password" name="senha" id="senhaLogin" placeholder="Digite sua senha">
                     <i class="bi bi-eye-slash-fill eyeIconLogin" id="btnSenha" onclick="mostrarSenha()"></i>
                 </div>
             </div>

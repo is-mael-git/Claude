@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `mentor` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`linkedin` VARCHAR(255) UNIQUE,
 	`instagram` VARCHAR(255) UNIQUE,
-	`biografia` VARCHAR(500) NOT NULL,
+	`biografia` VARCHAR(3000) NOT NULL,
 	`banner` VARCHAR(255),
 	`id_parceiro` INTEGER,
 	`id_usuario` INTEGER NOT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `startup` (
 	`nome` VARCHAR(100) NOT NULL UNIQUE,
 	`cnpj` VARCHAR(14) NOT NULL UNIQUE,
 	`data_fundacao` DATE NOT NULL,
-	`setor_atuacao` VARCHAR(150) NOT NULL,
+	`id_area_atuacao` INTEGER NOT NULL,
 	`site` VARCHAR(255),
 	`instagram` VARCHAR(255),
 	`linkedin` VARCHAR(255),
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `representante_parceiro` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`id_parceiro` INTEGER NOT NULL,
 	`nome` VARCHAR(100) NOT NULL,
-	`email` VARCHAR(320) NOT NULL UNIQUE,
+	`email` VARCHAR(320) NOT NULL,
 	`telefone` VARCHAR(20) NOT NULL,
 	`cargo` VARCHAR(50) NOT NULL,
 	PRIMARY KEY(`id`)
@@ -280,6 +280,7 @@ CREATE TABLE IF NOT EXISTS `avaliacao` (
 	`nome` VARCHAR(50) NOT NULL UNIQUE,
 	`minimo` INTEGER NOT NULL,
 	`maximo` INTEGER NOT NULL,
+	`ativo` BIT DEFAULT 1,
 	PRIMARY KEY(`id`)
 );
 
@@ -288,6 +289,7 @@ CREATE TABLE IF NOT EXISTS `categoria` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(100) NOT NULL,
 	`descricao` VARCHAR(255) NOT NULL,
+	`ativo` BIT DEFAULT 1,
 	PRIMARY KEY(`id`)
 );
 
@@ -296,6 +298,7 @@ CREATE TABLE IF NOT EXISTS `subcategoria` (
 	`id` INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
 	`nome` VARCHAR(100) NOT NULL,
 	`descricao` VARCHAR(255) NOT NULL,
+	`ativo` BIT DEFAULT 1,
 	PRIMARY KEY(`id`)
 );
 
@@ -493,6 +496,9 @@ ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE `mentor_subcategoria`
 ADD FOREIGN KEY(`id_subcategoria`) REFERENCES `subcategoria`(`id`)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `startup`
+ADD FOREIGN KEY(`id_area_atuacao`) REFERENCES `area_atuacao`(`id`)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 -- Inserções das tabelas ------------------------------
 
@@ -578,6 +584,8 @@ INSERT INTO usuario (nome, cpf, email, senha, ativo, telefone, foto)
 VALUES ('Carlos', '01928163721', 'carlos@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67948572943, 'huang.jpeg');
 INSERT INTO usuario (nome, email, senha, ativo, telefone, foto)
 VALUES ('Roberto', 'roberto@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67917243212, 'zuckerberg.jpg');
+INSERT INTO usuario (nome, cpf, email, senha, ativo, telefone) 
+VALUES ('Rafaela', '09045623103', 'rafaela@gmail.com', '210000$25831e120611829ebfb27515be6ea8d2$c7f9a6e58b72288767ff82270915546bb3bc97003bcb9e26c96799c78f65e4cd', 1, 67089461785);
 
 -- Vínculo Usuário x Perfil
 INSERT INTO usuario_perfil (id_usuario, id_perfil) VALUES (1, 1);
@@ -599,8 +607,8 @@ INSERT INTO mentor (linkedin, instagram, biografia, banner, id_parceiro, id_usua
 VALUES ('https://www.linkedin.com/in/italo-almeida-966b42354/', 'https://www.instagram.com/it_1luan/', 'Entusiasta da tecnologia, formado em engenharia de software na Harvard University', 'nothing', 1, 3, 1, NULL, 1);
 
 -- Startup
-INSERT INTO startup (nome, cnpj, data_fundacao, setor_atuacao, site, instagram, linkedin, cep, logradouro, numero, complemento, bairro, uf, cidade, logo, outras_participacoes, biografia, ativo) 
-VALUES ('Nubank', '18236120000158', '2023-05-06', 'financeiro', 'https://nubank.com.br/', 'https://www.instagram.com/nubank/', 'https://www.linkedin.com/company/nubank/', '05409000', 'Rua Capote Valente, 39, Pinheiros', 39, '9º ao 14º andares', 'Pinheiros', 'SP', 'São Paulo', 'nothing', 'acelerações de IA', 'Maior banco digital.', 1);
+INSERT INTO startup (nome, cnpj, data_fundacao, id_area_atuacao, site, instagram, linkedin, cep, logradouro, numero, complemento, bairro, uf, cidade, logo, outras_participacoes, biografia, ativo) 
+VALUES ('Nubank', '18236120000158', '2023-05-06', 1, 'https://nubank.com.br/', 'https://www.instagram.com/nubank/', 'https://www.linkedin.com/company/nubank/', '05409000', 'Rua Capote Valente, 39, Pinheiros', 39, '9º ao 14º andares', 'Pinheiros', 'SP', 'São Paulo', 'nothing', 'acelerações de IA', 'Maior banco digital.', 1);
 
 -- Fundador
 INSERT INTO fundador (id_startup, id_usuario, funcao, temp_empresa, ativo) 
@@ -935,3 +943,60 @@ SELECT
 FROM parceiro p
 INNER JOIN area_atuacao a ON a.id = p.id_area_atuacao
 LEFT JOIN representante_parceiro rp ON rp.id_parceiro = p.id;
+
+CREATE OR REPLACE VIEW vw_avaliacao_categoria AS
+SELECT
+    a.id,
+    a.nome,
+    a.minimo,
+    a.maximo,
+        COALESCE(
+            ( 
+				SELECT GROUP_CONCAT(c.nome ORDER BY c.nome SEPARATOR ', ')
+				FROM avaliacao_categoria ac
+				INNER JOIN categoria c ON c.id = ac.id_categoria
+				WHERE ac.id_avaliacao = a.id
+        	),
+                ''
+            ) AS categorias
+        FROM avaliacao a
+        ORDER BY a.id DESC;
+
+CREATE OR REPLACE VIEW vw_startups_detalhes AS
+SELECT
+    s.id,
+    s.id_area_atuacao,
+    a.nome AS area_nome,
+    a.nome AS setor_atuacao,
+    s.nome,
+    s.biografia,
+    s.cnpj,
+    s.data_fundacao,
+    s.site,
+    s.instagram,
+    s.linkedin,
+    CAST(s.ativo AS UNSIGNED) AS ativo,
+    s.criado_em,
+    s.cep,
+    s.logradouro,
+    s.numero,
+    s.complemento,
+    s.bairro,
+    s.uf,
+    s.cidade,
+    s.logo,
+    s.outras_participacoes
+FROM startup s
+INNER JOIN area_atuacao a ON a.id = s.id_area_atuacao;
+
+CREATE OR REPLACE VIEW vw_startups_fundadores AS
+SELECT
+    f.id,
+    f.id_startup,
+    f.id_usuario,
+    f.funcao,
+    u.nome,
+    u.email,
+    u.telefone
+FROM fundador f
+INNER JOIN usuario u ON u.id = f.id_usuario;

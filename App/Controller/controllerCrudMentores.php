@@ -39,6 +39,7 @@ class controllerCrudMentores extends controller
     ];
 
     private const TAMANHO_MAX = 2 * 1024 * 1024; // 2 MB
+    private const TAMANHO_MAX_CURRICULO = 5 * 1024 * 1024; // 5 MB
 
     public function index()
     {
@@ -65,30 +66,26 @@ class controllerCrudMentores extends controller
 
             $dados['foto']   = $this->subirImagem('mentorFoto', 'Mentor/', true);
             $dados['banner'] = $this->subirImagem('banner', 'Mentores/Banners/', false);
+            $dados['curriculo'] = $this->subirCurriculo();
 
             usuarioMentor::cadastrarMentor($dados);
-            $_SESSION['mentorSalvo'] = true;
+            $this->responderSalvarMentor(true);
         } catch (PDOException $e) {
             error_log($e->getMessage());
             $msg = $e->getCode() === '23000'
                 ? 'E-mail, telefone, Linkedin, Instagram ou foto já cadastrados.'
                 : 'Erro ao salvar o mentor.';
-            $_SESSION['mentorErro'] = $msg;
+            $this->responderSalvarMentor(false, $msg, $e->getCode() === '23000' ? 409 : 500);
         } catch (Exception $e) {
-            $_SESSION['mentorErro'] = $e->getMessage();
+            $this->responderSalvarMentor(false, $e->getMessage(), 422);
         }
-
-        header("Location: " . BASE_URL . "mentores/index");
-        exit();
     }
 
     public function atualizar()
     {
         $idMentor = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
         if (!$idMentor || $idMentor <= 0) {
-            $_SESSION['mentorErro'] = 'Mentor não encontrado.';
-            header("Location: " . BASE_URL . "mentores/index");
-            exit();
+            $this->responderSalvarMentor(false, 'Mentor não encontrado.', 422);
         }
 
         try {
@@ -102,20 +99,19 @@ class controllerCrudMentores extends controller
                 ?? $mentorAtual['foto'];
             $dados['banner'] = $this->subirImagem('banner', 'Mentores/Banners/', false)
                 ?? $mentorAtual['banner'];
+            $dados['curriculo'] = $this->subirCurriculo();
 
             usuarioMentor::atualizarMentor($dados, (int) $idMentor);
-            $_SESSION['mentorSalvo'] = true;
+            $this->responderSalvarMentor(true);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $_SESSION['mentorErro'] = $e->getCode() === '23000'
+            $mensagem = $e->getCode() === '23000'
                 ? 'E-mail, telefone, Linkedin ou Instagram já cadastrados.'
                 : 'Erro ao atualizar o mentor.';
+            $this->responderSalvarMentor(false, $mensagem, $e->getCode() === '23000' ? 409 : 500);
         } catch (Exception $e) {
-            $_SESSION['mentorErro'] = $e->getMessage();
+            $this->responderSalvarMentor(false, $e->getMessage(), 422);
         }
-
-        header("Location: " . BASE_URL . "mentores/index");
-        exit();
     }
 
     public function buscar()
@@ -178,8 +174,8 @@ class controllerCrudMentores extends controller
         if (strlen($telefone) < 10 || strlen($telefone) > 11) {
             throw new Exception('Telefone inválido.');
         }
-        if (mb_strlen($biografia) > 500) {
-            throw new Exception('A biografia deve ter no máximo 500 caracteres.');
+        if (mb_strlen($biografia) > 3000) {
+            throw new Exception('A biografia deve ter no máximo 3000 caracteres.');
         }
 
         $idParceiro = filter_var($_POST['id_parceiro'] ?? null, FILTER_VALIDATE_INT);
@@ -278,6 +274,81 @@ class controllerCrudMentores extends controller
         }
 
         return $nomeFinal;
+    }
+
+    private function subirCurriculo(): ?string
+    {
+        $arquivo = $_FILES['curriculo'] ?? null;
+        if (!$arquivo || ($arquivo['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        $erroUpload = $arquivo['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($erroUpload !== UPLOAD_ERR_OK || !is_uploaded_file($arquivo['tmp_name'] ?? '')) {
+            $mensagensUpload = [
+                UPLOAD_ERR_INI_SIZE   => 'O currículo excede o limite de upload configurado no servidor.',
+                UPLOAD_ERR_FORM_SIZE  => 'O currículo excede o limite permitido pelo formulário.',
+                UPLOAD_ERR_PARTIAL    => 'O upload do currículo foi interrompido. Tente novamente.',
+                UPLOAD_ERR_NO_TMP_DIR => 'O servidor não possui diretório temporário para receber o currículo.',
+                UPLOAD_ERR_CANT_WRITE => 'O servidor não conseguiu gravar o currículo temporário.',
+                UPLOAD_ERR_EXTENSION  => 'O servidor bloqueou o upload do currículo.',
+            ];
+            throw new Exception($mensagensUpload[$erroUpload] ?? 'Falha no upload do currículo.');
+        }
+
+        if ($arquivo['size'] > self::TAMANHO_MAX_CURRICULO) {
+            throw new Exception('O currículo deve ter no máximo 5 MB.');
+        }
+
+        $caminhoTemporario = $arquivo['tmp_name'];
+        $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($caminhoTemporario);
+        $assinatura = file_get_contents($caminhoTemporario, false, null, 0, 5);
+        if ($mime !== 'application/pdf' || $assinatura !== '%PDF-') {
+            throw new Exception('O currículo deve ser um arquivo PDF válido.');
+        }
+
+        $nomeFinal = bin2hex(random_bytes(16)) . '.pdf';
+        $diretorio = dirname(__DIR__, 2) . '/Public/Upload/Mentores/Curriculos' . DIRECTORY_SEPARATOR;
+        if (!is_dir($diretorio) && !mkdir($diretorio, 0755, true) && !is_dir($diretorio)) {
+            error_log("Não foi possível criar o diretório de currículos de mentores: {$diretorio}");
+            throw new Exception('Não foi possível criar a pasta de destino do currículo.');
+        }
+        if (!is_writable($diretorio)) {
+            error_log("Sem permissão de escrita no diretório de currículos de mentores: {$diretorio}");
+            throw new Exception('O servidor não tem permissão para gravar o currículo.');
+        }
+
+        $destino = $diretorio . $nomeFinal;
+        if (!move_uploaded_file($caminhoTemporario, $destino)) {
+            error_log("Falha ao mover currículo de mentor para: {$destino}");
+            throw new Exception('Falha ao salvar o currículo.');
+        }
+
+        return $nomeFinal;
+    }
+
+    private function responderSalvarMentor(bool $sucesso, ?string $mensagem = null, int $status = 200): void
+    {
+        $ajax = strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+        if ($ajax) {
+            http_response_code($sucesso ? 200 : $status);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($sucesso
+                ? ['sucesso' => true]
+                : ['sucesso' => false, 'erro' => $mensagem]);
+            exit();
+        }
+
+        if ($sucesso) {
+            $_SESSION['mentorSalvo'] = true;
+            unset($_SESSION['mentorErro']);
+        } else {
+            $_SESSION['mentorErro'] = $mensagem;
+            unset($_SESSION['mentorSalvo']);
+        }
+
+        header("Location: " . BASE_URL . "mentores/index");
+        exit();
     }
 
     public function listar()

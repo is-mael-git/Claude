@@ -50,7 +50,7 @@
 
     itens.forEach((texto) => {
       const tag = document.createElement('span');
-      tag.className = 'visTag';
+      tag.className = 'campoTag';
       tag.textContent = texto;
       container.appendChild(tag);
     });

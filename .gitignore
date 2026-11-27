@@ -7,6 +7,9 @@ aplicativo.php
 Public/Upload/**/*
 !Public/Upload/**/
 !Public/Upload/**/.gitkeep
+!Public/Upload/Equipe/huang.jpeg
+!Public/Upload/Equipe/renata.jpeg
+!Public/Upload/Mentor/zuckerberg.jpg
 
 # Pastas do postman
 

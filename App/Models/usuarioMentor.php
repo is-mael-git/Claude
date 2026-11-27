@@ -109,8 +109,8 @@ class usuarioMentor
     private static function criarMentor(PDO $db, array $dados, int $idUsuario, int $idDisponibilidade): int
     {
         $stmt = $db->prepare('INSERT INTO mentor
-            (linkedin, instagram, biografia, banner, id_parceiro, id_usuario, id_disponibilidade, ativo)
-            VALUES (:l, :i, :b, :fb, :id_p, :id_u, :id_d, 1)');
+            (linkedin, instagram, biografia, banner, id_parceiro, id_usuario, id_disponibilidade, curriculo, ativo)
+            VALUES (:l, :i, :b, :fb, :id_p, :id_u, :id_d, :curriculo, 1)');
         $stmt->execute([
             'l'    => !empty($dados['linkedin']) ? $dados['linkedin'] : null,
             'i'    => !empty($dados['instagram']) ? $dados['instagram'] : null,
@@ -119,6 +119,7 @@ class usuarioMentor
             'id_p' => $dados['id_parceiro'],
             'id_u' => $idUsuario,
             'id_d' => $idDisponibilidade,
+            'curriculo' => $dados['curriculo'] ?? null,
         ]);
         return (int) $db->lastInsertId();
     }
@@ -276,7 +277,8 @@ class usuarioMentor
             $stmtMentor = $db->prepare("
                 UPDATE mentor
                 SET linkedin = :linkedin, instagram = :instagram, biografia = :biografia,
-                    banner = :banner, id_parceiro = :id_parceiro
+                    banner = :banner, id_parceiro = :id_parceiro,
+                    curriculo = COALESCE(:curriculo, curriculo)
                 WHERE id = :id
             ");
             $stmtMentor->execute([
@@ -285,6 +287,7 @@ class usuarioMentor
                 'biografia'   => $dados['biografia'],
                 'banner'      => !empty($dados['banner']) ? $dados['banner'] : null,
                 'id_parceiro' => $dados['id_parceiro'],
+                'curriculo'   => $dados['curriculo'] ?? null,
                 'id'          => $idMentor,
             ]);
 

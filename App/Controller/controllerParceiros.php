@@ -124,29 +124,58 @@ class controllerParceiros extends controller
     }
 
     private function dadosFormulario(?string $imagem): array
-    {   
-        if(!validador::validarCnpj($_POST['cnpj'])){
-            die("CNPJ Parceiro Invalido");
+    {
+        $nome = trim((string) ($_POST['nome'] ?? ''));
+        $cnpj = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', (string) ($_POST['cnpj'] ?? '')));
+        $telefone = preg_replace('/\D/', '', (string) ($_POST['telefone'] ?? ''));
+        $site = trim((string) ($_POST['site'] ?? ''));
+        $instagram = trim((string) ($_POST['instagram'] ?? ''));
+        $linkedin = trim((string) ($_POST['linkedin'] ?? ''));
+        $nomeRepresentante = trim((string) ($_POST['nomeRepresentante'] ?? ''));
+        $telefoneRepresentante = preg_replace('/\D/', '', (string) ($_POST['telefoneRepresentante'] ?? ''));
+        $cargoRepresentante = trim((string) ($_POST['cargoRepresentante'] ?? ''));
+        $emailRepresentante = trim((string) ($_POST['emailRepresentante'] ?? ''));
+
+        if (!validador::required($nome) || mb_strlen($nome) > 100) {
+            $this->erroValidacao('Nome do parceiro é obrigatório e deve ter até 100 caracteres.');
         }
-        if(!validador::validarTel($_POST['telefone'])){
-            die("Telefone Parceiro Invalido");
+        if (!validador::validarCnpj($cnpj)) {
+            $this->erroValidacao('CNPJ do parceiro inválido.');
         }
-        if(!validador::validarTel($_POST['telefoneRepresentante'])){
-            die("Telefone Representante Invalido");
+        if (!validador::validarTel($telefone) || strlen($telefone) > 11) {
+            $this->erroValidacao('Telefone do parceiro inválido.');
         }
+        foreach (['Site' => $site, 'Instagram' => $instagram, 'LinkedIn' => $linkedin] as $rotulo => $url) {
+            if ($url !== '' && (mb_strlen($url) > 255 || !preg_match('/^https?:\/\//i', $url))) {
+                $this->erroValidacao("{$rotulo} deve começar com http:// ou https:// e ter até 255 caracteres.");
+            }
+        }
+        if (!validador::required($nomeRepresentante) || mb_strlen($nomeRepresentante) > 100) {
+            $this->erroValidacao('Nome do representante é obrigatório e deve ter até 100 caracteres.');
+        }
+        if (!validador::validarTel($telefoneRepresentante) || strlen($telefoneRepresentante) > 11) {
+            $this->erroValidacao('Telefone do representante inválido.');
+        }
+        if (!validador::required($cargoRepresentante) || mb_strlen($cargoRepresentante) > 50) {
+            $this->erroValidacao('Cargo do representante é obrigatório e deve ter até 50 caracteres.');
+        }
+        if (!validador::required($emailRepresentante) || !validador::email($emailRepresentante) || mb_strlen($emailRepresentante) > 320) {
+            $this->erroValidacao('E-mail do representante inválido.');
+        }
+
         return [
-            'foto'                      => $imagem ?? "",
-            'nome'                      => $this->antiXss($_POST['nome'] ?? ""),
-            'cnpj'                      => $this->antiXss($_POST['cnpj'] ?? ""),
-            'telefone'                  => $this->antiXss($_POST['telefone'] ?? ""),
-            'instagram'                 => $this->antiXss($_POST['instagram'] ?? ""),
+            'foto'                      => $imagem ?? '',
+            'nome'                      => $this->antiXss($nome),
+            'cnpj'                      => $cnpj,
+            'telefone'                  => $telefone,
+            'instagram'                 => $this->antiXss($instagram),
             'id_area_atuacao'           => $this->idAreaAtuacao(),
-            'site'                      => $this->antiXss($_POST['site'] ?? ""),
-            'linkedin'                  => $this->antiXss($_POST['linkedin'] ?? ""),
-            'nome_representante'        => $this->antiXss($_POST['nomeRepresentante'] ?? ""),
-            'telefone_representante'    => $this->antiXss($_POST['telefoneRepresentante'] ?? ""),
-            'cargo_representante'       => $this->antiXss($_POST['cargoRepresentante'] ?? ""),
-            'email_representante'       => $this->antiXss($_POST['emailRepresentante'] ?? "")
+            'site'                      => $this->antiXss($site),
+            'linkedin'                  => $this->antiXss($linkedin),
+            'nome_representante'        => $this->antiXss($nomeRepresentante),
+            'telefone_representante'    => $telefoneRepresentante,
+            'cargo_representante'       => $this->antiXss($cargoRepresentante),
+            'email_representante'       => $this->antiXss($emailRepresentante)
         ];
     }
 
@@ -155,19 +184,21 @@ class controllerParceiros extends controller
         return htmlspecialchars(trim($valor), ENT_QUOTES, 'UTF-8');
     }
 
-    
     private function idAreaAtuacao(): int
     {
-        $novaArea = trim($_POST['novaAreaAtuacao'] ?? '');
+        $novaArea = trim((string) ($_POST['novaAreaAtuacao'] ?? ''));
 
         if ($novaArea !== '') {
+            if (mb_strlen($novaArea) > 50) {
+                $this->erroValidacao('O nome da nova área de atuação deve ter até 50 caracteres.');
+            }
             return usuarioParceiros::cadastrarArea($this->antiXss($novaArea));
         }
 
         $id = (int) ($_POST['idAreaAtuacao'] ?? 0);
 
         if ($id <= 0) {
-            die("Area de Atuacao Obrigatoria");
+            $this->erroValidacao('Área de atuação obrigatória.');
         }
 
         return $id;
@@ -221,9 +252,14 @@ class controllerParceiros extends controller
         return $imagem;
     }
 
-    private function erroUploadFoto(string $mensagem): void
+    private function erroValidacao(string $mensagem): never
     {
         http_response_code(422);
         exit($mensagem);
+    }
+
+    private function erroUploadFoto(string $mensagem): never
+    {
+        $this->erroValidacao($mensagem);
     }
 }

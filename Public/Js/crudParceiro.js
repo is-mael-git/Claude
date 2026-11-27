@@ -202,6 +202,11 @@ function inicializarCrudParceiro() {
         }
     });
 
+    formParceiro.addEventListener('envioErro', (evento) => {
+        const mensagem = evento.detail?.error?.message || 'Não foi possível salvar o parceiro.';
+        alert(mensagem);
+    });
+
     // os botões do modal chamam essas duas pelo onclick
     window.avancarParceiro = avancarParceiro;
     window.voltarParceiro = voltarParceiro;

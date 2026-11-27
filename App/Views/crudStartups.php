@@ -112,12 +112,12 @@ abrirModal(
 
                     <div class="cs-formGroup">
                         <label for="programs">Participação em outros programas</label>
-                        <input type="text" id="programs" name="programs" maxlength="50" placeholder="Ex.: SEBRAE, Inova MS..." />
+                        <input type="text" id="programs" name="programs" maxlength="255" placeholder="Ex.: SEBRAE, Inova MS..." />
                     </div>
 
                     <div class="cs-formGroup">
                         <label for="sector" class="campoObrigatorio">Setor de atuação</label>
-                        <input type="text" id="sector" name="sector" maxlength="150" placeholder="Ex.: Tecnologia, Saúde, Agronegócio" required />
+                        <input type="text" id="sector" name="sector" maxlength="50" placeholder="Ex.: Tecnologia, Saúde, Agronegócio" required />
                     </div>
 
                     <div class="cs-formGroup">

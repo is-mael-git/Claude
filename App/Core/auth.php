@@ -194,7 +194,6 @@ class auth {
             if ($cookieExistia || $sessaoAutenticada) {
                 header('Location: ' . BASE_URL . 'login?sessaoExpirada=1');
             } else {
-                self::flash('erro', 'Faz login ae');
                 header('Location: ' . BASE_URL . 'login');
             }
             exit();

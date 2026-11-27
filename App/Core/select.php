@@ -19,29 +19,62 @@ class select
     private ?int $limit = null;
     private ?int $offset = null;
 
+    /**
+     * Inicia a consulta SELECT informando a tabela ou view base.
+     *
+     * @param string $tabela Nome da tabela ou view (pode incluir alias, ex: "parceiro p").
+     */
     public function __construct(string $tabela)
     {
         $this->tabela = $tabela;
     }
 
-    public function colunas(string $colunas): self
+    /**
+     * Define as colunas retornadas pela consulta.
+     * Todas colunas por padrão
+     * 
+     * @param string $colunas Lista de colunas ou expressões SQL (ex: "id, nome"). 
+     * @return self
+     */
+    public function colunas(string $colunas = "*"): self
     {
         $this->colunas = $colunas;
         return $this;
     }
 
+    /**
+     * Ativa ou desativa a cláusula DISTINCT na consulta.
+     *
+     * @param bool $ativo True para aplicar DISTINCT, false para remover.
+     * @return self
+     */
     public function distinct(bool $ativo = true): self
     {
         $this->distinto = $ativo;
         return $this;
     }
 
+    /**
+     * Adiciona uma cláusula JOIN à consulta.
+     *
+     * @param string $tabela Tabela a ser associada (pode incluir alias).
+     * @param string $condicao Condição da cláusula ON (ex: "u.id = e.id_usuario").
+     * @param string $tipo Tipo de JOIN (ex: "INNER", "LEFT", "RIGHT"). Padrão: "INNER".
+     * @return self
+     */
     public function join(string $tabela, string $condicao, string $tipo = 'INNER'): self
     {
         $this->joins[] = "{$tipo} JOIN {$tabela} ON {$condicao}";
         return $this;
     }
 
+    /**
+     * Adiciona uma condição à cláusula WHERE combinada com AND.
+     *
+     * @param string $condicao Expressão SQL da condição com placeholders nomeados.
+     * @param array $params Parâmetros nomeados vinculados à condição.
+     * @return self
+     */
     public function where(string $condicao, array $params = []): self
     {
         $this->wheres[] = $condicao;
@@ -49,6 +82,14 @@ class select
         return $this;
     }
 
+    /**
+     * Adiciona um filtro WHERE coluna IN (...) gerando placeholders nomeados automaticamente.
+     *
+     * @param string $coluna Nome da coluna a ser filtrada.
+     * @param array $valores Lista de valores permitidos para a cláusula IN.
+     * @param string $prefixo Prefixo usado nos placeholders gerados (ex: "area" -> :area_0).
+     * @return self
+     */
     public function whereIn(string $coluna, array $valores, string $prefixo = 'in'): self
     {
         if (empty($valores)) {
@@ -66,12 +107,25 @@ class select
         return $this;
     }
 
+    /**
+     * Define a ordenação dos resultados (ORDER BY).
+     *
+     * @param string $ordem Expressão de ordenação SQL (ex: "nome ASC, id DESC").
+     * @return self
+     */
     public function orderBy(string $ordem): self
     {
         $this->orderBy = $ordem;
         return $this;
     }
 
+    /**
+     * Define limite máximo de linhas e deslocamento opcional para paginação.
+     *
+     * @param int|null $limit Quantidade máxima de registros (ou null para sem limite).
+     * @param int|null $offset Quantidade de registros a pular (OFFSET).
+     * @return self
+     */
     public function limit(?int $limit, ?int $offset = null): self
     {
         $this->limit = $limit;
@@ -79,6 +133,11 @@ class select
         return $this;
     }
 
+    /**
+     * Monta e retorna a instrução SQL final com placeholders preparados.
+     *
+     * @return string Instrução SELECT pronta para prepare().
+     */
     public function montarSql(): string
     {
         $distinctSql = $this->distinto ? 'DISTINCT ' : '';
@@ -106,11 +165,21 @@ class select
         return $sql;
     }
 
+    /**
+     * Retorna os parâmetros acumulados para execução da consulta.
+     *
+     * @return array Mapa de placeholders e valores.
+     */
     public function obterParametros(): array
     {
         return $this->params;
     }
 
+    /**
+     * Executa a consulta e retorna todas as linhas encontradas.
+     *
+     * @return array Lista de registros associativos.
+     */
     public function buscarTodos(): array
     {
         $stmt = bancoDados::conectar()->prepare($this->montarSql());
@@ -118,6 +187,11 @@ class select
         return $stmt->fetchAll();
     }
 
+    /**
+     * Executa a consulta com LIMIT 1 e retorna o primeiro registro ou null.
+     *
+     * @return array|null Registro associativo ou null se nada for encontrado.
+     */
     public function buscarUm(): ?array
     {
         $clone = clone $this;
@@ -128,6 +202,11 @@ class select
         return $linha === false ? null : $linha;
     }
 
+    /**
+     * Executa a consulta e retorna os valores de uma única coluna como lista simples.
+     *
+     * @return array Lista indexada com os valores da primeira coluna selecionada.
+     */
     public function buscarColuna(): array
     {
         $stmt = bancoDados::conectar()->prepare($this->montarSql());
@@ -135,6 +214,12 @@ class select
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    /**
+     * Executa um COUNT ignorando ORDER BY, LIMIT e OFFSET da consulta atual.
+     *
+     * @param string $expressao Expressão passada ao COUNT() (ex: "*", "DISTINCT id").
+     * @return int Total de registros encontrados.
+     */
     public function contar(string $expressao = '*'): int
     {
         $clone = clone $this;

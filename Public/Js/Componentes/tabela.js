@@ -129,16 +129,20 @@ const templateCorpo = {
     },
     'mentor': (m) => {
         const ativo = Number(m.ativo) === 1;
+        const digitosTelefone = String(m.telefone ?? '').replace(/\D/g, '');
+        const numeroWhatsapp = digitosTelefone.length === 10 || digitosTelefone.length === 11
+            ? `55${digitosTelefone}`
+            : digitosTelefone;
+
         return `                
                 <tr class="linhaTabelaCorpo linhaTabelaCorpoMentores" data-id="${m.id_usuario}">
                     <td class="itemTabelaCorpo itemTabelaMentores1">${escaparHtml(m.nome)}</td>
                     <td class="itemTabelaCorpo itemTabelaMentores2">${escaparHtml(m.areas_atuacao || '—')}</td>
-                    <td class="itemTabelaCorpo itemTabelaMentores3">${escaparHtml(m.email)}</td>
-                    <td class="itemTabelaCorpo itemTabelaMentores4">${mascaraTelefone(m.telefone)}</td>
-                    <td class="itemTabelaCorpo itemTabelaMentores6">
+                    <td class="itemTabelaCorpo itemTabelaMentores3">${mascaraTelefone(m.telefone)}</td>
+                    <td class="itemTabelaCorpo itemTabelaMentores4">
                         <span class="textoStatus status ${ativo ? 'statusAtivo' : ''}">${ativo ? 'Ativo' : 'Inativo'}</span>
                     </td>
-                    <td class="itemTabelaCorpo itemTabelaParceiros7">
+                    <td class="itemTabelaCorpo itemTabelaParceiros5">
                         <div class="wrapperTabelaParceiros7">
                         <div class="btnSwitch">
                                 <label class="switch">
@@ -178,6 +182,8 @@ const templateCorpo = {
                                     </svg>
                                 </i>
                             </button>
+                            <a class="botaoAcaoTabela botaoAcaoWhatsapp" href="https://wa.me/${numeroWhatsapp}" target="_blank" rel="noopener noreferrer" aria-label="Conversar com ${escaparHtml(m.nome)} pelo WhatsApp"><i><i class="fa-brands fa-whatsapp"></i></i></a>
+                            <a class="botaoAcaoTabela botaoAcaoEmail" href="mailto:${escaparHtml(m.email)}" aria-label="Enviar e-mail para ${escaparHtml(m.nome)}"><i><i class="fa-solid fa-envelope"></i></i></a>
                         </div>
                     </td>
                 </tr>`
@@ -385,8 +391,7 @@ const templateCorpo = {
         </td>
 
         <td class="itemTabelaCorpo">
-            ${m.minimo}
-            ${m.maximo}
+            ${m.minimo} - ${m.maximo}
         </td>
 
         <td class="itemTabelaCorpo">

@@ -15,6 +15,7 @@ Documentação de referência para implementar e integrar tabelas dinâmicas no 
 | **JS (Tabela)** | `Public/Js/Componentes/tabela.js` | Busca `/ParkTec/{tela}/tabela`, aplica templates de linha, ordena, filtra, pagina sem reload e sincroniza a URL. |
 | **JS (Filtro)** | `Public/Js/Componentes/modalFiltro.js` | Abertura/fechamento, busca instantânea na lista, controle do checkbox "Todas" e integração com `filtrarTabela()`. |
 | **Backend (Base)** | `App/Core/controller.php` | Método protegido `ordenacaoTabela()` com whitelist de colunas SQL. |
+| **Backend (Consulta)** | `App/Core/model.php` e `App/Core/select.php` | Base DAO (`self::select()`) com `whereIn()`, `distinct()`, `orderBy()`, `limit()` e `contar()`. Veja [`Docs/dao-model.md`](dao-model.md). |
 
 > Referência completa em produção: `App/Views/crudParceiro.php`, `App/Controller/controllerParceiros.php` e `App/Models/usuarioParceiros.php`.
 
@@ -141,6 +142,7 @@ O `tabela.js` identifica a tela pelo segundo segmento da URL (`window.location.p
 Para registrar uma nova tela:
 
 1. Crie o template da linha (`<tr>...</tr>`) dentro de `templateCorpo` em `Public/Js/Componentes/tabela.js`.
+   - Use o helper `escaparHtml(valor)` (já definido no topo de `tabela.js`) nos campos de texto renderizados no template para evitar XSS.
 2. Vincule a chave da URL em `TEMPLATE_POR_TELA`:
 
 ```javascript
@@ -159,8 +161,8 @@ const TEMPLATE_POR_TELA = {
 | Função | Uso |
 | :--- | :--- |
 | `ordenarTabela(coluna, botao)` | Alterna `ASC`/`DESC` na coluna, sincroniza a classe `.desc` apenas no botão da coluna ativa e recarrega na página 1. |
-| `filtrarTabela(campo, valor)` | Define `state.filtros[campo] = valor`, volta para a página 1 e recarrega a tabela. |
-| `limparFiltros()` | Reseta `state.filtros` (`orderBy: "id"`, `direction: "DESC"`), limpa modais de filtro e recarrega na página 1. |
+| `filtrarTabela(campo, valor)` | Define `state.filtros[campo] = valor` (ou remove a chave com `delete` se `valor` vier vazio), volta para a página 1 e recarrega a tabela. |
+| `limparFiltros()` | Reseta `state.filtros` (`orderBy: "id"`, `direction: "DESC"`), limpa e fecha todos os modais de filtro (`fecharTodosModaisFiltro()`), limpa os parâmetros da URL com `sincronizarUrl()` e recarrega na página 1. |
 | `recarregarTabela()` | Faz novo `fetch` com os filtros atuais (e `limit`/`offset` quando paginado) e atualiza o `<tbody>` e a paginação. |
 
 ### Como funciona a paginação e a URL
@@ -168,7 +170,7 @@ const TEMPLATE_POR_TELA = {
 - O `tabela.js` suporta **paginação no servidor** (recomendada) e **paginação no cliente** (`QUANTIDADES_POR_PAGINA = [1, 5, 10, 25, 50]`, padrão `10`):
   - **Modo servidor:** quando o backend responde `{ dados: [...], total: N }`, o `tabela.js` envia `limit` e `offset` a cada mudança de página, quantidade ou filtro, usando `total` para calcular `state.totalPage`.
   - **Modo cliente (legado):** quando o backend responde um array simples `[...]`, o corte por página é feito no DOM via `recortarPagina()`.
-- A função `sincronizarUrl()` mantém `pagina`, `quantidade`, `orderBy`, `direction` e os filtros ativos na URL via `window.history.replaceState()`, preservando o estado ao atualizar (F5).
+- A função `sincronizarUrl()` zera a query string (`novaUrl.search = ''`) e remonta apenas os parâmetros ativos (`pagina`, `quantidade`, `orderBy`, `direction` e filtros selecionados) via `window.history.replaceState()`, preservando o estado ao atualizar (F5) sem deixar parâmetros antigos presos na URL.
 
 ---
 
@@ -205,75 +207,60 @@ public function tabela()
 
 ### 4.2. Model
 
-Regras importantes para manter a paginação e filtragem sincronizadas:
-- **Suporte `LIMIT` e `OFFSET` + método `contar()`**: aplique o mesmo filtro (`WHERE`) tanto na listagem paginada quanto na contagem total (`SELECT COUNT(DISTINCT id)`), para que `total` reflita os registros filtrados.
-- **Suporte múltiplos valores**: o `modalFiltro.js` envia valores separados por vírgula (ex: `?area=1,3`). Quebre com `explode(',', ...)` e monte `WHERE coluna IN (...)` usando prepared statements.
+Regras importantes para manter a paginação e filtragem sincronizadas (usando a camada DAO de `App/Core/model.php` e `App/Core/select.php` — detalhes completos em [`Docs/dao-model.md`](dao-model.md)):
+- **Reaproveite a consulta base**: crie um método privado que retorna um objeto `Core\select` já filtrado (`whereIn`) e reutilize-o tanto em `contar()` quanto em `listar()`, garantindo que `total` reflita exatamente os registros filtrados.
+- **Suporte múltiplos valores**: o `modalFiltro.js` envia valores separados por vírgula (ex: `?area=1,3`). Quebre com `explode(',', ...)` e passe para `->whereIn($coluna, $valores, 'area')`, que gera os placeholders preparados automaticamente.
 
 ```php
-private static function montarFiltroArea($area): array
+use Core\model;
+use Core\select;
+
+class usuarioParceiros extends model
 {
-    if (empty($area)) {
-        return ['', []];
-    }
+    private static function montarConsultaArea($area): select
+    {
+        $consulta = self::select('vw_parceiros_detalhes');
 
-    $areasArray = is_array($area) ? $area : explode(',', (string) $area);
-    $areasArray = array_filter(array_map('trim', $areasArray), fn($v) => $v !== '');
-
-    if (empty($areasArray)) {
-        return ['', []];
-    }
-
-    $ehNumerico = true;
-    foreach ($areasArray as $item) {
-        if (!ctype_digit((string) $item)) {
-            $ehNumerico = false;
-            break;
+        if (empty($area)) {
+            return $consulta;
         }
-    }
 
-    $colunaFiltro = $ehNumerico ? 'id_area_atuacao' : 'area_nome';
-    $placeholders = [];
-    $params = [];
+        $areasArray = is_array($area) ? $area : explode(',', (string) $area);
+        $areasArray = array_filter(array_map('trim', $areasArray), fn($v) => $v !== '');
 
-    foreach (array_values($areasArray) as $i => $valor) {
-        $ph = ":area_{$i}";
-        $placeholders[] = $ph;
-        $params[$ph] = $ehNumerico ? (int) $valor : $valor;
-    }
-
-    $whereSql = " WHERE {$colunaFiltro} IN (" . implode(', ', $placeholders) . ")";
-    return [$whereSql, $params];
-}
-
-public static function contar($area = null): int
-{
-    $db = bancoDados::conectar();
-    [$whereSql, $params] = self::montarFiltroArea($area);
-
-    $sql = "SELECT COUNT(DISTINCT id) FROM vw_parceiros_detalhes" . $whereSql;
-
-    $stmt = $db->prepare($sql);
-    $stmt->execute($params);
-    return (int) $stmt->fetchColumn();
-}
-
-public static function listar(string $orderBy = "id DESC", $area = null, ?int $limit = null, ?int $offset = null): array
-{
-    $db = bancoDados::conectar();
-    [$whereSql, $params] = self::montarFiltroArea($area);
-
-    $sql = "SELECT DISTINCT * FROM vw_parceiros_detalhes" . $whereSql . " ORDER BY " . $orderBy;
-
-    if ($limit !== null) {
-        $sql .= " LIMIT " . (int) $limit;
-        if ($offset !== null) {
-            $sql .= " OFFSET " . (int) $offset;
+        if (empty($areasArray)) {
+            return $consulta;
         }
+
+        $ehNumerico = true;
+        foreach ($areasArray as $item) {
+            if (!ctype_digit((string) $item)) {
+                $ehNumerico = false;
+                break;
+            }
+        }
+
+        $colunaFiltro = $ehNumerico ? 'id_area_atuacao' : 'area_nome';
+        $valores = $ehNumerico
+            ? array_map('intval', $areasArray)
+            : array_values($areasArray);
+
+        return $consulta->whereIn($colunaFiltro, $valores, 'area');
     }
 
-    $stmt = $db->prepare($sql);
-    $stmt->execute($params);
-    return $stmt->fetchAll();
+    public static function contar($area = null): int
+    {
+        return self::montarConsultaArea($area)->contar('DISTINCT id');
+    }
+
+    public static function listar(string $orderBy = "id DESC", $area = null, ?int $limit = null, ?int $offset = null): array
+    {
+        return self::montarConsultaArea($area)
+            ->distinct()
+            ->orderBy($orderBy)
+            ->limit($limit, $offset)
+            ->buscarTodos();
+    }
 }
 ```
 
